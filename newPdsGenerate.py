@@ -107,6 +107,15 @@ for b in range(0, boiteLen):
             w.write('E' + str(c), n, colorList[n - 1])
             w.write('D' + str(c), N, colorList[N - 1])
             n = n + 1
+        trial = 1
+        if cableExtremity[indexCable] != boiteCode[b] and trial != 2 :
+            indexBoite = boiteCode.index(cableExtremity[indexCable])
+            trial = trial +1
+            sorCab = boiteCable[indexBoite]
+            indexCab = cableName.index(sorCab)
+            cabSortCap = cableCapacity[indexCab]
+            for nc in range(2, cabSortCap+2):
+                pass
 
 
 workbook.close()

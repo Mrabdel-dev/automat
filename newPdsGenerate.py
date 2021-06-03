@@ -16,14 +16,14 @@ filedBoiteNam = boiteTable.field_names
 boiteLen = len(boiteTable)
 cableLen = len(cableTable)
 # declare the table that i need te full
-boiteCode = [];
-boiteCable = [];
-boiteCableState = [];
-boiteReference = [];
+boiteCode = []
+boiteCable = []
+boiteCableState = []
+boiteReference = []
 nbf = []
-cableName = [];
-cableOrigin = [];
-cableExtremity = [];
+cableName = []
+cableOrigin = []
+cableExtremity = []
 cableCapacity = []
 
 for i in range(0, cableLen):

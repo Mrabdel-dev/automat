@@ -32,8 +32,13 @@ colorList = [cell_format1, cell_format2, cell_format3, cell_format4, cell_format
 def stringCassette(x: string):
     if x.isdigit():
         j = 0
+        if int(x)%12 == 0:
+            x=12
+        else :
+            x = int(x) % 12
+
         for i in range(0, 13):
-            if i == int(x):
+            if i == x:
                 x = i
                 j = 1
         if j == 1:
@@ -124,13 +129,14 @@ for b in sheetSro:
     v = 0
     for i in range(12, bshet.max_row + 1):
         t = str(bshet.cell(row=i, column=8).value)
-        if t == 'LIBRE' or t == '':
+        if t == 'LIBRE' or t == 'PASSAGE':
             v = v + 1
     print('#' * 25)
     print(b)
     print(bshet.max_row - 11)
     print(v)
     Len = Len + bshet.max_row - v - 11
+    col=6
     # define the base element
     for p in range(N + 2, Len + 2):
         if f == 13:
@@ -147,26 +153,43 @@ for b in sheetSro:
                 L = 1
             elif L < 6:
                 L = L + 1
+    shRow=[]
+    for rw in range(12, bshet.max_row + 1):
+        raw = bshet.cell(row=rw,column=8).value
+        if str(raw) == 'LIBRE' or str(raw)=='PASSAGE' :
+            continue
+        else:
+            shRow.append(rw)
+
     # full up the table with value
-    for p, s in zip(range(N + 2, Len + 2), range(12, bshet.max_row + 1)):
+    for p, s in zip(range(N + 1, Len + 2), shRow):
+       # CAS VALUE
         x = bshet.cell(row=s, column=5).value
-        wr.write('G' + str(p), x, cassette)
+        wr.write(p,col, x, cassette)
+       # TUBE VALUE
         x = bshet.cell(row=s, column=5).value
-        wr.write('H' + str(p), x, stringCassette(str(x)))
+        wr.write(p, col+1, x, stringCassette(str(x)))
+       # FIBRE VALUE
         x = bshet.cell(row=s, column=6).value
-        wr.write('I' + str(p), x, stringCassette(str(x)))
+        wr.write(p, col+2, x, stringCassette(str(x)))
+       # CABLE VALUE
         x = bshet.cell(row=12, column=1).value
-        wr.write('J' + str(p), x, border)
+        wr.write(p, col+3, x, border)
+       # BOITE VALUE
         x = bshet.cell(row=7, column=1).value
-        wr.write('K' + str(p), x, border)
+        wr.write(p, col+4, x, border)
+       # TYPE VALUE
         x = bshet.cell(row=s, column=8).value
-        wr.write('L' + str(p), x, border)
+        wr.write(p, col+5, x, border)
+       # CAS VALUE
         x = bshet.cell(row=s, column=7).value
-        wr.write('M' + str(p), x, cassette)
+        wr.write(p, col+6, x, cassette)
+       # TUBE VALUE
         x = bshet.cell(row=s, column=10).value
-        wr.write('N' + str(p), x, stringCassette(str(x)))
+        wr.write(p, col+7, x, stringCassette(str(x)))
+       # FIBRE VALUE
         x = bshet.cell(row=s, column=9).value
-        wr.write('O' + str(p), x, stringCassette(str(x)))
+        wr.write(p, col+8, x, stringCassette(str(x)))
 
     N = Len
 rootBook.close()

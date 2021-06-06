@@ -2,7 +2,7 @@ import string
 
 import xlsxwriter
 from openpyxl import load_workbook
-
+from copy import copy
 # ################define the path of output routage file######################################
 rootBook = xlsxwriter.Workbook('fileGenerated/root.xlsx')
 wr = rootBook.add_worksheet()
@@ -31,16 +31,14 @@ colorList = [cell_format1, cell_format2, cell_format3, cell_format4, cell_format
 
 def stringCassette(x: string):
     if x.isdigit():
-        j=0
+        j = 0
         for i in range(0, 13):
             if i == int(x):
                 x = i
-                j=1
-        if j ==1:
-            print(x)
-            return colorList[x-1]
+                j = 1
+        if j == 1:
+            return colorList[x - 1]
         else:
-            print(x)
             return colorList[12]
     return colorList[len(colorList) - 1]
 
@@ -54,13 +52,20 @@ def baseHeader():
     wr.write('F1', 'TYPE', header)
 
 
-def normalHeader(i):
-    wr.write('G' + str(i), 'CAS', header)
-    wr.write('H' + str(i), 'T', header)
-    wr.write('I' + str(i), 'F', header)
-    wr.write('J' + str(i), 'CABLE', header)
-    wr.write('K' + str(i), 'BOITE', header)
-    wr.write('L' + str(i), 'TYPE', header)
+def normalHeader(j):
+    for i in range(j, 20):
+        wr.write(0, j, 'CAS', header)
+        j = j + 1
+        wr.write(0, j, 'T', header)
+        j = j + 1
+        wr.write(0, j, 'F', header)
+        j = j + 1
+        wr.write(0, j, 'CABLE', header)
+        j = j + 1
+        wr.write(0, j, 'BOITE', header)
+        j = j + 1
+        wr.write(0, j, 'TYPE', header)
+        j = j + 1
 
 
 # ##################declare the input PDS file ############################
@@ -74,19 +79,34 @@ cableSro = []
 capSro = []
 # sro name
 SRO = ''
+routeDec = {}
 # loop to the boite inside the pds to know SRO cable
 for sh in pdsSheets:
     sheet = pdsBook[sh]
     value = sheet.cell(row=1, column=1).value
     if str(value).startswith('SRO'):
         sheetSro.append(sh)
-
+        boiteList = []
+        old = 0
+        for i in range(12, sheet.max_row):
+            cableVal = str(sheet.cell(row=i, column=14).value)
+            if cableVal != old and str(cableVal) != '':
+                boitBring = cableVal[-4:]
+                for s in pdsSheets:
+                    boit = str(s)
+                    if boit.endswith(boitBring):
+                        boiteList.append(s)
+                        break
+            old = cableVal
+        routeDec.update({sh: boiteList})
         SRO = value
         cableSro.append(str(sheet.cell(row=12, column=1).value))
         capSro.append(int(sheet.cell(row=12, column=3).value))
+print(SRO)
+print(routeDec)
 
 baseHeader()
-normalHeader(1)
+normalHeader(6)
 p = 0
 c = []
 for i in range(65, 77):
@@ -101,16 +121,34 @@ for b in sheetSro:
     bshet = pdsBook[b]
     L = 1
     T = T + 1
-    Len = Len + bshet.max_row - 11
-    for p, s in zip(range(N + 2, Len + 2), range(12, bshet.max_row + 1)):
+    v = 0
+    for i in range(12, bshet.max_row + 1):
+        t = str(bshet.cell(row=i, column=8).value)
+        if t == 'LIBRE' or t == '':
+            v = v + 1
+    print('#' * 25)
+    print(b)
+    print(bshet.max_row - 11)
+    print(v)
+    Len = Len + bshet.max_row - v - 11
+    # define the base element
+    for p in range(N + 2, Len + 2):
         if f == 13:
             f = 0
         wr.write('A' + str(p), SRO, border)
-        wr.write('B' + str(p), p-1, border)
+        wr.write('B' + str(p), p - 1, border)
         wr.write('E' + str(p), 'TIROIR_' + str(T), border)
         wr.write('F' + str(p), 'CONNECTEUR', border)
         wr.write('C' + str(p), c[f], border)
         wr.write('D' + str(p), L, border)
+        f = f + 1
+        if p % 24 == 0:
+            if L == 6:
+                L = 1
+            elif L < 6:
+                L = L + 1
+    # full up the table with value
+    for p, s in zip(range(N + 2, Len + 2), range(12, bshet.max_row + 1)):
         x = bshet.cell(row=s, column=5).value
         wr.write('G' + str(p), x, cassette)
         x = bshet.cell(row=s, column=5).value
@@ -129,11 +167,6 @@ for b in sheetSro:
         wr.write('N' + str(p), x, stringCassette(str(x)))
         x = bshet.cell(row=s, column=9).value
         wr.write('O' + str(p), x, stringCassette(str(x)))
-        f = f + 1
-        if p % 24 == 0:
-            if L == 6:
-                L = 1
-            elif L < 6:
-                L = L + 1
+
     N = Len
 rootBook.close()

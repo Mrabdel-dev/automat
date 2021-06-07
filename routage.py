@@ -1,8 +1,9 @@
+import operator
 import string
 
 import xlsxwriter
 from openpyxl import load_workbook
-from copy import copy
+
 # ################define the path of output routage file######################################
 rootBook = xlsxwriter.Workbook('fileGenerated/root.xlsx')
 wr = rootBook.add_worksheet()
@@ -32,9 +33,9 @@ colorList = [cell_format1, cell_format2, cell_format3, cell_format4, cell_format
 def stringCassette(x: string):
     if x.isdigit():
         j = 0
-        if int(x)%12 == 0:
-            x=12
-        else :
+        if int(x) % 12 == 0:
+            x = 12
+        else:
             x = int(x) % 12
 
         for i in range(0, 13):
@@ -57,6 +58,20 @@ def baseHeader():
     wr.write('F1', 'TYPE', header)
 
 
+def getBoiteName(cabledigite):
+    for b in pdsSheets:
+        if b.endswith(cabledigite):
+            return b
+
+
+def getSheetName(boite):
+    for sh in pdsSheets:
+        if sh == boite:
+            return sh
+    else:
+        return print('eroor')
+
+
 def normalHeader(j):
     for i in range(j, 20):
         wr.write(0, j, 'CAS', header)
@@ -73,6 +88,7 @@ def normalHeader(j):
         j = j + 1
 
 
+trysh = []
 # ##################declare the input PDS file ############################
 pdsBook = load_workbook('fileGenerated/PDS.xlsx')
 pdsSheets = pdsBook.sheetnames
@@ -85,12 +101,18 @@ capSro = []
 # sro name
 SRO = ''
 routeDec = {}
+srodict = {}
 # loop to the boite inside the pds to know SRO cable
 for sh in pdsSheets:
     sheet = pdsBook[sh]
     value = sheet.cell(row=1, column=1).value
     if str(value).startswith('SRO'):
-        sheetSro.append(sh)
+        j = 0
+        for i in range(12, sheet.max_row + 1):
+            ETAT = str(sheet.cell(row=i, column=8).value)
+            if ETAT != 'LIBRE' or ETAT != '':
+                j = j + 1
+        srodict.update({sh: j})
         boiteList = []
         old = 0
         for i in range(12, sheet.max_row):
@@ -107,9 +129,13 @@ for sh in pdsSheets:
         SRO = value
         cableSro.append(str(sheet.cell(row=12, column=1).value))
         capSro.append(int(sheet.cell(row=12, column=3).value))
+
 print(SRO)
 print(routeDec)
-
+print(srodict)
+sortedSro = dict(sorted(srodict.items(), key=operator.itemgetter(1)))
+sheetSro = sortedSro.keys()
+print(sheetSro)
 baseHeader()
 normalHeader(6)
 p = 0
@@ -136,7 +162,7 @@ for b in sheetSro:
     print(bshet.max_row - 11)
     print(v)
     Len = Len + bshet.max_row - v - 11
-    col=6
+    col = 6
     # define the base element
     for p in range(N + 2, Len + 2):
         if f == 13:
@@ -153,43 +179,110 @@ for b in sheetSro:
                 L = 1
             elif L < 6:
                 L = L + 1
-    shRow=[]
+    shRow = []
     for rw in range(12, bshet.max_row + 1):
-        raw = bshet.cell(row=rw,column=8).value
-        if str(raw) == 'LIBRE' or str(raw)=='PASSAGE' :
+        raw = bshet.cell(row=rw, column=8).value
+        if str(raw) == 'LIBRE' or str(raw) == 'PASSAGE':
             continue
         else:
             shRow.append(rw)
 
     # full up the table with value
     for p, s in zip(range(N + 1, Len + 2), shRow):
-       # CAS VALUE
+        column = col
+        # CAS VALUE
         x = bshet.cell(row=s, column=5).value
-        wr.write(p,col, x, cassette)
-       # TUBE VALUE
+        wr.write(p, column, x, cassette)
+        column = column + 1
+        # TUBE VALUE
         x = bshet.cell(row=s, column=5).value
-        wr.write(p, col+1, x, stringCassette(str(x)))
-       # FIBRE VALUE
+        wr.write(p, column, x, stringCassette(str(x)))
+        column = column + 1
+        # FIBRE VALUE
         x = bshet.cell(row=s, column=6).value
-        wr.write(p, col+2, x, stringCassette(str(x)))
-       # CABLE VALUE
+        wr.write(p, column, x, stringCassette(str(x)))
+        column = column + 1
+        # CABLE VALUE
         x = bshet.cell(row=12, column=1).value
-        wr.write(p, col+3, x, border)
-       # BOITE VALUE
+        wr.write(p, column, x, border)
+        column = column + 1
+        # BOITE VALUE
         x = bshet.cell(row=7, column=1).value
-        wr.write(p, col+4, x, border)
-       # TYPE VALUE
+        wr.write(p, column, x, border)
+        column = column + 1
+        # TYPE VALUE
         x = bshet.cell(row=s, column=8).value
-        wr.write(p, col+5, x, border)
-       # CAS VALUE
+        wr.write(p, column, x, border)
+        column = column + 1
+        # CAS VALUE
         x = bshet.cell(row=s, column=7).value
-        wr.write(p, col+6, x, cassette)
-       # TUBE VALUE
+        wr.write(p, column, x, cassette)
+        column = column + 1
+        # TUBE VALUE
         x = bshet.cell(row=s, column=10).value
-        wr.write(p, col+7, x, stringCassette(str(x)))
-       # FIBRE VALUE
+        wr.write(p, column, x, stringCassette(str(x)))
+        column = column + 1
+        # FIBRE VALUE
         x = bshet.cell(row=s, column=9).value
-        wr.write(p, col+8, x, stringCassette(str(x)))
+        wr.write(p, column, x, stringCassette(str(x)))
+        column = column + 1
+        # CABLE VALUE 2
+        x = bshet.cell(row=s, column=14).value
+        wr.write(p, column, x, border)
+        column = column + 1
+        # BOITE VALUE 2
+        x = str(bshet.cell(row=s, column=14).value)
+        boite = x[-4:]
+        if boite is not None:
+            boit = getBoiteName(boite)
+            wr.write(p, column, boit, border)
+            column = column + 1
+            done = True
+            newBoite = str(boit)
+            trysh.append(newBoite)
+        if newBoite is not None:
+            while done:
+                try:
+                    nextBoiteSheet = pdsBook[newBoite]
+                    # TYPE VALUE
+                    state = nextBoiteSheet.cell(row=s, column=8).value
+                    wr.write(p, column, state, border)
+                    column = column + 1
+                    # CAS VALUE
+                    x = nextBoiteSheet.cell(row=s, column=7).value
+                    wr.write(p, column, x, cassette)
+                    column = column + 1
+                    if state != 'A STOCKER' and state != 'LIBRE':
+                        # TUBE VALUE
+                        x = nextBoiteSheet.cell(row=s, column=10).value
+                        wr.write(p, column, x, stringCassette(str(x)))
+                        column = column + 1
+                        # FIBRE VALUE
+                        x = nextBoiteSheet.cell(row=s, column=9).value
+                        wr.write(p, column, x, stringCassette(str(x)))
+                        column = column + 1
+                        # CABLE VALUE 2
+                        x = nextBoiteSheet.cell(row=s, column=14).value
+                        wr.write(p, column, x, border)
+                        column = column + 1
+                        # BOITE VALUE 2
+                        x = str(nextBoiteSheet.cell(row=s, column=14).value)
+                        boite = x[-4:]
+                        if boite is not None:
+                            boit = getBoiteName(boite)
+                            wr.write(p, column, boit, border)
+                            column = column + 1
+                            newBoite = str(boit)
+                    else:
+                        done = False
+                except KeyError:
+                    print('one empthy value passed')
+                    done=False
 
     N = Len
+for i in trysh:
+    try:
+        sheet = pdsBook[i]
+    except KeyError:
+        print(i)
 rootBook.close()

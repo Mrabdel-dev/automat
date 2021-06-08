@@ -130,12 +130,15 @@ for sh in pdsSheets:
         cableSro.append(str(sheet.cell(row=12, column=1).value))
         capSro.append(int(sheet.cell(row=12, column=3).value))
 
-print(SRO)
-print(routeDec)
-print(srodict)
+#print(SRO)
+# print(routeDec)
+#print(srodict)
 sortedSro = dict(sorted(srodict.items(), key=operator.itemgetter(1)))
-sheetSro = sortedSro.keys()
-print(sheetSro)
+sheetSro = list(sortedSro.keys())
+r=sheetSro[0]
+sheetSro[0]=sheetSro[1]
+sheetSro[1]=r
+#print(sheetSro)
 baseHeader()
 normalHeader(6)
 p = 0
@@ -187,7 +190,7 @@ for b in sheetSro:
         else:
             shRow.append(rw)
 
-    newBoite=''
+    newBoite = ''
     # full up the table with value
     for p, s in zip(range(N + 1, Len + 2), shRow):
         column = col
@@ -242,12 +245,14 @@ for b in sheetSro:
             newBoite = str(boit)
             trysh.append(newBoite)
         if newBoite is not None:
+            print('#'*20)
+            print(newBoite)
             while done:
                 try:
                     nextBoiteSheet = pdsBook[newBoite]
                     # TYPE VALUE
-                    state = nextBoiteSheet.cell(row=s, column=8).value
-                    if state=='LIBRE' or state=='PASSAGE':
+                    state = str(nextBoiteSheet.cell(row=s, column=8).value)
+                    if state == 'LIBRE' or state == 'PASSAGE':
                         done = False
                     else:
                         wr.write(p, column, state, border)
@@ -256,7 +261,10 @@ for b in sheetSro:
                         x = nextBoiteSheet.cell(row=s, column=7).value
                         wr.write(p, column, x, cassette)
                         column = column + 1
-                        if state!='A STOCKER':
+                        if state == 'A STOCKER' or state.endswith('KER') or state.startswith('A STO'):
+                            done=False
+                            continue
+                        else:
                             # TUBE VALUE
                             x = nextBoiteSheet.cell(row=s, column=10).value
                             wr.write(p, column, x, stringCassette(str(x)))
@@ -277,11 +285,9 @@ for b in sheetSro:
                                 wr.write(p, column, boit, border)
                                 column = column + 1
                                 newBoite = str(boit)
-                        else:
-                            done=False
                 except KeyError:
                     print('one empthy value passed')
-                    done=False
+                    done = False
     N = Len
 for i in trysh:
     try:

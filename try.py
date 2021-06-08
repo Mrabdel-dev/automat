@@ -26,3 +26,32 @@
 # print(sortedOne)
 # for sh in sh :
 #     print(sh)
+#                     wr.write(p, column, state, border)
+#                     column = column + 1
+#                     # CAS VALUE
+#                     x = nextBoiteSheet.cell(row=s, column=7).value
+#                     wr.write(p, column, x, cassette)
+#                     column = column + 1
+#                     if state != 'A STOCKER' and state != 'LIBRE':
+#                         # TUBE VALUE
+#                         x = nextBoiteSheet.cell(row=s, column=10).value
+#                         wr.write(p, column, x, stringCassette(str(x)))
+#                         column = column + 1
+#                         # FIBRE VALUE
+#                         x = nextBoiteSheet.cell(row=s, column=9).value
+#                         wr.write(p, column, x, stringCassette(str(x)))
+#                         column = column + 1
+#                         # CABLE VALUE 2
+#                         x = nextBoiteSheet.cell(row=s, column=14).value
+#                         wr.write(p, column, x, border)
+#                         column = column + 1
+#                         # BOITE VALUE 2
+#                         x = str(nextBoiteSheet.cell(row=s, column=14).value)
+#                         boite = x[-4:]
+#                         if boite is not None:
+#                             boit = getBoiteName(boite)
+#                             wr.write(p, column, boit, border)
+#                             column = column + 1
+#                             newBoite = str(boit)
+#                     else:
+#                         done = False

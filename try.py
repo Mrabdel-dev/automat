@@ -10,13 +10,34 @@
 # for i in range(65, 77):
 #     c.append(chr(i))
 # c.append(chr(78))
-#
+# import openpyxl.worksheet.worksheet
+# import xlsxwriter.worksheet
+from openpyxl import load_workbook
+
+# pdsBook = load_workbook('fileGenerated/PDS.xlsx')
+# pdsSheets = pdsBook.sheetnames
+# y = pdsBook[pdsSheets[0]]
+# print(type(y))
+# def sheets(x:openpyxl.worksheet.worksheet.Worksheet):
+#     x.cell()
 # print(c[15])
 # import xlsxwriter
 # rootBook = xlsxwriter.Workbook('fileGenerated/hh.xlsx')
 # wr = rootBook.add_worksheet()
 # wr.write(0,0,"hello")
+# print(type(wr))
 # rootBook.close()
+# sheet = openpyxl.worksheet.worksheet.Worksheet
+# worksheet = xlsxwriter.worksheet.Worksheet
+#
+#
+# def xlssx(t: x, r: y):
+#     t = t.cell(row=5, column=7).value
+#     r.write(0, 0, t)
+#     print('hello from sheet')
+#
+#
+# xlssx(1,2)
 # import operator
 #
 # az ={'rrrrr':144,'hhhhhh':568,'yyyyyyyyy':144}

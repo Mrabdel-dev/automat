@@ -130,15 +130,15 @@ for sh in pdsSheets:
         cableSro.append(str(sheet.cell(row=12, column=1).value))
         capSro.append(int(sheet.cell(row=12, column=3).value))
 
-#print(SRO)
+# print(SRO)
 # print(routeDec)
-#print(srodict)
+# print(srodict)
 sortedSro = dict(sorted(srodict.items(), key=operator.itemgetter(1)))
 sheetSro = list(sortedSro.keys())
-r=sheetSro[0]
-sheetSro[0]=sheetSro[1]
-sheetSro[1]=r
-#print(sheetSro)
+r = sheetSro[0]
+sheetSro[0] = sheetSro[1]
+sheetSro[1] = r
+# print(sheetSro)
 baseHeader()
 normalHeader(6)
 p = 0
@@ -245,25 +245,25 @@ for b in sheetSro:
             newBoite = str(boit)
             trysh.append(newBoite)
         if newBoite is not None:
-            print('#'*20)
+            print('#' * 20)
             print(newBoite)
             while done:
                 try:
                     nextBoiteSheet = pdsBook[newBoite]
                     # TYPE VALUE
                     state = str(nextBoiteSheet.cell(row=s, column=8).value)
-                    if state == 'LIBRE' or state == 'PASSAGE':
-                        done = False
-                    else:
+                    if state == 'A STOCKER' or state.endswith('KER') or state.startswith('A STO'):
                         wr.write(p, column, state, border)
                         column = column + 1
                         # CAS VALUE
                         x = nextBoiteSheet.cell(row=s, column=7).value
                         wr.write(p, column, x, cassette)
                         column = column + 1
+
+                    elif state == 'A STOCKER':
+
                         if state == 'A STOCKER' or state.endswith('KER') or state.startswith('A STO'):
-                            done=False
-                            continue
+                            break
                         else:
                             # TUBE VALUE
                             x = nextBoiteSheet.cell(row=s, column=10).value

@@ -130,9 +130,8 @@ def getIndex(val, tabl: list):
             return tabl.index(val)
 
 
-def getNextIndex(val, tube, fibre, tabl):
-    x = len(tabl)
-    for t in range(0, len(tabl)):
+def getNextIndex(val, tube, fibre, tabl: list):
+    for i in range(0, len(tabl)):
         c = cableName[i]
         t = tubeNumberI[i]
         f = fibreNumberI[i]

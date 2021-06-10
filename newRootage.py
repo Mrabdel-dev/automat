@@ -55,7 +55,7 @@ with open('fileGenerated/21_017_101_EPISSURAGE_B-CORIGE POUR LE ROUTAGE.csv', 'r
     print(dictCable)
 # ########################################################################################
 # <-----------------------route file creation------------------------------------------->
-rootBook = xlsxwriter.Workbook('Root.xlsx')
+rootBook = xlsxwriter.Workbook('ttot.xlsx')
 wr = rootBook.add_worksheet()
 # define the character and style of cell inside excel
 bold = rootBook.add_format({'bold': True, "border": 1})
@@ -96,7 +96,7 @@ def stringCassette(x: str):
             return colorList[x - 1]
         else:
             return colorList[12]
-    return colorList[len(colorList) - 1]
+    return colorList[12]
 
 
 def baseHeader():
@@ -170,6 +170,13 @@ def checkPassage(index):
     except TypeError:
         print(index, 'eroooooooooor')
 
+def getListSroCable():
+    vall=[]
+    for s in sroCable:
+        for k in cableName:
+            if s == k:
+                vall.append(k)
+
 
 x = checkPassage(411)
 print(x)
@@ -195,130 +202,130 @@ l = 0
 column = 0
 TEST = ''
 # # ##################################
-baseHeader()
-normalHeader(8)
-for cab in sroCable:
-    T += 1
-    while done:
-        len = getIndex(cab, cableName)
-        b = l + 1
-        wr.write('A' + str(b), 'SRO', border)
-        wr.write('B' + str(b), b, border)
-        wr.write('E' + str(b), 'TIROIR_' + str(T), border)
-        wr.write('F' + str(b), 'CONNECTEUR', border)
-        wr.write('C' + str(b), c[f], border)
-        wr.write('D' + str(b), L, border)
-        f = f + 1
-        if p % 24 == 0:
-            if L == 6:
-                L = 1
-            elif L < 6:
-                L = L + 1
-
-        TEST = checkPassage(len)
-        if TEST == 'PASS':
-            # #################get the values#############################
-            CAS = tubeNumberI[len]
-            tube1 = tubeNumberI[len]
-            fibre1 = fibreNumberI[len]
-            cable1 = cableName[len]
-            boite = boiteName[len]
-            ETAT = etat[len]
-            cassete = casseteName[len]
-            tube2 = tubeNumberII[len]
-            fibr2 = fibreNumberII[len]
-            cable2 = destinationCable[len]
-            column = 6
-            # CAS VALUE
-            wr.write(b, column, CAS, cassette)
-            column = column + 1
-            # TUBE1 VALUE
-            wr.write(b, column, tube1, stringCassette(str(tube1)))
-            column = column + 1
-            # FIBRE1 VALUE
-            wr.write(b, column, fibre1, stringCassette(str(fibre1)))
-            column = column + 1
-            # CABLE1 VALUE
-            wr.write(b, column, cable1, border)
-            column = column + 1
-            # BOITE1 VALUE
-            wr.write(b, column, boite, border)
-            column = column + 1
-            # TYPE VALUE
-            wr.write(b, column, ETAT, border)
-            column = column + 1
-            # Cassete VALUE
-            wr.write(b, column, cassete, cassette)
-            column = column + 1
-            # TUBE2 VALUE
-            wr.write(b, column, tube2, stringCassette(str(tube2)))
-            column = column + 1
-            # FIBRE2 VALUE
-            wr.write(b, column, fibr2, stringCassette(str(fibr2)))
-            column = column + 1
-            # CABLE2 VALUE 2
-            wr.write(b, column, cable2, border)
-            column = column + 1
-            if ETAT == 'STOCKEE':
-                y = getNextIndex(cable2, tube2, fibr2, cableName)
-                boite = boiteName[y]
-                # BOITE2 VALUE
-                wr.write(b, column, boite, border)
-                column = column + 1
-                ETAT = etat[y]
-                # TYPE2 VALUE
-                wr.write(b, column, ETAT, border)
-                column = column + 1
-                cassete = casseteName[y]
-                # Cassete2 VALUE
-                wr.write(b, column, cassete, cassette)
-                column = column + 1
-                keep = False
-                len += 1
-            else:
-                keep = True
-                while keep:
-                    y = getNextIndex(cable2, tube2, fibr2, cableName)
-                    boite = boiteName[y]
-                    # BOITE2 VALUE
-                    wr.write(b, column, boite, border)
-                    column = column + 1
-                    ETAT = etat[y]
-                    # TYPE2 VALUE
-                    wr.write(b, column, ETAT, border)
-                    column = column + 1
-                    cassete = casseteName[y]
-                    # Cassete2 VALUE
-                    wr.write(b, column, cassete, cassette)
-                    column = column + 1
-                    # TUBE2 VALUE
-                    tube2 = tubeNumberII[y]
-                    wr.write(b, column, tube2, stringCassette(str(tube2)))
-                    column = column + 1
-                    # FIBRE2 VALUE
-                    fibr2 = fibreNumberII[y]
-                    wr.write(b, column, fibr2, stringCassette(str(fibr2)))
-                    column = column + 1
-                    # CABLE2 VALUE 2
-                    cable2 = destinationCable[y]
-                    wr.write(b, column, cable2, border)
-                    column = column + 1
-                    if ETAT == 'STOCKEE':
-                        y = getNextIndex(cable2, tube2, fibr2, cableName)
-                        boite = boiteName[y]
-                        # BOITE2 VALUE
-                        wr.write(b, column, boite, border)
-                        column = column + 1
-                        ETAT = etat[y]
-                        # TYPE2 VALUE
-                        wr.write(b, column, ETAT, border)
-                        column = column + 1
-                        cassete = casseteName[y]
-                        # Cassete2 VALUE
-                        wr.write(b, column, cassete, cassette)
-                        column = column + 1
-                        keep = False
-                        len += 1
-                    else:
-                        continue
-rootBook.close()
+# baseHeader()
+# normalHeader(8)
+# for cab in sroCable:
+#     T += 1
+#     while done:
+#         len = getIndex(cab, cableName)
+#         b = l + 1
+#         wr.write('A' + str(b), 'SRO', border)
+#         wr.write('B' + str(b), b, border)
+#         wr.write('E' + str(b), 'TIROIR_' + str(T), border)
+#         wr.write('F' + str(b), 'CONNECTEUR', border)
+#         wr.write('C' + str(b), c[f], border)
+#         wr.write('D' + str(b), L, border)
+#         f = f + 1
+#         if p % 24 == 0:
+#             if L == 6:
+#                 L = 1
+#             elif L < 6:
+#                 L = L + 1
+#
+#         TEST = checkPassage(len)
+#         if TEST == 'PASS':
+#             # #################get the values#############################
+#             CAS = tubeNumberI[len]
+#             tube1 = tubeNumberI[len]
+#             fibre1 = fibreNumberI[len]
+#             cable1 = cableName[len]
+#             boite = boiteName[len]
+#             ETAT = etat[len]
+#             cassete = casseteName[len]
+#             tube2 = tubeNumberII[len]
+#             fibr2 = fibreNumberII[len]
+#             cable2 = destinationCable[len]
+#             column = 6
+#             # CAS VALUE
+#             wr.write(b, column, CAS, cassette)
+#             column = column + 1
+#             # TUBE1 VALUE
+#             wr.write(b, column, tube1, stringCassette(str(tube1)))
+#             column = column + 1
+#             # FIBRE1 VALUE
+#             wr.write(b, column, fibre1, stringCassette(str(fibre1)))
+#             column = column + 1
+#             # CABLE1 VALUE
+#             wr.write(b, column, cable1, border)
+#             column = column + 1
+#             # BOITE1 VALUE
+#             wr.write(b, column, boite, border)
+#             column = column + 1
+#             # TYPE VALUE
+#             wr.write(b, column, ETAT, border)
+#             column = column + 1
+#             # Cassete VALUE
+#             wr.write(b, column, cassete, cassette)
+#             column = column + 1
+#             # TUBE2 VALUE
+#             wr.write(b, column, tube2, stringCassette(str(tube2)))
+#             column = column + 1
+#             # FIBRE2 VALUE
+#             wr.write(b, column, fibr2, stringCassette(str(fibr2)))
+#             column = column + 1
+#             # CABLE2 VALUE 2
+#             wr.write(b, column, cable2, border)
+#             column = column + 1
+#             if ETAT == 'STOCKEE':
+#                 y = getNextIndex(cable2, tube2, fibr2, cableName)
+#                 boite = boiteName[y]
+#                 # BOITE2 VALUE
+#                 wr.write(b, column, boite, border)
+#                 column = column + 1
+#                 ETAT = etat[y]
+#                 # TYPE2 VALUE
+#                 wr.write(b, column, ETAT, border)
+#                 column = column + 1
+#                 cassete = casseteName[y]
+#                 # Cassete2 VALUE
+#                 wr.write(b, column, cassete, cassette)
+#                 column = column + 1
+#                 keep = False
+#                 len += 1
+#             else:
+#                 keep = True
+#                 while keep:
+#                     y = getNextIndex(cable2, tube2, fibr2, cableName)
+#                     boite = boiteName[y]
+#                     # BOITE2 VALUE
+#                     wr.write(b, column, boite, border)
+#                     column = column + 1
+#                     ETAT = etat[y]
+#                     # TYPE2 VALUE
+#                     wr.write(b, column, ETAT, border)
+#                     column = column + 1
+#                     cassete = casseteName[y]
+#                     # Cassete2 VALUE
+#                     wr.write(b, column, cassete, cassette)
+#                     column = column + 1
+#                     # TUBE2 VALUE
+#                     tube2 = tubeNumberII[y]
+#                     wr.write(b, column, tube2, stringCassette(str(tube2)))
+#                     column = column + 1
+#                     # FIBRE2 VALUE
+#                     fibr2 = fibreNumberII[y]
+#                     wr.write(b, column, fibr2, stringCassette(str(fibr2)))
+#                     column = column + 1
+#                     # CABLE2 VALUE 2
+#                     cable2 = destinationCable[y]
+#                     wr.write(b, column, cable2, border)
+#                     column = column + 1
+#                     if ETAT == 'STOCKEE':
+#                         y = getNextIndex(cable2, tube2, fibr2, cableName)
+#                         boite = boiteName[y]
+#                         # BOITE2 VALUE
+#                         wr.write(b, column, boite, border)
+#                         column = column + 1
+#                         ETAT = etat[y]
+#                         # TYPE2 VALUE
+#                         wr.write(b, column, ETAT, border)
+#                         column = column + 1
+#                         cassete = casseteName[y]
+#                         # Cassete2 VALUE
+#                         wr.write(b, column, cassete, cassette)
+#                         column = column + 1
+#                         keep = False
+#                         len += 1
+#                     else:
+#                         continue
+# rootBook.close()

@@ -17,6 +17,7 @@ sroCable = []
 cap = 0
 found = True
 x = 0
+rowmax = 0
 # ##########################################################################################
 with open('fileGenerated/21_017_101_EPISSURAGE_B-CORIGE POUR LE ROUTAGE.csv', 'rt')as f:
     data = csv.DictReader(f, delimiter=';')
@@ -31,6 +32,7 @@ with open('fileGenerated/21_017_101_EPISSURAGE_B-CORIGE POUR LE ROUTAGE.csv', 'r
         tubeNumberII.append(row['NUMERO_TUBE_DESTINATION'])
         fibreNumberII.append(row['NUMERO_FIBRE_DESTINATION'])
         etat.append(row['ETAT'])
+        rowmax += 1
     # ##########################################################################################
     # get sro cable ande there capcity
     for i in cableName:
@@ -96,7 +98,7 @@ def stringCassette(x: str):
             return colorList[x - 1]
         else:
             return colorList[12]
-    return colorList[len(colorList) - 1]
+    return colorList[12]
 
 
 def baseHeader():
@@ -130,10 +132,9 @@ def getIndex(val, tabl: list):
             return tabl.index(val)
 
 
-def getNextIndex(val, tube, fibre, tabl):
-    x = len(tabl)
-    for t in range(0, len(tabl)):
-        c = cableName[i]
+def getNextIndex(val, tube, fibre, tabl:list):
+    for i in range(0, rowmax):
+        c = tabl[i]
         t = tubeNumberI[i]
         f = fibreNumberI[i]
         if c == val and tube == t and fibre == f:
@@ -172,8 +173,13 @@ def checkPassage(index):
         print(index, 'eroooooooooor')
 
 
-x = checkPassage(411)
+x = checkPassage(100)
+y = getNextIndex('CDI-21-017-101-1012',3,1,cableName)
+print(y)
 print(x)
+print(destinationCable.index('CDI-21-017-101-3005'))
+print(cableName[4704])
+
 
 # getNextIndex('CDI-21-017-101-1004',9,4,cableName)#######################################################################################
 
@@ -200,8 +206,11 @@ baseHeader()
 normalHeader(8)
 for cab in sroCable:
     T += 1
-    while done:
-        len = getIndex(cab, cableName)
+    len = getIndex(cab, cableName)
+    while done :
+        N += 1
+        if f==13:
+            f=0
         b = l + 1
         wr.write('A' + str(b), 'SRO', border)
         wr.write('B' + str(b), b, border)
@@ -210,13 +219,14 @@ for cab in sroCable:
         wr.write('C' + str(b), c[f], border)
         wr.write('D' + str(b), L, border)
         f = f + 1
-        if p % 24 == 0:
+        if b % 24 == 0:
             if L == 6:
                 L = 1
             elif L < 6:
                 L = L + 1
 
         TEST = checkPassage(len)
+        print(len)
         if TEST == 'PASS':
             # #################get the values#############################
             CAS = tubeNumberI[len]
@@ -279,31 +289,36 @@ for cab in sroCable:
             else:
                 keep = True
                 while keep:
-                    y = getNextIndex(cable2, tube2, fibr2, cableName)
-                    boite = boiteName[y]
-                    # BOITE2 VALUE
-                    wr.write(b, column, boite, border)
-                    column = column + 1
-                    ETAT = etat[y]
-                    # TYPE2 VALUE
-                    wr.write(b, column, ETAT, border)
-                    column = column + 1
-                    cassete = casseteName[y]
-                    # Cassete2 VALUE
-                    wr.write(b, column, cassete, cassette)
-                    column = column + 1
-                    # TUBE2 VALUE
-                    tube2 = tubeNumberII[y]
-                    wr.write(b, column, tube2, stringCassette(str(tube2)))
-                    column = column + 1
-                    # FIBRE2 VALUE
-                    fibr2 = fibreNumberII[y]
-                    wr.write(b, column, fibr2, stringCassette(str(fibr2)))
-                    column = column + 1
-                    # CABLE2 VALUE 2
-                    cable2 = destinationCable[y]
-                    wr.write(b, column, cable2, border)
-                    column = column + 1
+                    try:
+                        print(cable2, tube2, fibr2)
+                        y = getNextIndex(cable2, tube2, fibr2, cableName)
+                        boite = boiteName[y]
+                        # BOITE2 VALUE
+                        wr.write(b, column, boite, border)
+                        column = column + 1
+                        ETAT = etat[y]
+                        # TYPE2 VALUE
+                        wr.write(b, column, ETAT, border)
+                        column = column + 1
+                        cassete = casseteName[y]
+                        # Cassete2 VALUE
+                        wr.write(b, column, cassete, cassette)
+                        column = column + 1
+                        # TUBE2 VALUE
+                        tube2 = tubeNumberII[y]
+                        wr.write(b, column, tube2, stringCassette(str(tube2)))
+                        column = column + 1
+                        # FIBRE2 VALUE
+                        fibr2 = fibreNumberII[y]
+                        wr.write(b, column, fibr2, stringCassette(str(fibr2)))
+                        column = column + 1
+                        # CABLE2 VALUE 2
+                        cable2 = destinationCable[y]
+                        wr.write(b, column, cable2, border)
+                        column = column + 1
+                    except TypeError:
+                        print(cable2, tube2, fibr2)
+                        continue
                     if ETAT == 'STOCKEE':
                         y = getNextIndex(cable2, tube2, fibr2, cableName)
                         boite = boiteName[y]
@@ -322,4 +337,10 @@ for cab in sroCable:
                         len += 1
                     else:
                         continue
+        else:
+            len +=1
+
+        cabel = cableName[len]
+        if cab != cabel:
+            done = False
 rootBook.close()

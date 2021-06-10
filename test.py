@@ -21,7 +21,7 @@ found = True
 x = 0
 rowmax = 0
 # ##########################################################################################
-with open('fileGenerated/21_017_101_EPISSURAGENew.csv', 'rt')as f:
+with open('fileGenerated/21_017_101_UP.csv', 'rt')as f:
     data = csv.DictReader(f, delimiter=';')
     # #<---------- get the value from csv epesourge table---------------------------------->#
     for row in data:

@@ -63,7 +63,7 @@ print(dictCable)
 print(sroCable)
 # ########################################################################################
 # <-----------------------route file creation------------------------------------------->
-rootBook = xlsxwriter.Workbook('Root-21_017_104.xlsx')
+rootBook = xlsxwriter.Workbook('Root-104.xlsx')
 wr = rootBook.add_worksheet()
 # define the character and style of cell inside excel
 bold = rootBook.add_format({'bold': True, "border": 1})
@@ -177,6 +177,7 @@ def checkPassage(index):
                 return 'LIB'
     except TypeError:
         print(index, 'eroooooooooor')
+        print(cable2)
 
 
 #
@@ -219,8 +220,8 @@ for cab in sroCable:
     while done:
         TEST = checkPassage(Line)
         print('#' * 25)
-        print(TEST)
-        print(cableName[Line])
+        # print(TEST)
+        # print(cableName[Line])
         if TEST == 'PASS':
             if f == 13:
                 f = 0
@@ -313,6 +314,7 @@ for cab in sroCable:
                         cable2 = destinationCable[y]
                         wr.write(Lin, column, cable2, border)
                         column = column + 1
+                        print(cable2)
                     except TypeError:
                         print(cable2, tube2, fibr2)
                         continue

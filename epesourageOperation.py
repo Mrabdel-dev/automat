@@ -56,15 +56,14 @@ b = 2
 def integerFormat(x):
     test = str(x)
     if test.isdigit():
-        f = 'CSE-'+test.zfill(2)
+        f = 'CSE-' + test.zfill(2)
         return f
 
     elif test.startswith('FON'):
-        test='FOND DE BOITE'
+        test = 'FOND DE BOITE'
         return test
     else:
         return x
-
 
 
 def getBagueByTube(tube: str):
@@ -103,7 +102,7 @@ for s in boiteList:
         tube1 = sheet.cell(row=i, column=5).value
         wr.write('B' + str(b), tube1, border)
         # bugue
-        x= getBagueByTube(str(tube1))
+        x = getBagueByTube(str(tube1))
         if x is not None:
             wr.write('C' + str(b), x, border)
         else:

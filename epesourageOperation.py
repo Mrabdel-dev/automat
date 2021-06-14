@@ -7,7 +7,7 @@ from dbfread import DBF
 from openpyxl import load_workbook
 
 # load your pds file here
-pds = load_workbook('31-206-326  PLAN DE BOITE.xlsx')
+pds = load_workbook('fileGenerated/31-206-326  PLAN DE BOITE (1).xlsx')
 wpds = pds.sheetnames
 # dbf file to get information about the boit
 boiteTable = DBF('fileGenerated/31_206_326_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
@@ -19,7 +19,7 @@ for j in range(0, boiteLen):
     boiteCode.append(boiteTable.records[j]['NOM'])
     codeLocal.append(boiteTable.records[j]['ID_PARENT'])
 # create the epesourege file
-epesBook = xlsxwriter.Workbook('31_206_326Epes.xlsx')
+epesBook = xlsxwriter.Workbook('31_206_326_Epesourage.xlsx')
 wr = epesBook.add_worksheet()
 print(wpds)
 boiteList = sorted(wpds)
@@ -34,7 +34,7 @@ wr.write('D1', 'COULEUR_TUBE_ORIGINE', header)
 wr.write('E1', 'NUMERO_FIBRE_ORIGINE', header)
 wr.write('F1', 'BAGUE_FIBRE_ORIGINE ', header)
 wr.write('G1', 'COULEUR_FIBRE_ORIGINE', header)
-wr.write('H1', 'LOVAGE_FIBRE_ORIGINELOVAGE_FIBRE_ORIGINE', header)
+wr.write('H1', 'LOVAGE_FIBRE_ORIGINE', header)
 wr.write('I1', 'CODE_SITE', header)
 wr.write('J1', 'CODE_NIVEAU', header)
 wr.write('K1', 'CODE_LOCALTECHNIQUE', header)
@@ -48,7 +48,7 @@ wr.write('R1', 'COULEUR_TUBE_DESTINATION', header)
 wr.write('S1', 'NUMERO_FIBRE_DESTINATION', header)
 wr.write('T1', 'BAGUE_FIBRE_DESTINATION ', header)
 wr.write('U1', 'COULEUR_FIBRE_DESTINATION', header)
-wr.write('V1', 'LOVAGE_FIBRE_ORIGINELOVAGE_FIBRE_DESTINATION', header)
+wr.write('V1', 'LOVAGE_FIBRE_DESTINATION', header)
 wr.write('W1', 'ETAT', header)
 b = 2
 
@@ -59,6 +59,9 @@ def integerFormat(x):
         f = 'CSE-'+test.zfill(2)
         return f
 
+    elif test.startswith('FON'):
+        test='FOND DE BOITE'
+        return test
     else:
         return x
 
@@ -102,9 +105,9 @@ for s in boiteList:
         # bugue
         x= getBagueByTube(str(tube1))
         if x is not None:
-            wr.write('C' + str(b),x, border)
+            wr.write('C' + str(b), x, border)
         else:
-            wr.write('C' + str(b),'', border)
+            wr.write('C' + str(b), '', border)
 
         wr.write('D' + str(b), '', border)
         # fibre1

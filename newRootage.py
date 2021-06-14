@@ -180,7 +180,7 @@ def checkPassage(index):
         print(index, 'eroooooooooor')
         print(cable2)
 
-
+# need more updating to check within it work or not teroire
 def getTeroire(y: int):
     if y % 144 == 0:
         mod = x % 12

@@ -217,7 +217,7 @@ for i in range(65, 76):
     c.append(chr(i))
 c.append(chr(78))
 L = 1
-T = 1
+T = 0
 Tero = 1
 f = 0
 N = 0
@@ -237,14 +237,14 @@ for cab in sroCable:
 
     Line = getIndex(cab, cableName)
     done = True
+    L = 1
+    f = 0
+    T += 1
     while done:
         TEST = checkPassage(Line)
         print('#' * 25)
-        E = getTeroire(Tero)
-        if E == 0:
-            Tero = 0
-            T += 1
-            # print(TEST)
+
+        # print(TEST)
         # print(cableName[Line])
         if TEST == 'PASS':
 

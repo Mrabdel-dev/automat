@@ -79,7 +79,7 @@ from openpyxl import load_workbook
 from openpyxl import load_workbook
 
 # book =load_workbook('fileGenerated/51074-1.xlsx')
-#print(book.sheetnames)
+# print(book.sheetnames)
 # sheet =book.active
 # for row in sheet['E2':'P2']:
 #
@@ -87,22 +87,6 @@ from openpyxl import load_workbook
 #
 # book.save('55.xlsx')
 import openpyxl
-import editpyxl
-from os import walk
 
-monRepertoire = 'C:/Users/etudes20/Desktop/rep/'
-
-listeFichiers = []
-for (repertoire, sousRepertoires, fichiers) in walk(monRepertoire):
-    listeFichiers.extend(fichiers)
-
-i = 0
-while i < len(listeFichiers):
-    wb = editpyxl.Workbook()
-    wb.open(monRepertoire + listeFichiers[i])
-    ws = wb.active
-    ws.cell('E2').value = 'F09892110321'
-    wb.save('C:/Users/etudes20/Desktop/rlc/' + listeFichiers[i] )
-    wb.close()
-    i += 1
-
+for i in range(65, 76):
+    print(chr(i))

@@ -58,7 +58,8 @@ with open('fileGenerated/31_206_326_EPISSURE.csv', 'rt')as f:
         dictCable.update({cb: cap})
 
 sortedSro = dict(sorted(dictCable.items(), key=operator.itemgetter(1)))
-sroCable = list(sortedSro.keys())
+sroCab = list(sortedSro.keys())
+sroCable = ['CDI-31-206-326-1004', 'CDI-31-206-326-2001', 'CDI-31-206-326-3001']
 print(dictCable)
 print(sroCable)
 # ########################################################################################
@@ -180,6 +181,23 @@ def checkPassage(index):
         print(cable2)
 
 
+def getTeroire(y: int):
+    if y % 144 == 0:
+        mod = x % 12
+        if mod == 0:
+            r = 144 - y
+            return r
+        else:
+            r = int(y / 12) + 1
+            g = 144 - r * 12
+            if g > 12:
+                return g
+            else:
+                return 0
+    else:
+        return 0
+
+
 #
 # x = checkPassage(100)
 # y = getNextIndex('CDI-21-017-101-3007', 3, 4, cableName)
@@ -195,11 +213,12 @@ def checkPassage(index):
 # all constant we work with inside
 p = 0
 c = []
-for i in range(65, 77):
+for i in range(65, 76):
     c.append(chr(i))
 c.append(chr(78))
 L = 1
-T = 0
+T = 1
+Tero = 1
 f = 0
 N = 0
 Line = 0
@@ -207,6 +226,7 @@ done = True
 b = 0
 Lin = 1
 l = 1
+E = 0
 column = 0
 TEST = ''
 SRO = 'SRO' + str(cableName[0])[4:14]
@@ -214,16 +234,21 @@ SRO = 'SRO' + str(cableName[0])[4:14]
 baseHeader()
 normalHeader(6)
 for cab in sroCable:
-    T += 1
+
     Line = getIndex(cab, cableName)
     done = True
     while done:
         TEST = checkPassage(Line)
         print('#' * 25)
-        # print(TEST)
+        E = getTeroire(Tero)
+        if E == 0:
+            Tero = 0
+            T += 1
+            # print(TEST)
         # print(cableName[Line])
         if TEST == 'PASS':
-            if f == 13:
+
+            if f == 12:
                 f = 0
             b = l + 1
             wr.write('A' + str(b), SRO, border)
@@ -233,14 +258,8 @@ for cab in sroCable:
             wr.write('C' + str(b), c[f], border)
             wr.write('D' + str(b), L, border)
             f = f + 1
-            if l % 24 == 0:
-                if L == 6:
-                    L = 1
-                elif L < 6:
-                    L = L + 1
-            l += 1
+
             # #################get the values#############################
-            CAS = tubeNumberI[Line]
             tube1 = tubeNumberI[Line]
             fibre1 = fibreNumberI[Line]
             cable1 = cableName[Line]
@@ -252,8 +271,14 @@ for cab in sroCable:
             cable2 = destinationCable[Line]
             column = 6
             # CAS VALUE
-            wr.write(Lin, column, CAS, cassette)
+            wr.write(Lin, column, L, cassette)
             column = column + 1
+            if l % 24 == 0:
+                if L == 6:
+                    L = 1
+                elif L < 6:
+                    L = L + 1
+            l += 1
             # TUBE1 VALUE
             wr.write(Lin, column, tube1, stringCassette(str(tube1)))
             column = column + 1
@@ -284,6 +309,7 @@ for cab in sroCable:
             if ETAT == 'STOCKEE':
                 keep = False
                 Line += 1
+                Tero += 1
             else:
                 keep = True
                 while keep:
@@ -325,9 +351,11 @@ for cab in sroCable:
                     else:
                         continue
             Lin += 1
+            Tero += 1
         else:
             Line += 1
         cabel = cableName[Line]
         if cab != cabel:
             done = False
+
 rootBook.close()

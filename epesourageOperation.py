@@ -53,10 +53,12 @@ wr.write('W1', 'ETAT', header)
 b = 2
 
 
-def integerFormat(x:str):
-    if x.isdigit():
-        f = 'CSE-'+x.zfill(2)
+def integerFormat(x):
+    test = str(x)
+    if test.isdigit():
+        f = 'CSE-'+test.zfill(2)
         return f
+
     else:
         return x
 
@@ -118,7 +120,7 @@ for s in boiteList:
         # boite
         wr.write('L' + str(b), s, border)
         # cassete
-        cassete = str(sheet.cell(row=i, column=7).value)
+        cassete = sheet.cell(row=i, column=7).value
         wr.write('M' + str(b), integerFormat(cassete), border)
         # position
         position = sheet.cell(row=i, column=4).value

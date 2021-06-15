@@ -21,7 +21,7 @@ found = True
 x = 0
 rowmax = 0
 # ##########################################################################################
-with open('fileGenerated/31_206_326_EPISSURE.csv', 'rt')as f:
+with open('epesourageCSV/21_011_071_EPISSURE.csv', 'rt')as f:
     data = csv.DictReader(f, delimiter=';')
     # #<---------- get the value from csv epesourge table---------------------------------->#
     for row in data:
@@ -59,12 +59,12 @@ with open('fileGenerated/31_206_326_EPISSURE.csv', 'rt')as f:
 
 sortedSro = dict(sorted(dictCable.items(), key=operator.itemgetter(1)))
 sroCab = list(sortedSro.keys())
-sroCable = ['CDI-31-206-326-1004', 'CDI-31-206-326-2001', 'CDI-31-206-326-3001']
+sroCable = ['CDI-21-011-071-2023', 'CDI-21-011-071-1024','CDI-21-011-071-3045']
 print(dictCable)
 print(sroCable)
 # ########################################################################################
 # <-----------------------route file creation------------------------------------------->
-rootBook = xlsxwriter.Workbook('Root-31_206_326.xlsx')
+rootBook = xlsxwriter.Workbook('routage/Rootage-21-011-071.xlsx')
 wr = rootBook.add_worksheet()
 # define the character and style of cell inside excel
 bold = rootBook.add_format({'bold': True, "border": 1})
@@ -179,6 +179,7 @@ def checkPassage(index):
     except TypeError:
         print(index, 'eroooooooooor')
         print(cable2)
+
 
 # need more updating to check within it work or not teroire
 def getTeroire(y: int):
@@ -297,20 +298,21 @@ for cab in sroCable:
             # Cassete VALUE
             wr.write(Lin, column, cassete, cassette)
             column = column + 1
-            # TUBE2 VALUE
-            wr.write(Lin, column, tube2, stringCassette(str(tube2)))
-            column = column + 1
-            # FIBRE2 VALUE
-            wr.write(Lin, column, fibr2, stringCassette(str(fibr2)))
-            column = column + 1
-            # CABLE2 VALUE 2
-            wr.write(Lin, column, cable2, border)
-            column = column + 1
+
             if ETAT == 'STOCKEE':
                 keep = False
                 Line += 1
                 Tero += 1
             else:
+                # TUBE2 VALUE
+                wr.write(Lin, column, tube2, stringCassette(str(tube2)))
+                column = column + 1
+                # FIBRE2 VALUE
+                wr.write(Lin, column, fibr2, stringCassette(str(fibr2)))
+                column = column + 1
+                # CABLE2 VALUE 2
+                wr.write(Lin, column, cable2, border)
+                column = column + 1
                 keep = True
                 while keep:
                     try:
@@ -328,6 +330,16 @@ for cab in sroCable:
                         # Cassete2 VALUE
                         wr.write(Lin, column, cassete, cassette)
                         column = column + 1
+
+                        print(cable2)
+                    except TypeError:
+                        print(cable2, tube2, fibr2)
+                        continue
+                    if ETAT == 'STOCKEE':
+                        # keep = False
+                        Line += 1
+                        break
+                    else:
                         # TUBE2 VALUE
                         tube2 = tubeNumberII[y]
                         wr.write(Lin, column, tube2, stringCassette(str(tube2)))
@@ -340,22 +352,18 @@ for cab in sroCable:
                         cable2 = destinationCable[y]
                         wr.write(Lin, column, cable2, border)
                         column = column + 1
-                        print(cable2)
-                    except TypeError:
-                        print(cable2, tube2, fibr2)
-                        continue
-                    if ETAT == 'STOCKEE':
-                        # keep = False
-                        Line += 1
-                        break
-                    else:
                         continue
             Lin += 1
             Tero += 1
         else:
+            print(cableName[Line])
             Line += 1
-        cabel = cableName[Line]
-        if cab != cabel:
+        try:
+
+            cabel = cableName[Line]
+            if cab != cabel:
+                done = False
+        except IndexError:
             done = False
 
 rootBook.close()

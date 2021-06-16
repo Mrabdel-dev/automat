@@ -7,10 +7,12 @@ from dbfread import DBF
 from openpyxl import load_workbook
 
 # load your pds file here
-pds = load_workbook('fileGenerated/SRO-21_011_071_PLAN DE BOITE.xlsx')
+pdsFile = ''
+pds = load_workbook('epesIn/31_206_295_PLAN_BOITE.xlsx')
 wpds = pds.sheetnames
 # dbf file to get information about the boit
-boiteTable = DBF('fileGenerated/21_011_071_BOITE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
+dbfFile = 'epesIn/21_011_079_BOITE_OPTIQUE_A.dbf'
+boiteTable = DBF('epesIn/31_206_295_BOITE_OPTIQUE_G.dbf', load=True, encoding='iso-8859-1')
 filedBoiteNam = boiteTable.field_names
 boiteLen = len(boiteTable)
 boiteCode = []
@@ -19,7 +21,7 @@ for j in range(0, boiteLen):
     boiteCode.append(boiteTable.records[j]['NOM'])
     codeLocal.append(boiteTable.records[j]['ID_PARENT'])
 # create the epesourege file
-epesBook = xlsxwriter.Workbook('21_011_071_Epesourage.xlsx')
+epesBook = xlsxwriter.Workbook('epesExcell/31_206_295_Epesourage.xlsx')
 wr = epesBook.add_worksheet()
 print(wpds)
 boiteList = sorted(wpds)
@@ -149,10 +151,12 @@ for s in boiteList:
         wr.write('V' + str(b), '', border)
         # ETAT
         type = sheet.cell(row=i, column=8).value
-        if type == 'EN ATTENTE':
+        if type == 'EN ATTENTE' or type == 'PASSAGE':
             type = 'EN PASSAGE'
-        elif type == 'LIBRE':
+        elif type == 'LIBRE' or type == 'A STOCKER':
             type = 'STOCKEE'
+        elif type == 'A EPISSURER' or type == 'EPISSURER':
+            type = 'EPISSUREE'
 
         wr.write('W' + str(b), type, border)
         b += 1

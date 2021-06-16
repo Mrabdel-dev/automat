@@ -6,9 +6,9 @@ import datetime
 now = datetime.datetime.now()
 date = now.strftime("%d/%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('fileGenerated/069_CABLE_OPTIQUE.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('fileGenerated/BOITE_OPTIQUE.dbf', load=True, encoding='iso-8859-1')
-zaPboDbl = DBF('fileGenerated/BOITE_OE.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('pdsInput/21_011_076_CABLE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/21_011_076_BOITE_OPTIQUE_B_AI.dbf', load=True, encoding='iso-8859-1')
+zaPboDbl = DBF('pdsInput/zapbodbl.dbf', load=True, encoding='iso-8859-1')
 # ################### declare the excel pds file ###########################################################
 workbook = xlsxwriter.Workbook('fileGenerated/pds.xlsx')
 # ############### define the character and style of cell inside excel ################"
@@ -63,12 +63,12 @@ for i in range(0, cableLen):
     cableExtremity.append(cableTable.records[i]['EXTREMITE'])
     cableCapacity.append(cableTable.records[i]['CAPACITE'])
 # FROM THE JOIN ZAPBO AND DBL
-boite = []
+boiteName = []
 nbPrise = []
 tECHNO = []
 typeBat = []
 for k in range(0, zapLen):
-    boite.append(zaPboDbl.records[k]['NOM'])
+    boiteName.append(zaPboDbl.records[k]['NOM'])
     nbPrise.append(zaPboDbl.records[k]['NB_PRISE'])
     tECHNO.append(zaPboDbl.records[k]['TECHNO'])
     typeBat.append(zaPboDbl.records[k]['TYPE_BAT'])
@@ -94,10 +94,44 @@ def stringCassette(x: str):
     return colorList[12]
 
 
-def getNumbrFu():
-    pass
+nbmrEpes = 0
+
+
+def getNumbrFu(boite, nbmrEpes):
+    comingBoiteList = []
+    for org, extr in zip(cableOrigin, cableExtremity):
+        if boite == org:
+            comingBoiteList.append(extr)
+    y = len(comingBoiteList)
+    if y < 1:
+        nbmrEpes += nbf[boiteCode.index(boite)]
+
+        print('this',boite)
+
+        return nbmrEpes
+    else:
+        nbmrEpes = nbf[boiteCode.index(comingBoiteList[0])]
+        for b in comingBoiteList:
+            print(b)
+            nbmrEpes += getNumbrFu(b,nbmrEpes)
+        return nbmrEpes
 
 
 def checkFtt():
     pass
 
+
+def getSroBoite():
+    sroBoite = []
+    for o,e in zip(cableOrigin,cableExtremity):
+        if o.startswith('SRO'):
+            sroBoite.append(e)
+
+    return sroBoite
+
+
+SROboite = getSroBoite()
+print(SROboite)
+print('#'*15)
+boite = 'PBO-21-011-076-2001'
+print(getNumbrFu(boite,nbmrEpes))

@@ -1,3 +1,5 @@
+import operator
+
 from dbfread import DBF
 import xlsxwriter
 import datetime
@@ -77,6 +79,7 @@ for k in range(0, zapLen):
     typeBat.append(zaPboDbl.records[k]['TYPE_BAT'])
 
 
+sheet = xlsxwriter.worksheet.Worksheet
 # ########################## functions #################################
 def stringCassette(x: str):
     if x.isdigit():
@@ -114,6 +117,35 @@ def getListComingBoite(pbo):
     for org, extr in zip(cableOrigin, cableExtremity):
         if pbo == org:
             comingList.append(extr)
+    dectBoit = {}
+    for b in comingList:
+        index = boiteCode.index(b)
+        nbfu = nbf[index]
+        dectBoit.update({b: nbfu})
+    comingL = dict(sorted(dectBoit.items(), key=operator.itemgetter(1)))
+    comingList = list(comingL)
+    return comingList
+
+
+def getListComingBoitePEC(pbo):
+    comingList = []
+    ind = boiteCode.index(pbo)
+    cable = boiteCable[ind]
+    capaci = getCapacity(cable)
+    for org, extr in zip(cableOrigin, cableExtremity):
+        if pbo == org:
+            index = boiteCode.index(extr)
+            cable1 = boiteCable[index]
+            capcity2 = getCapacity(cable1)
+            if capaci != capcity2:
+                comingList.append(extr)
+    dectBoit = {}
+    for b in comingList:
+        index = boiteCode.index(b)
+        nbfu = nbf[index]
+        dectBoit.update({b: nbfu})
+    comingL = dict(sorted(dectBoit.items(), key=operator.itemgetter(1)))
+    comingList = list(comingL)
     return comingList
 
 
@@ -142,16 +174,12 @@ def getNumbrFu(boite, nbmrEpes):
                 comingBoiteList.append(extr)
 
     y = len(comingBoiteList)
-    print(comingBoiteList)
+
     if y == 0:
         f = nbf[boiteCode.index(boite)]
         if f is None:
             f = 0
         nbmrEpes += f
-        print(nbmrEpes)
-
-        print('this', boite)
-
         return nbmrEpes
     else:
         f = nbf[boiteCode.index(boite)]
@@ -195,6 +223,10 @@ def checkGlobalFtt(bo):
     x = 0
     if len(listBoit) == 0:
         return checkFtt(bo)
+    elif len(listBoit) == 1:
+        x = checkFtt(bo)
+        x += checkFtt(listBoit[0])
+        return x
     else:
         x += checkFtt(bo)
         for pbo in listBoit:
@@ -202,7 +234,6 @@ def checkGlobalFtt(bo):
         return x
 
 
-sheet = xlsxwriter.worksheet.Worksheet
 
 
 def baseSheet(boite, w: sheet):
@@ -268,12 +299,92 @@ def cableBaseInfo(w: sheet, cable, capacity, T=1, ):
         w.write(i + 1, 4, num, colorList[num - 1])
 
 
+def fillInEpess(w: sheet, Lin, i, boite, T=1):
+    index = boiteCode.index(boite)
+    cable = boiteCable[index]
+    cableIn = cableName.index(cable)
+    capacity = cableCapacity[cableIn]
+    ftt = checkGlobalFtt(boite)
+    funb = getNumbrFu(boite, 0)
+    nbrEps = funb - ftt
+    for j in range(0, nbrEps):
+        w.write(Lin, 6, 'EPISSUREE', border)
+        w.write(Lin, 10, capacity, border)
+        num = (i % 12) + 1
+        w.write(Lin, 9, num, border)
+        w.write(Lin, 8, T, colorList[T - 1])
+        if num % 12 == 0:
+            if T == 12:
+                T = 1
+            else:
+                T += 1
+        w.write(Lin, 7, num, colorList[num - 1])
+        w.write(Lin, 12, cable, border)
+        w.write(Lin, 13, 'EPISSUREE', border)
+        i += 1
+        Lin += 1
+    return Lin
+
+
+def nextcableEpess(w: sheet, nextBoite):
+    Lin = 1
+    for b in nextBoite:
+        x = fillInEpess(w, Lin, 0, b, 1)
+        Lin = x
+
+
+def ftteFillIn():
+    pass
+
+def PboFillStokker(w:sheet,boite,stokker,i,T=1):
+    Lin = 1
+    for s in range(0,stokker):
+        w.write(Lin, 6, 'STOCKEE', border)
+        w.write(Lin, 10, capacity, border)
+        num = (i % 12) + 1
+        w.write(Lin, 9, num, border)
+        w.write(Lin, 8, T, colorList[T - 1])
+        if num % 12 == 0:
+            if T == 12:
+                T = 1
+            else:
+                T += 1
+        w.write(Lin, 7, num, colorList[num - 1])
+        w.write(Lin, 13, 'STOCKEE', border)
+        Lin += 1
+        i += 1
+    return 1
+
+def PboFillEpes(w:sheet,boite,epes,Lin,i,T=1):
+    for s in range(0, epes):
+        w.write(Lin, 6, 'STOCKEE', border)
+        w.write(Lin, 10, capacity, border)
+        num = (i % 12) + 1
+        w.write(Lin, 9, num, border)
+        w.write(Lin, 8, T, colorList[T - 1])
+        if num % 12 == 0:
+            if T == 12:
+                T = 1
+            else:
+                T += 1
+        w.write(Lin, 7, num, colorList[num - 1])
+        w.write(Lin, 13, 'STOCKEE', border)
+        Lin += 1
+        i += 1
+    return 1
+
+
+
+
+
+
+
 SROboite = getSroBoite()
 print(SROboite)
+# # print('#' * 15)
+# print(getNumbrFu('PBO-21-011-076-2007', 0))
 # print('#' * 15)
-print(getNumbrFu('PBO-21-011-076-2007', 0))
-print('#' * 15)
-print(checkGlobalFtt('PEC-21-011-076-2000'))
+# print(checkGlobalFtt('PEC-21-011-076-2000'))
 
 # ########################################## start fill In the pds ##############################
 
@@ -299,10 +410,17 @@ for b in range(0, boiteLen):
         fuNumber = getNumbrFu(boite, 0)
         ftte = checkGlobalFtt(boite)
         nbrEpesSansFTTE = fuNumber - ftte
+        cableBaseInfo(w, cable, capacity, T)
+        nextBoits = getListComingBoitePEC(boite)
+        print(boite)
+        print(nextBoits)
+        print('##############')
+        nextcableEpess(w, nextBoits)
     else:
         stockN = nbf[b]
         ffuNumber = getNumbrFu(boite, 0)
         nbrEpesSansFTTE = fuNumber - stockN
-    cableBaseInfo(w,cable,capacity,T)
+        cableBaseInfo(w, cable, capacity, T)
+        x = PboFillStokker(w,boite,stockN,0,1)
 
 workbook.close()

@@ -21,15 +21,15 @@ from openpyxl import load_workbook
 # def sheets(x:openpyxl.worksheet.worksheet.Worksheet):
 #     x.cell()
 # print(c[15])
-# import xlsxwriter
-# rootBook = xlsxwriter.Workbook('fileGenerated/hh.xlsx')
-# wr = rootBook.add_worksheet()
-# wr.write(0,0,"hello")
-# print(type(wr))
+import xlsxwriter
+rootBook = xlsxwriter.Workbook('fileGenerated/hh.xlsx')
+wr = rootBook.add_worksheet()
+wr.write(0,0,"hello")
+print(type(wr))
 # rootBook.close()
 # sheet = openpyxl.worksheet.worksheet.Worksheet
-# worksheet = xlsxwriter.worksheet.Worksheet
-#
+worksheet = xlsxwriter.worksheet.Worksheet
+
 #
 # def xlssx(t: x, r: y):
 #     t = t.cell(row=5, column=7).value

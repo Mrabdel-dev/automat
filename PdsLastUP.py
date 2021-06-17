@@ -10,12 +10,13 @@ cableTable = DBF('pdsInput/21_011_076_CABLE_OPTIQUE_B.dbf', load=True, encoding=
 boiteTable = DBF('pdsInput/21_011_076_BOITE_OPTIQUE_B_AI.dbf', load=True, encoding='iso-8859-1')
 zaPboDbl = DBF('pdsInput/zpbodbl.dbf', load=True, encoding='iso-8859-1')
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('fileGenerated/pds.xlsx')
+workbook = xlsxwriter.Workbook('PDS/pds-21_011_076.xlsx')
 # ############### define the character and style of cell inside excel ################"
 bold = workbook.add_format({'bold': True, "border": 1})
 bold1 = workbook.add_format({'bold': True})
 border = workbook.add_format({"border": 1})
-header = workbook.add_format({'bold': True, 'border': 1, 'bg_color': '#037d50'})
+back = workbook.add_format({"bg_color": '#CD5C5C', "border": 1})
+header = workbook.add_format({'bold': True, 'border': 1, 'bg_color': '#33FFE3'})
 cassette = workbook.add_format({"bg_color": '#A9A9A9', "border": 1})
 cell_formatCapacity = workbook.add_format({"bg_color": '#E6E6FA', "border": 1})
 cell_format1 = workbook.add_format({"bg_color": 'red', "border": 1})
@@ -116,6 +117,13 @@ def getListComingBoite(pbo):
     return comingList
 
 
+def getboiteOrigine(boite):
+    i = boiteCode.index(boite)
+    cable = boiteCable[i]
+    origin = cableOrigin[cableName.index(cable)]
+    return origin
+
+
 def getNumbrFu(boite, nbmrEpes):
     comingBoiteList = []
     indexB = boiteCode.index(boite)
@@ -193,13 +201,108 @@ def checkGlobalFtt(bo):
             x += checkGlobalFtt(pbo)
         return x
 
-def baseSheet(boite):
 
+sheet = xlsxwriter.worksheet.Worksheet
+
+
+def baseSheet(boite, w: sheet):
+    # INFORMATION ABOUT BOITE
+    # boite name
+    w.write('Q1', 'Etiquette : ', header)
+    w.write('R1', boite, bold)
+    # boite Ref
+    w.write('Q2', 'Reference : ', header)
+    w.write('R2', boiteReference[boiteCode.index(boite)], bold)
+    # date Now
+    w.write('Q3', 'Date de modification : ', header)
+    w.write('R3', date, bold)
+    # boite Origine
+    w.write('Q5', 'RETURN : ', back)
+    orgin = getboiteOrigine(boite)
+    w.write('Q6', orgin, bold)
+    # boite Next boite coming
+    w.write('R5', 'NEXT : ', back)
+    BoiteNext = getListComingBoite(boite)
+    R = 6
+    for l in BoiteNext:
+        w.write('R' + str(R), l, bold)
+        R += 1
+
+    # INFORMATION OF THE HEADER
+    w.write('A1', 'Entrée', header)
+    w.write('B1', 'Capacité', header)
+    w.write('C1', 'N°         ', header)
+    w.write('D1', 'N° Tube', header)
+    w.write('E1', 'N° Fibre', header)
+    w.write('F1', 'Cassette', header)
+    w.write('G1', 'Etat fibre', header)
+    w.write('H1', 'N° Fibre', header)
+    w.write('I1', 'N° Tube', header)
+    w.write('J1', 'N°       ', header)
+    w.write('K1', 'Capacité', header)
+    w.write('L1', '', header)
+    w.write('M1', 'Sortie', header)
+    w.write('N1', 'Statut', header)
+    w.write('O1', 'Client', header)
+
+
+def getCapacity(cable):
+    i = cableName.index(cable)
+    capacity = cableCapacity[i]
+    return capacity
+
+
+def cableBaseInfo(w: sheet, cable, capacity, T=1, ):
+    for i in range(0, capacity):
+
+        w.write(i + 1, 0, cable, border)
+        w.write(i + 1, 1, capacity, border)
+        num = (i % 12) + 1
+        w.write(i + 1, 2, num, border)
+        w.write(i + 1, 3, T, colorList[T - 1])
+        if num % 12 == 0:
+            if T == 12:
+                T = 1
+            else:
+                T += 1
+        w.write(i + 1, 4, num, colorList[num - 1])
 
 
 SROboite = getSroBoite()
 print(SROboite)
 # print('#' * 15)
-boite = 'PEC-21-011-076-1014'
-print(getNumbrFu('PEC-21-011-076-1014', 0))
+print(getNumbrFu('PBO-21-011-076-2007', 0))
+print('#' * 15)
+print(checkGlobalFtt('PEC-21-011-076-2000'))
 
+# ########################################## start fill In the pds ##############################
+
+for b in range(0, boiteLen):
+    # ################## constant work with ####################
+    N = 1
+    T = 1
+    Len = 0
+    F = 0
+    stockN = 0
+    fuNumber = 0
+    ftte = 0
+    nbrEpesSansFTTE = 0
+    # ##########################################################
+    w = workbook.add_worksheet(boiteCode[b])
+    boite = boiteCode[b]
+    func = boiteFunction[b]
+    baseSheet(boite, w)
+    cable = boiteCable[b]
+    capacity = getCapacity(cable)
+    if func == 'PEC':
+        stockN = 0
+        fuNumber = getNumbrFu(boite, 0)
+        ftte = checkGlobalFtt(boite)
+        nbrEpesSansFTTE = fuNumber - ftte
+    else:
+        stockN = nbf[b]
+        ffuNumber = getNumbrFu(boite, 0)
+        nbrEpesSansFTTE = fuNumber - stockN
+    cableBaseInfo(w,cable,capacity,T)
+
+workbook.close()

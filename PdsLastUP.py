@@ -45,12 +45,14 @@ boiteCode = []  # name of the boite
 boiteCable = []  # AMOUNT CABLE
 boiteCableState = []  # INTERCO
 boiteReference = []  # REFERENCE OF THE BOITE
+boiteFunction = []
 nbf = []  # NBFUTILE
 for j in range(0, boiteLen):
     boiteCode.append(boiteTable.records[j]['NOM'])
     boiteCable.append(boiteTable.records[j]['AMONT'])
     boiteCableState.append(boiteTable.records[j]['INTERCO'])
     boiteReference.append(boiteTable.records[j]['REFERENCE'])
+    boiteFunction.append(boiteTable.records[j]['FONCTION'])
     nbf.append(boiteTable.records[j]['NBFUTILE'])
 # FROM THE CABLE OPTIQUE
 cableName = []  # NAME OF THE CABLE
@@ -97,22 +99,57 @@ def stringCassette(x: str):
 nbmrEpes = 0
 
 
+def getSroBoite():
+    sroBoite = []
+    for o, e in zip(cableOrigin, cableExtremity):
+        if o.startswith('SRO'):
+            sroBoite.append(e)
+
+    return sroBoite
+
+
+def getListComingBoite(pbo):
+    comingList = []
+    for org, extr in zip(cableOrigin, cableExtremity):
+        if pbo == org:
+            comingList.append(extr)
+    return comingList
+
+
 def getNumbrFu(boite, nbmrEpes):
     comingBoiteList = []
-    for org, extr in zip(cableOrigin, cableExtremity):
-        if boite == org:
-            comingBoiteList.append(extr)
+    indexB = boiteCode.index(boite)
+    capacity = cableCapacity[cableName.index(boiteCable[indexB])]
+    fonc = str(boiteFunction[indexB])
+    if fonc == 'PEC':
+        for org, extr, cap in zip(cableOrigin, cableExtremity, cableCapacity):
+            if boite == org:
+                if capacity != cap:
+                    comingBoiteList.append(extr)
+                else:
+                    continue
+    else:
+        for org, extr in zip(cableOrigin, cableExtremity):
+            if boite == org:
+                comingBoiteList.append(extr)
+
     y = len(comingBoiteList)
     print(comingBoiteList)
     if y == 0:
-        nbmrEpes += nbf[boiteCode.index(boite)]
+        f = nbf[boiteCode.index(boite)]
+        if f is None:
+            f = 0
+        nbmrEpes += f
         print(nbmrEpes)
 
         print('this', boite)
 
         return nbmrEpes
     else:
-        nbmrEpes += nbf[boiteCode.index(boite)]
+        f = nbf[boiteCode.index(boite)]
+        if f is None:
+            f = 0
+        nbmrEpes += f
         for b in comingBoiteList:
             nbmrEpes = getNumbrFu(b, nbmrEpes)
         return nbmrEpes
@@ -130,29 +167,39 @@ def aroundToThree(x: int):
 def checkFtt(boit):
     fuFttE = 0
     for b, n, t, y in zip(boiteName, nbPrise, tECHNO, typeBat):
-        if boit == b and t == 'FTTE':
-            if y == 'PYLONE' or y.startswith('CHT'):
-                fuFttE += n * 4
-                return aroundToThree(fuFttE)
-            else:
+        if boit == b:
+            if t == 'FTTE':
+                if y == 'PYLONE' or y.startswith('CHT'):
+                    fuFttE += n * 4
+                    return aroundToThree(fuFttE)
+                else:
+                    fuFttE += n * 2
+                    return aroundToThree(fuFttE)
+            elif t == 'FTTH' and y == 'BATIMENT PUBLIC':
                 fuFttE += n * 2
                 return aroundToThree(fuFttE)
     else:
         return 0
 
 
-def getSroBoite():
-    sroBoite = []
-    for o, e in zip(cableOrigin, cableExtremity):
-        if o.startswith('SRO'):
-            sroBoite.append(e)
+def checkGlobalFtt(bo):
+    listBoit = getListComingBoite(bo)
+    x = 0
+    if len(listBoit) == 0:
+        return checkFtt(bo)
+    else:
+        x += checkFtt(bo)
+        for pbo in listBoit:
+            x += checkGlobalFtt(pbo)
+        return x
 
-    return sroBoite
+def baseSheet(boite):
+
 
 
 SROboite = getSroBoite()
 print(SROboite)
-print('#' * 15)
-boite = 'PEC-21-011-076-2000'
-print(getNumbrFu(boite, nbmrEpes))
-print(checkFtt('PBO-21-011-076-3000'))
+# print('#' * 15)
+boite = 'PEC-21-011-076-1014'
+print(getNumbrFu('PEC-21-011-076-1014', 0))
+

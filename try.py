@@ -91,11 +91,11 @@ import openpyxl
 
 # for i in range(65, 76):
 #     print(chr(i))
-def aroundToThree(x: int):
-    y = x % 3
-    if y != 0:
-        k = x + 3 - y
-        return k
-    else:
-        return x
-print(aroundToThree(0))
+# def aroundToThree(x: int):
+#     y = x % 3
+#     if y != 0:
+#         k = x + 3 - y
+#         return k
+#     else:
+#         return x
+# print(aroundToThree(0))

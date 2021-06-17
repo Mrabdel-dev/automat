@@ -59,7 +59,6 @@ cell_format12 = workbook.add_format({"bg_color": '#FFAAD4', "border": 1})
 colorList = [cell_format1, cell_format2, cell_format3, cell_format4, cell_format5, cell_format6, cell_format7,
              cell_format8, cell_format9, cell_format10, cell_format11, cell_format12]
 
-
 for b in range(0, boiteLen):
     N = 1
     n = 1
@@ -97,10 +96,10 @@ for b in range(0, boiteLen):
             w.write('E' + str(c), n, colorList[n - 1])
             w.write('D' + str(c), N, colorList[N - 1])
             n = 1
-            if N==12:
-                N=1
-            else :
-                N = N+1
+            if N == 12:
+                N = 1
+            else:
+                N = N + 1
 
         else:
             w.write('C' + str(c), n)
@@ -108,14 +107,13 @@ for b in range(0, boiteLen):
             w.write('D' + str(c), N, colorList[N - 1])
             n = n + 1
         trial = 1
-        if cableExtremity[indexCable] != boiteCode[b] and trial != 2 :
+        if cableExtremity[indexCable] != boiteCode[b] and trial != 2:
             indexBoite = boiteCode.index(cableExtremity[indexCable])
-            trial = trial +1
+            trial = trial + 1
             sorCab = boiteCable[indexBoite]
             indexCab = cableName.index(sorCab)
             cabSortCap = cableCapacity[indexCab]
-            for nc in range(2, cabSortCap+2):
+            for nc in range(2, cabSortCap + 2):
                 pass
-
 
 workbook.close()

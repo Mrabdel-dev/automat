@@ -78,8 +78,9 @@ for k in range(0, zapLen):
     tECHNO.append(zaPboDbl.records[k]['TECHNO'])
     typeBat.append(zaPboDbl.records[k]['TYPE_BAT'])
 
-
 sheet = xlsxwriter.worksheet.Worksheet
+
+
 # ########################## functions #################################
 def stringCassette(x: str):
     if x.isdigit():
@@ -144,8 +145,10 @@ def getListComingBoitePEC(pbo):
         index = boiteCode.index(b)
         nbfu = nbf[index]
         dectBoit.update({b: nbfu})
+        print(dectBoit)
     comingL = dict(sorted(dectBoit.items(), key=operator.itemgetter(1)))
-    comingList = list(comingL)
+
+    comingList = list(comingL.keys())
     return comingList
 
 
@@ -232,8 +235,6 @@ def checkGlobalFtt(bo):
         for pbo in listBoit:
             x += checkGlobalFtt(pbo)
         return x
-
-
 
 
 def baseSheet(boite, w: sheet):
@@ -336,9 +337,10 @@ def nextcableEpess(w: sheet, nextBoite):
 def ftteFillIn():
     pass
 
-def PboFillStokker(w:sheet,boite,stokker,i,T=1):
+
+def PboFillStokker(w: sheet, boite, stokker, i, T=1):
     Lin = 1
-    for s in range(0,stokker):
+    for s in range(0, stokker):
         w.write(Lin, 6, 'STOCKEE', border)
         w.write(Lin, 10, capacity, border)
         num = (i % 12) + 1
@@ -355,7 +357,8 @@ def PboFillStokker(w:sheet,boite,stokker,i,T=1):
         i += 1
     return 1
 
-def PboFillEpes(w:sheet,boite,epes,Lin,i,T=1):
+
+def PboFillEpes(w: sheet, boite, epes, Lin, i, T=1):
     for s in range(0, epes):
         w.write(Lin, 6, 'STOCKEE', border)
         w.write(Lin, 10, capacity, border)
@@ -372,11 +375,6 @@ def PboFillEpes(w:sheet,boite,epes,Lin,i,T=1):
         Lin += 1
         i += 1
     return 1
-
-
-
-
-
 
 
 SROboite = getSroBoite()
@@ -421,6 +419,6 @@ for b in range(0, boiteLen):
         ffuNumber = getNumbrFu(boite, 0)
         nbrEpesSansFTTE = fuNumber - stockN
         cableBaseInfo(w, cable, capacity, T)
-        x = PboFillStokker(w,boite,stockN,0,1)
+        x = PboFillStokker(w, boite, stockN, 0, 1)
 
 workbook.close()

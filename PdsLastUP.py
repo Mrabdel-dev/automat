@@ -289,7 +289,7 @@ def getFTTEBoites(boite):
 
 
 # function write the basic header for the sheet
-def baseSheet(boite, w: sheet):
+def baseSheet(w: sheet, boite ):
     # INFORMATION ABOUT BOITE
     # boite name
     w.write('Q1', 'Etiquette : ', header)
@@ -381,6 +381,7 @@ def fillInAllCableEpess(w: sheet, nextBoite):
     for b in nextBoite:
         x = fillInEpess(w, Lin, 0, b, 1)
         Lin = x
+        return Lin
 
 
 # function  to write the ftte nex cable
@@ -481,13 +482,14 @@ def libreFillIn(w: sheet, boit, startLine, endLine, T=1):
 
 # ################### PEC function #############################
 def boitePecFillIn(w: sheet, cable, boite, capacity, T):
+    baseSheet(w,boite)
     stockN = 0
     fuNumber = getNumbrFu(boite, 0)
     ftte = checkGlobalFtt(boite)
     nbrEpesSansFTTE = fuNumber - ftte
     cableBaseInfo(w, cable, capacity, T)
     nextBoits = getListComingBoitePEC(boite)
-    nextcableEpess(w, nextBoits)
+    Lin = fillInAllCableEpess(w,nextBoits)
 
 
 # ##############################################################

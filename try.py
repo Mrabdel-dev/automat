@@ -14,6 +14,7 @@
 # import xlsxwriter.worksheet
 from openpyxl import load_workbook
 
+
 # pdsBook = load_workbook('fileGenerated/PDS.xlsx')
 # pdsSheets = pdsBook.sheetnames
 # y = pdsBook[pdsSheets[0]]
@@ -21,15 +22,26 @@ from openpyxl import load_workbook
 # def sheets(x:openpyxl.worksheet.worksheet.Worksheet):
 #     x.cell()
 # print(c[15])
-import xlsxwriter
-rootBook = xlsxwriter.Workbook('fileGenerated/hh.xlsx')
-wr = rootBook.add_worksheet()
-wr.write(0,0,"hello")
-print(type(wr))
-# rootBook.close()
-# sheet = openpyxl.worksheet.worksheet.Worksheet
-worksheet = xlsxwriter.worksheet.Worksheet
+# import xlsxwriter
+# rootBook = xlsxwriter.Workbook('fileGenerated/hh.xlsx')
+# wr = rootBook.add_worksheet()
+# wr.write(0,0,"hello")
+# print(type(wr))
+# # rootBook.close()
+# # sheet = openpyxl.worksheet.worksheet.Worksheet
+# worksheet = xlsxwriter.worksheet.Worksheet
+def aroundTo(x: int, num):
+    y = x % num
+    if y != 0:
+        k = x + num - y
+        return k
+    else:
+        return x
 
+
+x = [1, 2, 3, 5, 9, 10, 20, 30]
+for i in x:
+    print(aroundTo(i,12))
 #
 # def xlssx(t: x, r: y):
 #     t = t.cell(row=5, column=7).value
@@ -87,7 +99,6 @@ from openpyxl import load_workbook
 #
 # book.save('55.xlsx')
 import openpyxl
-
 
 # for i in range(65, 76):
 #     print(chr(i))

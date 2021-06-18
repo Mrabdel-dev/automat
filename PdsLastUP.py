@@ -82,28 +82,10 @@ sheet = xlsxwriter.worksheet.Worksheet
 
 
 # ########################## functions #################################
-def stringCassette(x: str):
-    if x.isdigit():
-        j = 0
-        if int(x) % 12 == 0:
-            x = 12
-        else:
-            x = int(x) % 12
-
-        for i in range(0, 13):
-            if i == x:
-                x = i
-                j = 1
-        if j == 1:
-            return colorList[x - 1]
-        else:
-            return colorList[12]
-    return colorList[12]
-
-
 nbmrEpes = 0
 
 
+# get all Sro boite
 def getSroBoite():
     sroBoite = []
     for o, e in zip(cableOrigin, cableExtremity):
@@ -113,6 +95,7 @@ def getSroBoite():
     return sroBoite
 
 
+# function return all next coming boite
 def getListComingBoite(pbo):
     comingList = []
     for org, extr in zip(cableOrigin, cableExtremity):
@@ -128,6 +111,7 @@ def getListComingBoite(pbo):
     return comingList
 
 
+# function return all the next withe boite tha PIC with some capacity
 def getListComingBoitePEC(pbo):
     comingList = []
     ind = boiteCode.index(pbo)
@@ -152,6 +136,7 @@ def getListComingBoitePEC(pbo):
     return comingList
 
 
+# functio return the boite origine of a specific boite
 def getboiteOrigine(boite):
     i = boiteCode.index(boite)
     cable = boiteCable[i]
@@ -159,6 +144,7 @@ def getboiteOrigine(boite):
     return origin
 
 
+# get the rsulte of fu of next boite
 def getNumbrFu(boite, nbmrEpes):
     comingBoiteList = []
     indexB = boiteCode.index(boite)
@@ -194,6 +180,7 @@ def getNumbrFu(boite, nbmrEpes):
         return nbmrEpes
 
 
+# math function to major a number to a specific num
 def aroundTo(x: int, num):
     y = x % num
     if y != 0:
@@ -203,6 +190,7 @@ def aroundTo(x: int, num):
         return x
 
 
+# get fu ftte of a boite
 def checkFtt(boit):
     fuFttE = 0
     for b, n, t, y in zip(boiteName, nbPrise, tECHNO, typeBat):
@@ -221,6 +209,7 @@ def checkFtt(boit):
         return 0
 
 
+# get the resulte ftte of all next coming boite
 def checkGlobalFtt(bo):
     listBoit = getListComingBoite(bo)
     x = 0
@@ -237,6 +226,69 @@ def checkGlobalFtt(bo):
         return x
 
 
+# founction to capcity of cable
+def getCapacity(cable):
+    i = cableName.index(cable)
+    capacity = cableCapacity[i]
+    return capacity
+
+
+# function to cable index based on boite name
+def getCableIndex(boite):
+    index = boiteCode.index(boite)
+    cable = boiteCable[index]
+    indexc = cableName.index(cable)
+    return indexc
+
+
+# function to cable based on boite
+def getCable(boite):
+    index = boiteCode.index(boite)
+    cable = boiteCable[index]
+    return cable
+
+
+# function to get last boite have some capacity cable
+def getLastStartBoite(boite):
+    index = getCableIndex(boite)
+    capacity = cableCapacity[index]
+    orginBoite = cableOrigin[index]
+    index2 = getCableIndex(orginBoite)
+    capacity2 = cableCapacity[index2]
+    if capacity == capacity2:
+        return getLastStartBoite(orginBoite)
+    else:
+        return boite
+
+
+# function return where i should start write to write stocked state
+def getStockStartLine(boite):
+    fuUsed = getNumbrFu(getLastStartBoite(boite), 0)
+    fuBoit = getNumbrFu(boite, 0)
+    fttcheck = checkFtt(boite)
+    lineStart = fuUsed - fuBoit - fttcheck
+    return lineStart
+
+
+# function return where i should start write ftte
+def getFTTElineStart(boite):
+    cable = getCable(boite)
+    capacity = getCapacity(cable)
+    line = capacity - aroundTo(checkGlobalFtt(boite), 12)
+    return line
+
+
+# function to get boit that have ftte prise
+def getFTTEBoites(boite):
+    listBoit = getListComingBoite(boite)
+    listFFTE = []
+    for i in listBoit:
+        x = checkGlobalFtt(i)
+        if i != 0:
+            listFFTE.append(i)
+
+
+# function write the basic header for the sheet
 def baseSheet(boite, w: sheet):
     # INFORMATION ABOUT BOITE
     # boite name
@@ -278,25 +330,7 @@ def baseSheet(boite, w: sheet):
     w.write('O1', 'Client', header)
 
 
-def getCapacity(cable):
-    i = cableName.index(cable)
-    capacity = cableCapacity[i]
-    return capacity
-
-
-def getCableIndex(boite):
-    index = boiteCode.index(boite)
-    cable = boiteCable[index]
-    indexc = cableName.index(cable)
-    return indexc
-
-
-def getCable(boite):
-    index = boiteCode.index(boite)
-    cable = boiteCable[index]
-    return cable
-
-
+# function to write the basic info of the boite and cable
 def cableBaseInfo(w: sheet, cable, capacity, T=1, ):
     for i in range(0, capacity):
 
@@ -313,6 +347,7 @@ def cableBaseInfo(w: sheet, cable, capacity, T=1, ):
         w.write(i + 1, 4, num, colorList[num - 1])
 
 
+# function to write next cable epesuree on the boite just for specific next boit
 def fillInEpess(w: sheet, Lin, i, boite, T=1):
     index = boiteCode.index(boite)
     cable = boiteCable[index]
@@ -340,18 +375,21 @@ def fillInEpess(w: sheet, Lin, i, boite, T=1):
     return Lin
 
 
-def nextcableEpess(w: sheet, nextBoite):
+# function to write  all next cable epesuree on the boite
+def fillInAllCableEpess(w: sheet, nextBoite):
     Lin = 1
     for b in nextBoite:
         x = fillInEpess(w, Lin, 0, b, 1)
         Lin = x
 
 
+# function  to write the ftte nex cable
 def ftteFillIn():
     pass
 
 
-def PboFillStokker(w: sheet, boite, stokker, i, T=1):
+# function to write stoker state
+def PboFillStokker(w: sheet, boite, capacity, stokker, i, T=1):
     Lin = 1
     for s in range(0, stokker):
         w.write(Lin, 6, 'STOCKEE', border)
@@ -371,7 +409,8 @@ def PboFillStokker(w: sheet, boite, stokker, i, T=1):
     return 1
 
 
-def PboFillEpes(w: sheet, boite,capacity, epes, Lin, i, T=1):
+# !!!!!!!!!!
+def PboFillEpes(w: sheet, boite, capacity, epes, Lin, i, T=1):
     for s in range(0, epes):
         w.write(Lin, 6, 'STOCKEE', border)
         w.write(Lin, 10, capacity, border)
@@ -390,48 +429,58 @@ def PboFillEpes(w: sheet, boite,capacity, epes, Lin, i, T=1):
     return 1
 
 
-def getLastStartBoite(boite):
-    index = getCableIndex(boite)
-    capacity = cableCapacity[index]
-    orginBoite = cableOrigin[index]
-    index2 = getCableIndex(orginBoite)
-    capacity2 = cableCapacity[index2]
-    if capacity == capacity2:
-        return getLastStartBoite(orginBoite)
-    else:
-        return boite
+# function to write all passage state next cable
+def passageFillIn(w: sheet, boit, startLine, T=1):
+    boitlist = getListComingBoite(boit)
+    for b in boitlist:
+        cable = getCable(b)
+        capacity = getCable(cable)
+        nmbrfu = getNumbrFu(b, 0)
+        i = 0
+        for k in range(0, nmbrfu):
+            w.write(startLine, 6, 'EN PASSAGE', border)
+            w.write(startLine, 10, capacity, border)
+            num = (i % 12) + 1
+            w.write(startLine, 9, num, border)
+            w.write(startLine, 8, T, colorList[T - 1])
+            if num % 12 == 0:
+                if T == 12:
+                    T = 1
+                else:
+                    T += 1
+            w.write(startLine, 7, num, colorList[num - 1])
+            w.write(startLine, 12, cable, border)
+            w.write(startLine, 13, 'EN PASSAGE', border)
+            startLine += 1
+            i += 1
+    return startLine
 
 
-def getStockStartLine(boite):
-    fuUsed = getNumbrFu(getLastStartBoite(boite), 0)
-    fuBoit = getNumbrFu(boite, 0)
-    fttcheck = checkFtt(boite)
-    lineStart = fuUsed - fuBoit - fttcheck
-    return lineStart
 
 
-def getFTTElineStart(boite):
-    cable = getCable(boite)
-    capacity = getCapacity(cable)
-    line = capacity - aroundTo(checkGlobalFtt(boite), 12)
-    return line
 
 
-def getFTTEBoites(boite):
-    listBoit = getListComingBoite(boite)
-    listFFTE = []
-    for i in listBoit:
-        x = checkGlobalFtt(i)
-        if i != 0:
-            listFFTE.append(i)
-
-
-def passageFillIn(w:sheet,boit,startLine,endLine,T):
-    pass
+# function to write the libre state for next cable
+def libreFillIn(w: sheet, boit, startLine, endLine, T=1):
+    i = 0
+    for k in range(0, endLine):
+        w.write(startLine, 6, 'LIBRE', border)
+        num = (i % 12) + 1
+        w.write(startLine, 8, T, colorList[T - 1])
+        if num % 12 == 0:
+            if T == 12:
+                T = 1
+            else:
+                T += 1
+        w.write(startLine, 7, num, colorList[num - 1])
+        w.write(startLine, 13, 'LIBRE', border)
+        startLine += 1
+        i += 1
+    return startLine
 
 
 # ################### PEC function #############################
-def boitePecFillIn(w: sheet,cable, boite,capacity,T):
+def boitePecFillIn(w: sheet, cable, boite, capacity, T):
     stockN = 0
     fuNumber = getNumbrFu(boite, 0)
     ftte = checkGlobalFtt(boite)
@@ -439,7 +488,6 @@ def boitePecFillIn(w: sheet,cable, boite,capacity,T):
     cableBaseInfo(w, cable, capacity, T)
     nextBoits = getListComingBoitePEC(boite)
     nextcableEpess(w, nextBoits)
-
 
 
 # ##############################################################
@@ -452,7 +500,7 @@ def boitePecFillIn(w: sheet,cable, boite,capacity,T):
 SROboite = getSroBoite()
 print(SROboite)
 print(getLastStartBoite('BTI-21-011-076-2026'))
-print(getNumbrFu('PBO-21-011-076-2024', 0) )
+print(getNumbrFu('PBO-21-011-076-2024', 0))
 print(checkGlobalFtt('PBO-21-011-076-2024'))
 
 # # print('#' * 15)

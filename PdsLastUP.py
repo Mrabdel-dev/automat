@@ -78,6 +78,11 @@ for k in range(0, zapLen):
     tECHNO.append(zaPboDbl.records[k]['TECHNO'])
     typeBat.append(zaPboDbl.records[k]['TYPE_BAT'])
 
+# from the cassete file
+reference = []
+nbrCassete = []
+tailleCassete = []
+
 sheet = xlsxwriter.worksheet.Worksheet
 
 # ########################## functions #################################
@@ -340,7 +345,7 @@ def baseSheet(w: sheet, boite):
     if str(orgin).startswith('SRO'):
         w.write('Q6', orgin, bold)
     else:
-        w.write_url('Q6', f"internal:'{orgin}'!A1", string=orgin)
+        w.write_url('Q6', f"internal:'{orgin}'!R1", string=orgin)
     # boite Next boite coming
     w.write('R5', 'NEXT : ', back)
     BoiteNext = getListComingBoite(boite)
@@ -348,7 +353,7 @@ def baseSheet(w: sheet, boite):
     if k > 0:
         R = 6
         for l in BoiteNext:
-            w.write_url('R' + str(R), f"internal:'{l}'!A1", string=l)
+            w.write_url('R' + str(R), f"internal:'{l}'!R1", string=l)
             R += 1
     else:
         l = 'EXTREMITE'
@@ -601,8 +606,10 @@ def extracableFillIn(w: sheet, cable, cap, extarline, startLine, funm):
 def extracablePECPBOFillIn(w: sheet, boites, boite, startLine):
     y = getBoitePassage(boite)
     index1 = boiteCode.index(boite)
+    func = boiteFunction[index1]
     k = getFTTEBoites(boite)
     fuNumbr = nbf[index1]
+    fuNumbr1 = getNumbrFu(boite,0)
     test = False
     for b in boites:
         for l in k:
@@ -611,7 +618,7 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine):
             else:
                 test = False
 
-        if test == False:
+        if not test:
             if y != b:
                 fuN = getNumbrFu(b, 0)
                 cable = getCable(b)
@@ -622,23 +629,50 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine):
             else:
                 cable = getCable(b)
                 cap = getCapacity(cable)
-                extraN = cap - fuNumbr
-                startLine = extracableFillIn(w, cable, cap, fuNumbr, startLine, extraN)
+            if func == 'PEC':
+                start = getLastStartBoite(boite)
+                if start == boite:
+                    Lin = 1
+                else:
+                    Lin = getNumbrFu(getLastStartBoite(start), 0)
+                startLine = extracableFillIn(w, cable, cap, fuNumbr1, startLine, Lin)
+            else:
+                Lin = getStockStartLine(boite)
+                startLine = extracableFillIn(w, cable, cap, fuNumbr1, startLine, Lin)
+
         else:
             if y != b:
                 cable = getCable(b)
                 cap = getCapacity(cable)
-                ftte = checkFtt(b)
+                ftte = checkGlobalFtt(b)
                 extraN = aroundTo(ftte, 12) - ftte
-                startLine = extracableFillIn(w, cable, cap, extraN, startLine, ftte)
+                tt = cap - getNumbrFu(b, 0)
+                startLine = extracableFillIn(w, cable, cap, extraN, startLine, tt)
                 nbfu = getNumbrFu(b, 0) - ftte
-                extraN2 = cap - nbfu - extraN
+                extraN2 = cap - aroundTo(ftte, 12) - getNumbrFu(b, 0) - ftte
                 startLine = extracableFillIn(w, cable, cap, extraN2, startLine, nbfu)
             else:
                 cable = getCable(b)
                 cap = getCapacity(cable)
-                extraN = cap - fuNumbr
-                startLine = extracableFillIn(w, cable, cap, fuNumbr, startLine, extraN)
+            if func == 'PEC':
+                start = getLastStartBoite(boite)
+                if start == boite:
+                    Lin = 1
+                else:
+                    Lin = getNumbrFu(getLastStartBoite(start), 0)
+                startLine = extracableFillIn(w, cable, cap, fuNumbr, startLine, Lin)
+            else:
+                Lin = getStockStartLine(boite)
+                startLine = extracableFillIn(w, cable, cap, fuNumbr, startLine, Lin)
+
+
+def cassteFillIn(w: sheet, boite):
+    index = boiteCode.index(boite)
+    ref = boiteReference[index]
+    for r in range(0, len(reference)):
+        if ref == reference[r]:
+            nbrCass = nbrCassete[r]
+            cassTAILL = tailleCassete[r]
 
 
 # ################### PEC function #############################
@@ -789,4 +823,6 @@ index1 = boiteCode.index('PBO-21-011-076-3011')
 # index2 = boiteCode.index('PBO-21-011-076-3006')
 print(nbf[index1] - checkFtt('PBO-21-011-076-3035'))
 # print(getFTTEBoites('PBO-21-011-076-3035'))
-print(getNumbrFu('PBO-21-011-076-3011', 0) - checkGlobalFtt('PBO-21-011-076-3011'))
+print( checkGlobalFtt('PEC-21-011-076-3032'))
+ftte = getNumbrFu('PEC-21-011-076-2014', 0)
+print(ftte)

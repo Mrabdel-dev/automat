@@ -41,7 +41,7 @@ def aroundTo(x: int, num):
 
 x = [1, 2, 3, 5, 9, 10, 20, 30]
 for i in x:
-    print(aroundTo(i,12))
+    print(aroundTo(i, 12))
 #
 # def xlssx(t: x, r: y):
 #     t = t.cell(row=5, column=7).value

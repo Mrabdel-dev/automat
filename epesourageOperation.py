@@ -8,7 +8,7 @@ from openpyxl import load_workbook
 
 # load your pds file here
 pdsFile = ''
-pds = load_workbook('epesIn/SRO-51-032-032-PLAN DE BOITE.xlsx')
+pds = load_workbook('epesIn/SRO-31-206-328-PLAN DE BOITE.xlsx')
 wpds = pds.sheetnames
 # dbf file to get information about the boit
 dbfFile = 'epesIn/21_011_079_BOITE_OPTIQUE_A.dbf'
@@ -21,7 +21,7 @@ dbfFile = 'epesIn/21_011_079_BOITE_OPTIQUE_A.dbf'
 #     boiteCode.append(boiteTable.records[j]['NOM'])
 #     codeLocal.append(boiteTable.records[j]['ID_PARENT'])
 # create the epesourege file
-epesBook = xlsxwriter.Workbook('epesExcel/SRO-51-032-032_Epesourage.xlsx')
+epesBook = xlsxwriter.Workbook('epesExcel/SRO-31-206-328-Epesourage.xlsx')
 wr = epesBook.add_worksheet()
 print(wpds)
 boiteList = sorted(wpds)
@@ -153,11 +153,10 @@ for s in boiteList:
         type = sheet.cell(row=i, column=8).value
         if type == 'EN ATTENTE' or type == 'PASSAGE':
             type = 'EN PASSAGE'
-        elif type == 'LIBRE' or type == 'A STOCKER':
+        elif type == 'LIBRE' or type == 'A STOCKER' or type == 'STOCKER' :
             type = 'STOCKEE'
-        elif type == 'A EPISSURER' or type == 'EPISSURER':
+        elif type == 'A EPISSURER' or type == 'EPISSURER' or type == 'A EPISSUREE':
             type = 'EPISSUREE'
-
         wr.write('W' + str(b), type, border)
         b += 1
 

@@ -57,14 +57,15 @@ with open('routInput/SRO-31-206-328-Epesourage.csv', 'rt')as f:
                 continue
         dictCable.update({cb: cap})
 
-sortedSro = dict(sorted(dictCable.items(), key=operator.itemgetter(1)))
+sortedSro = {k: v for k, v in sorted(dictCable.items(), key=lambda v: v[1])}
 sroCab = list(sortedSro.keys())
-sroCable = ['CDI-31-206-328-1001', 'CDI-31-206-328-2001', 'CDI-31-206-328-3090', 'CDI-31-206-328-4037']
+sroCable = sroCab
 print(dictCable)
+print(sortedSro)
 print(sroCable)
 # ########################################################################################
 # <-----------------------route file creation------------------------------------------->
-rootBook = xlsxwriter.Workbook('routage/Rootage-SRO-31-206-328.xlsx')
+rootBook = xlsxwriter.Workbook('routage/Rootage-TEST.xlsx')
 wr = rootBook.add_worksheet()
 # define the character and style of cell inside excel
 bold = rootBook.add_format({'bold': True, "border": 1})

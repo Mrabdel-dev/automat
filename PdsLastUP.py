@@ -609,7 +609,7 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine):
     func = boiteFunction[index1]
     k = getFTTEBoites(boite)
     fuNumbr = nbf[index1]
-    fuNumbr1 = getNumbrFu(boite,0) - 1
+    fuNumbr1 = getNumbrFu(boite, 0) - 1
     test = False
     for b in boites:
         for l in k:
@@ -638,7 +638,7 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine):
                     startLine = extracableFillIn(w, cable, cap, fuNumbr1, startLine, Lin)
                 else:
                     Lin = getStockStartLine(boite)
-                    startLine = extracableFillIn(w, cable, cap, fuNumbr1, startLine, Lin)
+                    startLine = extracableFillIn(w, cable, cap, fuNumbr, startLine, Lin)
 
 
         else:
@@ -646,12 +646,13 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine):
                 cable = getCable(b)
                 cap = getCapacity(cable)
                 ftte = checkGlobalFtt(b)
+                nbfu = getNumbrFu(b, 0) - ftte
+                extraN2 = cap - aroundTo(ftte, 12) - getNumbrFu(b, 0) + ftte
+                startLine = extracableFillIn(w, cable, cap, extraN2, startLine, nbfu)
                 extraN = aroundTo(ftte, 12) - ftte
                 tt = cap - aroundTo(ftte, 12) + ftte
                 startLine = extracableFillIn(w, cable, cap, extraN, startLine, tt)
-                nbfu = getNumbrFu(b, 0) - ftte
-                extraN2 = cap - aroundTo(ftte, 12) - getNumbrFu(b, 0) - ftte
-                startLine = extracableFillIn(w, cable, cap, extraN2, startLine, nbfu)
+
             else:
                 cable = getCable(b)
                 cap = getCapacity(cable)
@@ -666,9 +667,8 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine):
                 else:
                     Lin = getStockStartLine(boite)
                     startLine = extracableFillIn(w, cable, cap, fuNumbr, startLine, Lin)
-                    lin = Lin + getNumbrFu(getLastStartBoite(b), 0)-ftte
-                    startLine = extracableFillIn(w, cable, cap, fuNumbr1-ftte, startLine, Lin)
-
+                    # lin = Lin + getNumbrFu(getLastStartBoite(b), 0)-ftte
+                    # startLine = extracableFillIn(w, cable, cap, fuNumbr1-ftte, startLine, Lin)
 
 
 def cassteFillIn(w: sheet, boite):
@@ -824,10 +824,13 @@ for b in range(0, boiteLen):
         boitePboFillIn(w, cable, boite, capacity, T)
 
 workbook.close()
-index1 = boiteCode.index('PBO-21-011-076-3011')
+index1 = boiteCode.index('PBO-21-011-076-2015')
 # index2 = boiteCode.index('PBO-21-011-076-3006')
-print(nbf[index1] - checkFtt('PBO-21-011-076-3035'))
+cable = getCable('PBO-21-011-076-2015')
+cap = getCapacity(cable)
+print(nbf[index1])
 # print(getFTTEBoites('PBO-21-011-076-3035'))
-print( checkGlobalFtt('PEC-21-011-076-3032'))
-ftte = getNumbrFu('PEC-21-011-076-2014', 0)
-print(ftte)
+x = checkGlobalFtt('PBO-21-011-076-2015')
+print(x)
+ftte = getNumbrFu('PBO-21-011-076-2015', 0)
+print(cap - aroundTo(x, 12) - ftte)

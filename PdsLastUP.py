@@ -629,6 +629,8 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine):
             else:
                 cable = getCable(b)
                 cap = getCapacity(cable)
+                fu = getNumbrFu(b,0)
+                total = fuNumbr1 -fu+1
                 if func == 'PEC':
                     start = getLastStartBoite(boite)
                     if start == boite:
@@ -638,7 +640,7 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine):
                     startLine = extracableFillIn(w, cable, cap, fuNumbr1, startLine, Lin)
                 else:
                     Lin = getStockStartLine(boite)
-                    startLine = extracableFillIn(w, cable, cap, fuNumbr, startLine, Lin)
+                    startLine = extracableFillIn(w, cable, cap, total, startLine, Lin)
 
 
         else:
@@ -666,7 +668,9 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine):
                     startLine = extracableFillIn(w, cable, cap, fuNumbr1, startLine, Lin)
                 else:
                     Lin = getStockStartLine(boite)
-                    startLine = extracableFillIn(w, cable, cap, fuNumbr, startLine, Lin)
+                    fu = getNumbrFu(b, 0)
+                    total = fuNumbr1 - fu+1
+                    startLine = extracableFillIn(w, cable, cap, total, startLine, Lin)
                     # lin = Lin + getNumbrFu(getLastStartBoite(b), 0)-ftte
                     # startLine = extracableFillIn(w, cable, cap, fuNumbr1-ftte, startLine, Lin)
 

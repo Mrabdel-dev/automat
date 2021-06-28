@@ -410,7 +410,7 @@ def fillInEpess(w: sheet, Lin, i, boite, T, N, k, size):
     funb = getNumbrFu(boite, 0)
     nbrEps = funb - ftt
     for j in range(0, nbrEps):
-        n = 'CSE-'+str(N)
+        n = 'CSE-' + str(N)
         w.write(Lin, 5, n, border)
         k += 1
         w.write(Lin, 6, 'EPISSUREE', border)
@@ -646,6 +646,7 @@ def extracableFillIn(w: sheet, cable, cap, extarline, startLine, funm):
         i += 1
     return startLine
 
+
 # function to write all extract libre cable need for sorted cable
 def extracablePECPBOFillIn(w: sheet, boites, boite, startLine):
     y = getBoitePassage(boite)
@@ -741,51 +742,6 @@ def cassteFillIn(w: sheet, boite, function):
         pass
     else:
         pass
-
-
-def epessCasseteFillIn(w: sheet, boites, line, size, cass, ftte):
-    i = 0
-
-    for b in boites:
-        ftte = checkGlobalFtt(b)
-        fu = getNumbrFu(b, 0) - ftte
-        for k in range(0, fu):
-            T = 'CSE-' + str(cass)
-            w.write(line, 5, T, border)
-            i += 1
-            line += 1
-            if i > size:
-                cass += 1
-
-
-def stockpboCasseteFillIn(w: sheet, boites, line, size, cass):
-    i = 0
-
-    for b in boites:
-        ftte = checkGlobalFtt(b)
-        fu = getNumbrFu(b, 0) - ftte
-        for k in range(0, fu):
-            T = 'CSE-' + str(cass)
-            w.write(line, 5, T, border)
-            i += 1
-            line += 1
-            if i > size:
-                cass += 1
-
-
-def stokerfttCasseteFillIn(w: sheet, boites, line, size, cass):
-    i = 0
-
-    for b in boites:
-        ftte = checkGlobalFtt(b)
-        fu = getNumbrFu(b, 0) - ftte
-        for k in range(0, fu):
-            T = 'CSE-' + str(cass)
-            w.write(line, 5, T, border)
-            i += 1
-            line += 1
-            if i > size:
-                cass += 1
 
 
 def passageCasseteFillIn(w: sheet, boites, line, size, cass):

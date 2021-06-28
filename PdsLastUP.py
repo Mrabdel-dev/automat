@@ -867,7 +867,7 @@ print(getLastStartBoite('BTI-21-011-076-2026'))
 print(getNumbrFu('PBO-21-011-076-2024', 0))
 print(checkGlobalFtt('PBO-21-011-076-2024'))
 
-# ########################################## start fill In the pds ##############################
+# ############## start fill In the pds ##########################################################
 for b in range(0, boiteLen):
     # ################## constant work with ####################
     N = 1
@@ -892,7 +892,7 @@ for b in range(0, boiteLen):
         boitePboFillIn(w, cable, boite, capacity, T)
 workbook.close()
 
-# ############################# some test for verification ##################################
+# ################# some test for verification ##############################################
 index1 = boiteCode.index('PBO-21-011-076-2015')
 # index2 = boiteCode.index('PBO-21-011-076-3006')
 cable = getCable('PBO-21-011-076-2015')

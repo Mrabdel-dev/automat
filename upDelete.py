@@ -66,7 +66,7 @@ for i in range(2, maxRow + 1):
 newMax = oldBookFree.max_row
 # the second loop is for delete all value doesn't come with new file
 for c in range(2, newMax):
-    Test = str(newBook.cell(row=i, column=7).value)
+    Test = str(oldBookFree.cell(row=c, column=6).value)
     if Test == "Sebastien GELSI":
         valTest = oldBookFree.cell(row=c, column=4).value
         for d in range(2, maxRow + 1):
@@ -83,8 +83,9 @@ for c in range(2, newMax):
 
 newMaxPaca = oldBookPaca.max_row
 for c in range(2,newMaxPaca):
-    Test = str(newBook.cell(row=i, column=7).value)
+    Test = str(oldBookPaca.cell(row=c, column=6).value)
     if Test == "Philippe PHILIS":
+        print(c)
         valTest = oldBookPaca.cell(row=c, column=4).value
         for d in range(2, maxRow + 1):
             valTestedWith = newBook.cell(row=d, column=4).value
@@ -98,6 +99,7 @@ for c in range(2,newMaxPaca):
             for e in range(1, maxColOldPaca + 1):
                 oldBookPaca.cell(row=c, column=e).value = ''
     else:
+        print("yes")
         for e in range(1, maxColOldPaca + 1):
             oldBookPaca.cell(row=c, column=e).value = ''
 

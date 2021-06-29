@@ -18,4 +18,3 @@ browsebutton.pack()
 pathlabel = Label(top)
 pathlabel.pack()
 top.mainloop()
-# help

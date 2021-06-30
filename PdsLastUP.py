@@ -8,12 +8,12 @@ import datetime
 now = datetime.datetime.now()
 date = now.strftime("%d/%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('pdsInput/21_011_076_CABLE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('pdsInput/21_011_076_BOITE_OPTIQUE_B_AI.dbf', load=True, encoding='iso-8859-1')
-zaPboDbl = DBF('pdsInput/zpbodbl.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('pdsInput/85_048_568_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/85_048_568_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+zaPboDbl = DBF('pdsInput/zapbodbl.dbf', load=True, encoding='iso-8859-1')
 casseteTable = DBF('pdsInput/cassete file.dbf', load=True, encoding='iso-8859-1')
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('PDS/pds-21_011_076.xlsx')
+workbook = xlsxwriter.Workbook('PDS/pds-85_048_568.xlsx')
 # ############### define the character and style of cell inside excel ################"
 bold = workbook.add_format({'bold': True, "border": 1})
 bold1 = workbook.add_format({'bold': True})
@@ -74,11 +74,13 @@ boiteName = []
 nbPrise = []
 tECHNO = []
 typeBat = []
+statut = []
 for k in range(0, zapLen):
     boiteName.append(zaPboDbl.records[k]['NOM'])
     nbPrise.append(zaPboDbl.records[k]['NB_PRISE'])
     tECHNO.append(zaPboDbl.records[k]['TECHNO'])
     typeBat.append(zaPboDbl.records[k]['TYPE_BAT'])
+    statut.append(zaPboDbl.records[k]['STATUT'])
 
 # from the cassete file
 reference = []  # reference of the boite
@@ -220,9 +222,9 @@ def aroundTo(x: int, num):
 # get fu ftte of a boite
 def checkFtt(boit):
     fuFttE = 0
-    for b, n, t, y in zip(boiteName, nbPrise, tECHNO, typeBat):
+    for b, n, t, y, s in zip(boiteName, nbPrise, tECHNO, typeBat, statut):
         if boit == b:
-            if t == 'FTTE':
+            if t == 'FTTE' and s != 'ABANDONNE':
                 if y == 'PYLONE' or y.startswith('CHT'):
                     fuFttE += n * 4
                     return aroundTo(fuFttE, 3)
@@ -256,7 +258,7 @@ def checkGlobalFtt(bo):
 # founction to capcity of cable
 def getCapacity(cable):
     i = cableName.index(cable)
-    capacity = cableCapacity[i]
+    capacity = int(cableCapacity[i])
     return capacity
 
 
@@ -505,6 +507,7 @@ def fillPecPassage(w, boite, startLine, endLine, i, T):
     cable = getCable(boite)
     cap = getCapacity(cable)
     for k in range(startLine, endLine):
+        w.write(startLine, 5, 'FOND DE BOITE', border)
         w.write(startLine, 6, 'EN PASSAGE', border)
         num = (i % 12) + 1
         w.write(startLine, 8, T, stringCassette(str(T)))
@@ -581,6 +584,7 @@ def passageFillIn(w: sheet, boit, startLine, T=1):
         nmbrfu = getNumbrFu(b, 0)
         i = 0
         for k in range(0, nmbrfu):
+            w.write(startLine, 5, 'FOND DE BOITE', border)
             w.write(startLine, 6, 'EN PASSAGE', border)
             w.write(startLine, 10, capacity, border)
             num = (i % 12) + 1
@@ -863,9 +867,7 @@ def boitePboFillIn(w: sheet, cable, boite, capacity, T):
 
 SROboite = getSroBoite()
 print(SROboite)
-print(getLastStartBoite('BTI-21-011-076-2026'))
-print(getNumbrFu('PBO-21-011-076-2024', 0))
-print(checkGlobalFtt('PBO-21-011-076-2024'))
+
 
 # ############## start fill In the pds ##########################################################
 for b in range(0, boiteLen):
@@ -893,14 +895,14 @@ for b in range(0, boiteLen):
 workbook.close()
 
 # ################# some test for verification ##############################################
-index1 = boiteCode.index('PBO-21-011-076-2015')
-# index2 = boiteCode.index('PBO-21-011-076-3006')
-cable = getCable('PBO-21-011-076-2015')
-cap = getCapacity(cable)
-print(nbf[index1])
-# print(getFTTEBoites('PBO-21-011-076-3035'))
-x = checkGlobalFtt('PBO-21-011-076-2015')
-print(x)
-ftte = getNumbrFu('PBO-21-011-076-2015', 0)
-index = boiteCode.index('PBO-21-011-076-3011')
-ref = boiteReference[index]
+# index1 = boiteCode.index('PBO-21-011-076-2015')
+# # index2 = boiteCode.index('PBO-21-011-076-3006')
+# cable = getCable('PBO-21-011-076-2015')
+# cap = getCapacity(cable)
+# print(nbf[index1])
+# # print(getFTTEBoites('PBO-21-011-076-3035'))
+# x = checkGlobalFtt('PBO-21-011-076-2015')
+# print(x)
+# ftte = getNumbrFu('PBO-21-011-076-2015', 0)
+# index = boiteCode.index('PBO-21-011-076-3011')
+# ref = boiteReference[index]

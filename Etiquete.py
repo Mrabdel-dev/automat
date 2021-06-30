@@ -53,10 +53,14 @@ for s in range(0, supplen):
 # FROM THE TECHNIC POINT
 pointNom = []
 pointCode = []
+pointFonc = []
+pointStruc = []
 pointPrp = []
 for p in range(0, pointlen):
     pointNom.append(pointTechTable.records[p]['NOM'])
     pointCode.append(pointTechTable.records[p]['CODE'])
+    pointFonc.append(pointTechTable.records[p]['TYPE_FONC'])
+    pointStruc.append(pointTechTable.records[p]['TYPE_STRUC'])
     pointPrp.append(pointTechTable.records[p]['PROPRIETAI'])
 # FROM THE FCI 
 fciNom = []
@@ -65,14 +69,9 @@ for f in range(0, fcilen):
     fciNom.append(fciTable.records[f]['POTEAU_CHA'])
     fciCode.append(fciTable.records[f]['FCI'])
 
-allcable = []
-cablePTCode =[]
-typeFonc = []
-typeStruc = []
-cablePTProp = []
-
 # ###################### define  the base header ##############################
 sheet = xlsxwriter.worksheet.Worksheet
+
 
 # ################ vender ###########
 def venderBaseHeader():
@@ -134,8 +133,68 @@ def getCablePointTechEnd(cable):
     pointTechCode = getPointCode(boite)
     return pointTechCode
 
-def createTablesBase()
-# ################################### fil in function #################
+
+def duplicates(lst, item):
+    return [i for i, x in enumerate(lst) if x == item]
+
+
+allcable = []
+cablePTCode = []
+typeFonc = []
+typeStruc = []
+cablePTProp = []
+
+
+def fillInAllTable(cable, pointCode, index):
+    allcable.append(cable)
+    cablePTCode.append(pointCode)
+    typeFonc.append(pointFonc[index])
+    typeStruc.append(pointStruc[index])
+    cablePTProp.append(pointPrp[index])
+
+
+def createTablesBase(cables):
+    for c in cables:
+        test = True
+        cablePointStart = getCablePointTechStart(c)
+        index = pointCode.index(cablePointStart)
+        fillInAllTable(c, cablePointStart, index)
+        cablePointEnd = getCablePointTechEnd(c)
+        start = cablePointStart
+        k = 0
+        while test:
+
+            try:
+
+                if k == 0:
+                    indexSup = suppAmount.index(start)
+                    avalpoint = suppAval[indexSup]
+                else:
+                    print(k)
+                    avalpoint = suppAval[k]
+                    print('#', avalpoint)
+                    print('#', cablePointEnd)
+
+                if avalpoint == cablePointEnd:
+                    test = False
+                    index = pointCode.index(cablePointEnd)
+                    fillInAllTable(c, cablePointEnd, index)
+                else:
+                    start = avalpoint
+                    index = pointCode.index(start)
+                    fillInAllTable(c, start, index)
+                    k = 0
+            except ValueError:
+                indexS = suppAval.index(start)
+                start = suppAmount[indexS]
+                print(start)
+                fillInAllTable(c, start, indexS)
+                inde = duplicates(suppAmount, start)
+                print(inde)
+                k = inde[1]
+
+
+# ############################# fill in function #################
 def boiteEtiqueteFill(boites, totale: sheet):
     w = workbook.add_worksheet("EtiquetteBoite")
     baseHeader(w)
@@ -194,4 +253,7 @@ def pointEtiqueteFill(points, k, totale: sheet):
 
 k = boiteEtiqueteFill(boiteCode, totaleSheet)
 k = pointEtiqueteFill(pointCode, k, totaleSheet)
+createTablesBase(cableName)
 workbook.close()
+for i in range(0, 50):
+    print(allcable[i], cablePTCode[i], typeFonc[i], typeStruc[i], cablePTProp[i])

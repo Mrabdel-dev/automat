@@ -97,11 +97,11 @@ for s in boiteList:
         if s == boiteCode[t]:
             code = codeLocal[t]
 
-    for i in range(12, MaxRow + 1):
+    for i in range(2, MaxRow + 1):
         cable = sheet.cell(row=i, column=1).value
         wr.write('A' + str(b), cable, border)
         # tube1
-        tube1 = sheet.cell(row=i, column=5).value
+        tube1 = sheet.cell(row=i, column=4).value
         wr.write('B' + str(b), tube1, border)
         # bugue
         x = getBagueByTube(str(tube1))
@@ -112,7 +112,7 @@ for s in boiteList:
 
         wr.write('D' + str(b), '', border)
         # fibre1
-        fibre1 = sheet.cell(row=i, column=6).value
+        fibre1 = sheet.cell(row=i, column=5).value
         wr.write('E' + str(b), fibre1, border)
         wr.write('F' + str(b), '', border)
         wr.write('G' + str(b), '', border)
@@ -124,16 +124,16 @@ for s in boiteList:
         # boite
         wr.write('L' + str(b), s, border)
         # cassete
-        cassete = sheet.cell(row=i, column=7).value
+        cassete = sheet.cell(row=i, column=6).value
         wr.write('M' + str(b), integerFormat(cassete), border)
         # position
-        position = sheet.cell(row=i, column=4).value
+        position = sheet.cell(row=i, column=3).value
         wr.write('N' + str(b), position, border)
         # cable dist
-        cableDist = sheet.cell(row=i, column=14).value
+        cableDist = sheet.cell(row=i, column=13).value
         wr.write('O' + str(b), cableDist, border)
         # tube2
-        tube2 = sheet.cell(row=i, column=10).value
+        tube2 = sheet.cell(row=i, column=9).value
         wr.write('P' + str(b), tube2, border)
         # bague 2
         x = getBagueByTube(str(tube2))
@@ -144,13 +144,13 @@ for s in boiteList:
 
         wr.write('R' + str(b), '', border)
         # fibre 2
-        fibre2 = sheet.cell(row=i, column=9).value
+        fibre2 = sheet.cell(row=i, column=8).value
         wr.write('S' + str(b), fibre2, border)
         wr.write('T' + str(b), '', border)
         wr.write('U' + str(b), '', border)
         wr.write('V' + str(b), '', border)
         # ETAT
-        type = sheet.cell(row=i, column=8).value
+        type = sheet.cell(row=i, column=7).value
         if type == 'EN ATTENTE' or type == 'PASSAGE':
             type = 'EN PASSAGE'
         elif type == 'LIBRE' or type == 'A STOCKER' or type == 'STOCKER':

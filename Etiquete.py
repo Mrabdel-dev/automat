@@ -96,6 +96,22 @@ def getPointCode(boite):
     return idPrent
 
 
+def getCapacity(cable):
+    index = cableName.index(cable)
+    cap = cableCapacity[index]
+    return cap
+
+
+def getNomPT(code):
+    try:
+        index = pointCode.index(code)
+        fcNom = pointNom[index]
+        fcNom = fcNom[0:6] + fcNom[6:].lstrip("0")
+        return fcNom
+    except ValueError:
+        return None
+
+
 def getPointTech(boite):
     index = boiteCode.index(boite)
     idPrent = boiteIdParent[index]
@@ -153,45 +169,128 @@ def fillInAllTable(cable, pointCode, index):
     cablePTProp.append(pointPrp[index])
 
 
-def createTablesBase(cables):
-    for c in cables:
-        test = True
-        cablePointStart = getCablePointTechStart(c)
+def getAval(point):
+    index = suppAmount.index(point)
+    return suppAval[index]
+
+
+def getAmount(point):
+    index = suppAval.index(point)
+    return suppAmount[index]
+
+
+def checkAvalway(c, cablepointStart, cablepointEnd, test):
+    start = cablepointEnd
+    k = test
+    try:
+        while test and k:
+            if cablepointStart == start:
+                test = False
+                break
+            else:
+                start = getAmount(start)
+                listDb = duplicates(suppAmount, start)
+                if len(listDb) > 1:
+                    k = False
+                index = pointCode.index(start)
+                fillInAllTable(c, start, index)
+        return test
+    except ValueError:
+        print(start)
+        return True
+
+
+def fillInTable(c):
+    test = True
+    cablePointStart = getCablePointTechStart(c)
+    cablePointEnd = getCablePointTechEnd(c)
+    index = pointCode.index(cablePointEnd)
+    fillInAllTable(c, cablePointEnd, index)
+    test = checkAvalway(c, cablePointStart, cablePointEnd, test)
+    if test:
         index = pointCode.index(cablePointStart)
         fillInAllTable(c, cablePointStart, index)
-        cablePointEnd = getCablePointTechEnd(c)
-        start = cablePointStart
-        k = 0
-        while test:
+    print(test)
+    try:
+        nextstart = getAval(cablePointStart)
+        duplistart = duplicates(suppAval, nextstart)
+    except ValueError:
+        nextstart = getAmount(cablePointStart)
+        duplistart = duplicates(suppAmount, nextstart)
+        print(c, cablePointStart, nextstart, duplicates(suppAmount, nextstart))
+    try:
+        nextend = getAmount(cablePointEnd)
 
-            try:
-
-                if k == 0:
-                    indexSup = suppAmount.index(start)
-                    avalpoint = suppAval[indexSup]
-                else:
-                    print(k)
-                    avalpoint = suppAval[k]
-                    print('#', avalpoint)
-                    print('#', cablePointEnd)
-
-                if avalpoint == cablePointEnd:
+        dupliend = duplicates(suppAmount, nextend)
+        print(c, nextend, len(dupliend))
+    except ValueError:
+        nextend = getAval(cablePointEnd)
+        print(c, cablePointEnd, nextend)
+        dupliend = duplicates(suppAval, nextend)
+    k = 0
+    while test:
+        try:
+            if len(dupliend) < 1 and len(duplistart) < 1:
+                if nextend == nextstart:
+                    index = pointCode.index(nextend)
+                    fillInAllTable(c, nextend, index)
                     test = False
-                    index = pointCode.index(cablePointEnd)
-                    fillInAllTable(c, cablePointEnd, index)
+
+                elif nextstart == cablePointEnd or nextend == cablePointStart:
+                    test = False
+
                 else:
-                    start = avalpoint
-                    index = pointCode.index(start)
-                    fillInAllTable(c, start, index)
-                    k = 0
-            except ValueError:
-                indexS = suppAval.index(start)
-                start = suppAmount[indexS]
-                print(start)
-                fillInAllTable(c, start, indexS)
-                inde = duplicates(suppAmount, start)
-                print(inde)
-                k = inde[1]
+                    index = pointCode.index(nextend)
+                    fillInAllTable(c, nextend, index)
+                    index = pointCode.index(nextstart)
+                    fillInAllTable(c, nextstart, index)
+                    nextstart = getAval(nextstart)
+                    nextend = getAmount(nextend)
+            elif len(dupliend) < 1:
+                if nextend == nextstart:
+                    index = pointCode.index(nextend)
+                    fillInAllTable(c, nextend, index)
+                    test = False
+                    break
+                elif nextstart == cablePointEnd or nextend == cablePointStart:
+                    test = False
+                    break
+                else:
+                    index = pointCode.index(nextstart)
+                    fillInAllTable(c, nextstart, index)
+                    nextstart = getAval(nextstart)
+            elif len(duplistart) < 1:
+                if nextend == nextstart:
+                    index = pointCode.index(nextend)
+                    fillInAllTable(c, nextend, index)
+                    test = False
+                    break
+                elif nextstart == cablePointEnd or nextend == cablePointStart:
+                    test = False
+                    break
+                else:
+                    index = pointCode.index(nextend)
+                    fillInAllTable(c, nextend, index)
+                    nextend = getAmount(nextend)
+            else:
+                test = False
+            dupliend = duplicates(suppAmount, nextend)
+            duplistart = duplicates(suppAval, nextstart)
+        except ValueError:
+            print(c)
+            print(' start', cablePointStart)
+            print('end', cablePointEnd)
+            print('next start', nextstart)
+            print('next end', nextend)
+
+
+def createTablesBase(cables):
+    for c in cables:
+        fillInTable(c)
+
+
+print(getAmount('POT-21065-5345'))
+createTablesBase(cableName)
 
 
 # ############################# fill in function #################
@@ -251,9 +350,91 @@ def pointEtiqueteFill(points, k, totale: sheet):
     return k
 
 
+def cableEtiqueteFill(cables, k, totale: sheet):
+    po = workbook.add_worksheet("Etiquette Cable")
+    baseHeader(po)
+
+    x = len(cables)
+    lin = 2
+    for i in range(0, x):
+        N = 1
+        cable = allcable[i]
+        cap = getCapacity(cable)
+        point = cablePTCode[i]
+        nm = getNomPT(point)
+        fci = getFci(nm)
+        typef = typeFonc[i]
+        typeStr = typeStruc[i]
+        if typeStr == 'CHAMBRE':
+            N = 2
+        cbPro = cablePTProp[i]
+        if typef == 'TIRAGE' and (typeStr == 'APPUI' or typeStr == 'ANCRAGE FACADE') and (
+                cbPro == 'ORANGE' or cbPro == 'ENEDIS'):
+            continue
+        else:
+
+            po.write('A' + str(lin), nm, border)
+            po.write('B' + str(lin), N, border)
+            po.write('C' + str(lin), 'BLANC', border)
+            po.write('D' + str(lin), "ALTITUDE FIBRE 21", border)
+            po.write('E' + str(lin), str(cable) + "-" + str(cap) + " FO", border)
+            po.write('F' + str(lin), str(fci) + "-" + str(date), border)
+            po.write('G' + str(lin), '', border)
+            # ############################
+            totale.write('A' + str(k), point, border)
+            totale.write('B' + str(k), N, border)
+            totale.write('C' + str(k), 'BLANC', border)
+            totale.write('D' + str(k), "ALTITUDE FIBRE 21", border)
+            totale.write('E' + str(k), str(cable) + "-" + str(cap) + " FO", border)
+            totale.write('F' + str(k), str(fci) + "-" + str(date), border)
+            totale.write('G' + str(k), '', border)
+            lin += 1
+            k += 1
+    return k
+
+
+def etiquettePtOrangeFill(cables, k, totale: sheet):
+    co = workbook.add_worksheet("Etiquette PT Orange")
+    baseHeader(co)
+    x = len(cables)
+    lin = 2
+    for i in range(0, x):
+        N = 1
+        cable = allcable[i]
+        cap = getCapacity(cable)
+        point = cablePTCode[i]
+        nm = getNomPT(point)
+        fci = getFci(nm)
+        typeStr = typeStruc[i]
+        if typeStr == 'CHAMBRE':
+            N = 2
+        cbPro = cablePTProp[i]
+        if typeStr == 'APPUI' and cbPro == 'ORANGE':
+            co.write('A' + str(lin), nm, border)
+            co.write('B' + str(lin), N, border)
+            co.write('C' + str(lin), 'BLANC', border)
+            co.write('D' + str(lin), "ALTITUDE FIBRE 21", border)
+            co.write('E' + str(lin), str(cable) + "-" + str(cap) + " FO", border)
+            co.write('F' + str(lin), str(fci) + "-" + str(date), border)
+            co.write('G' + str(lin), '', border)
+            # ############################
+            totale.write('A' + str(k), point, border)
+            totale.write('B' + str(k), N, border)
+            totale.write('C' + str(k), 'BLANC', border)
+            totale.write('D' + str(k), "ALTITUDE FIBRE 21", border)
+            totale.write('E' + str(k), str(cable) + "-" + str(cap) + " FO", border)
+            totale.write('F' + str(k), str(fci) + "-" + str(date), border)
+            totale.write('G' + str(k), '', border)
+            lin += 1
+            k += 1
+
+
+# #######################################################################
 k = boiteEtiqueteFill(boiteCode, totaleSheet)
 k = pointEtiqueteFill(pointCode, k, totaleSheet)
-createTablesBase(cableName)
+k = cableEtiqueteFill(allcable, k, totaleSheet)
+etiquettePtOrangeFill(allcable, k, totaleSheet)
+print('#' * 45)
+for i in range(0, 30):
+    print(allcable[i], "    ", cablePTCode[i], "  ", typeFonc[i], " ", typeStruc[i], " ", cablePTProp[i])
 workbook.close()
-for i in range(0, 50):
-    print(allcable[i], cablePTCode[i], typeFonc[i], typeStruc[i], cablePTProp[i])

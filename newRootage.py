@@ -21,7 +21,7 @@ found = True
 x = 0
 rowmax = 0
 # ##########################################################################################
-with open('routInput/SRO-31-206-328-Epesourage.csv', 'rt')as f:
+with open('routInput/SRO-51_032_011-Epesourage.csv', 'rt')as f:
     data = csv.DictReader(f, delimiter=';')
     # #<---------- get the value from csv epesourge table---------------------------------->#
     for row in data:
@@ -59,13 +59,15 @@ with open('routInput/SRO-31-206-328-Epesourage.csv', 'rt')as f:
 
 sortedSro = {k: v for k, v in sorted(dictCable.items(), key=lambda v: v[1])}
 sroCab = list(sortedSro.keys())
-sroCable = sroCab
+sroCable = ['CDI-51-032-011-4025', 'CDI-51-032-011-2210', 'CDI-51-032-011-1010', 'CDI-51-032-011-3005']
+
 print(dictCable)
 print(sortedSro)
+print(sroCab)
 print(sroCable)
 # ########################################################################################
 # <-----------------------route file creation------------------------------------------->
-rootBook = xlsxwriter.Workbook('routage/Rootage-TEST.xlsx')
+rootBook = xlsxwriter.Workbook('routage/Rootage-SRO-51_032_011.xlsx')
 wr = rootBook.add_worksheet()
 # define the character and style of cell inside excel
 bold = rootBook.add_format({'bold': True, "border": 1})
@@ -119,7 +121,7 @@ def baseHeader():
 
 
 def normalHeader(j):
-    for i in range(j, 20):
+    for i in range(j, 25):
         wr.write(0, j, 'CAS', header)
         j = j + 1
         wr.write(0, j, 'T', header)

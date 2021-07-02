@@ -1,297 +1,509 @@
-import operator
-import string
-
+from dbfread import DBF
 import xlsxwriter
-from openpyxl import load_workbook
+import datetime
 
-# ################define the path of output routage file######################################
-rootBook = xlsxwriter.Workbook('fileGenerated/root.xlsx')
-wr = rootBook.add_worksheet()
-# define the character and style of cell inside excel
-bold = rootBook.add_format({'bold': True, "border": 1})
-bold1 = rootBook.add_format({'bold': True})
-border = rootBook.add_format({"border": 1})
-header = rootBook.add_format({'bold': True, 'border': 1, 'bg_color': '#037d50'})
-cassette = rootBook.add_format({"bg_color": '#A9A9A9', "border": 1})
-cell_formatCapacity = rootBook.add_format({"bg_color": '#E6E6FA', "border": 1})
-cell_format1 = rootBook.add_format({"bg_color": 'red', "border": 1})
-cell_format2 = rootBook.add_format({"bg_color": 'blue', "border": 1})
-cell_format3 = rootBook.add_format({"bg_color": '#00FF00', "border": 1})
-cell_format4 = rootBook.add_format({"bg_color": 'yellow', "border": 1})
-cell_format5 = rootBook.add_format({"bg_color": '#BF00FF', "border": 1})
-cell_format6 = rootBook.add_format({"bg_color": 'white', "border": 1})
-cell_format7 = rootBook.add_format({"bg_color": '#FFBF00', "border": 1})
-cell_format8 = rootBook.add_format({"bg_color": '#828282', "border": 1})
-cell_format9 = rootBook.add_format({"bg_color": '#816B56', "border": 1})
-cell_format10 = rootBook.add_format({"bg_color": '#333333', "border": 1})
-cell_format11 = rootBook.add_format({"bg_color": '#00FFBF', "border": 1})
-cell_format12 = rootBook.add_format({"bg_color": '#FFAAD4', "border": 1})
-colorList = [cell_format1, cell_format2, cell_format3, cell_format4, cell_format5, cell_format6, cell_format7,
-             cell_format8, cell_format9, cell_format10, cell_format11, cell_format12, border]
+# date configuration
+now = datetime.datetime.now()
+date = now.strftime("%m/%Y")
+# ################## load the both file boite and cable in DBF format ###################################
+cableTable = DBF('etiqueteInputs/21_017_104_CABLE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('etiqueteInputs/21_017_104_BOITE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
+pointTechTable = DBF('etiqueteInputs/21_017_104_POINT_TECHNIQUE_B.dbf', load=True, encoding='iso-8859-1')
+supportTable = DBF('etiqueteInputs/21_017_104_SUPPORT_B.dbf', load=True, encoding='iso-8859-1')
+fciTable = DBF('etiqueteInputs/FCI_104.dbf', load=True, encoding='iso-8859-1')
 
+# ################### declare the excel pds file ###########################################################
+workbook = xlsxwriter.Workbook('Etiquette/etiquetteDetail104.xlsx')
+totaleSheet = workbook.add_worksheet("EtiquettePrintedFile")
+# ############### define the character and style of cell inside excel ################"
+border = workbook.add_format({"border": 1})
+header = workbook.add_format({'bold': True, 'border': 1, 'bg_color': '#C4E5F7'})
+# charge the name of all filed in tables
+filedCableNam = cableTable.field_names
+filedBoiteNam = boiteTable.field_names
+filedFciNam = fciTable.field_names
+boiteLen = len(boiteTable)
+cableLen = len(cableTable)
+pointlen = len(pointTechTable)
+fcilen = len(fciTable)
+supplen = len(supportTable)
+# #######################declare the table that i need te full#############################################
+# FROM THE BOITE OPTIQUE
+boiteCode = []  # name of the boite
+boiteIdParent = []  # AMOUNT CABLE
+for j in range(0, boiteLen):
+    boiteCode.append(boiteTable.records[j]['CODE'])
+    boiteIdParent.append(boiteTable.records[j]['ID_PARENT'])
+# FROM THE CABLE OPTIQUE
+cableName = []  # NAME OF THE CABLE
+cableOrigin = []  # WHERE THEY COME FROM
+cableExtremity = []  # WHERE HE GO IN
+cableCapacity = []  # CAPACITY OF THE CABLE
+for i in range(0, cableLen):
+    cableName.append(cableTable.records[i]['NOM'])
+    cableOrigin.append(cableTable.records[i]['ORIGINE'])
+    cableExtremity.append(cableTable.records[i]['EXTREMITE'])
+    cableCapacity.append(cableTable.records[i]['CAPACITE'])
+# FROM THE SUPPORT
+suppAmount = []
+suppAval = []
+for s in range(0, supplen):
+    suppAmount.append(supportTable.records[s]['AMONT'])
+    suppAval.append(supportTable.records[s]['AVAL'])
+# FROM THE TECHNIC POINT
+pointNom = []
+pointCode = []
+pointFonc = []
+pointStruc = []
+pointPrp = []
+for p in range(0, pointlen):
+    pointNom.append(pointTechTable.records[p]['NOM'])
+    pointCode.append(pointTechTable.records[p]['CODE'])
+    pointFonc.append(pointTechTable.records[p]['TYPE_FONC'])
+    pointStruc.append(pointTechTable.records[p]['TYPE_STRUC'])
+    pointPrp.append(pointTechTable.records[p]['PROPRIETAI'])
+# FROM THE FCI
+fciNom = []
+fciCode = []
+for f in range(0, fcilen):
+    fciNom.append(fciTable.records[f]['POTEAU_CHA'])
+    fciCode.append(fciTable.records[f]['FCI'])
 
-def stringCassette(x: string):
-    if x.isdigit():
-        j = 0
-        if int(x) % 12 == 0:
-            x = 12
-        else:
-            x = int(x) % 12
-
-        for i in range(0, 13):
-            if i == x:
-                x = i
-                j = 1
-        if j == 1:
-            return colorList[x - 1]
-        else:
-            return colorList[12]
-    return colorList[len(colorList) - 1]
-
-
-def baseHeader():
-    wr.write('A1', 'SRO', header)
-    wr.write('B1', 'P', header)
-    wr.write('C1', 'C ', header)
-    wr.write('D1', 'L', header)
-    wr.write('E1', 'TIROIR', header)
-    wr.write('F1', 'TYPE', header)
-
-
-def getBoiteName(cabledigite):
-    for b in pdsSheets:
-        if b.endswith(cabledigite):
-            return b
-
-
-def getSheetName(boite):
-    for sh in pdsSheets:
-        if sh == boite:
-            return sh
-    else:
-        return print('eroor')
-
-
-def normalHeader(j):
-    for i in range(j, 20):
-        wr.write(0, j, 'CAS', header)
-        j = j + 1
-        wr.write(0, j, 'T', header)
-        j = j + 1
-        wr.write(0, j, 'F', header)
-        j = j + 1
-        wr.write(0, j, 'CABLE', header)
-        j = j + 1
-        wr.write(0, j, 'BOITE', header)
-        j = j + 1
-        wr.write(0, j, 'TYPE', header)
-        j = j + 1
+# ###################### define  the base header ##############################
+sheet = xlsxwriter.worksheet.Worksheet
 
 
-trysh = []
-# ##################declare the input PDS file ############################
-pdsBook = load_workbook('fileGenerated/PDS.xlsx')
-pdsSheets = pdsBook.sheetnames
-# boite base of sro
-sheetSro = []
-# cable base sro
-cableSro = []
-# capacity of the cable sro
-capSro = []
-# sro name
-SRO = ''
-routeDec = {}
-srodict = {}
-# loop to the boite inside the pds to know SRO cable
-for sh in pdsSheets:
-    sheet = pdsBook[sh]
-    value = sheet.cell(row=1, column=1).value
-    if str(value).startswith('SRO'):
-        j = 0
-        for i in range(12, sheet.max_row + 1):
-            ETAT = str(sheet.cell(row=i, column=8).value)
-            if ETAT != 'LIBRE' or ETAT != '':
-                j = j + 1
-        srodict.update({sh: j})
-        boiteList = []
-        old = 0
-        for i in range(12, sheet.max_row):
-            cableVal = str(sheet.cell(row=i, column=14).value)
-            if cableVal != old and str(cableVal) != '':
-                boitBring = cableVal[-4:]
-                for s in pdsSheets:
-                    boit = str(s)
-                    if boit.endswith(boitBring):
-                        boiteList.append(s)
-                        break
-            old = cableVal
-        routeDec.update({sh: boiteList})
-        SRO = value
-        cableSro.append(str(sheet.cell(row=12, column=1).value))
-        capSro.append(int(sheet.cell(row=12, column=3).value))
+# ################ vender ###########
+def venderBaseHeader():
+    pass
 
-# print(SRO)
-# print(routeDec)
-# print(srodict)
-sortedSro = dict(sorted(srodict.items(), key=operator.itemgetter(1)))
-sheetSro = list(sortedSro.keys())
-r = sheetSro[0]
-sheetSro[0] = sheetSro[1]
-sheetSro[1] = r
-# print(sheetSro)
-baseHeader()
-normalHeader(6)
-p = 0
-c = []
-for i in range(65, 77):
-    c.append(chr(i))
-c.append(chr(78))
-L = 0
-T = 0
-f = 0
-N = 0
-Len = 0
-for b in sheetSro:
-    bshet = pdsBook[b]
-    L = 1
-    T = T + 1
-    v = 0
-    for i in range(12, bshet.max_row + 1):
-        t = str(bshet.cell(row=i, column=8).value)
-        if t == 'LIBRE' or t == 'PASSAGE':
-            v = v + 1
-    print('#' * 25)
-    print(b)
-    print(bshet.max_row - 11)
-    print(v)
-    Len = Len + bshet.max_row - v - 11
-    col = 6
-    # define the base element
-    for p in range(N + 2, Len + 2):
-        if f == 13:
-            f = 0
-        wr.write('A' + str(p), SRO, border)
-        wr.write('B' + str(p), p - 1, border)
-        wr.write('E' + str(p), 'TIROIR_' + str(T), border)
-        wr.write('F' + str(p), 'CONNECTEUR', border)
-        wr.write('C' + str(p), c[f], border)
-        wr.write('D' + str(p), L, border)
-        f = f + 1
-        if p % 24 == 0:
-            if L == 6:
-                L = 1
-            elif L < 6:
-                L = L + 1
-    shRow = []
-    for rw in range(12, bshet.max_row + 1):
-        raw = bshet.cell(row=rw, column=8).value
-        if str(raw) == 'LIBRE' or str(raw) == 'PASSAGE':
+
+# ################# normale ############
+def baseHeader(w: sheet):
+    w.write('A1', "CODE POINT TECHNIQUE", header)
+    w.write('B1', 'NB ETIQUETTE', header)
+    w.write('C1', 'COULEUR_ETIQUETTE', header)
+    w.write('D1', 'LIGNE 1', header)
+    w.write('E1', 'LIGNE 2', header)
+    w.write('F1', 'LIGNE 3', header)
+    w.write('G1', 'LIGNE 4', header)
+
+
+# #################################### function  ########################
+def getPointCode(boite):
+    index = boiteCode.index(boite)
+    idPrent = boiteIdParent[index]
+    return idPrent
+
+
+def getCapacity(cable):
+    index = cableName.index(cable)
+    cap = cableCapacity[index]
+    return cap
+
+
+def getNomPT(code):
+    try:
+        index = pointCode.index(code)
+        fcNom = pointNom[index]
+        fcNom = fcNom[0:6] + fcNom[6:].lstrip("0")
+        return fcNom
+    except ValueError:
+        return None
+
+
+def getPointTech(boite):
+    index = boiteCode.index(boite)
+    idPrent = boiteIdParent[index]
+    indexPoint = pointCode.index(idPrent)
+    pointTech = pointNom[indexPoint]
+    pointTech = pointTech[0:6] + pointTech[6:].lstrip("0")
+    return pointTech
+
+
+def getFci(pointTech):
+    try:
+        index = fciNom.index(pointTech)
+        fcicode = fciCode[index]
+        return fcicode
+    except ValueError:
+        return None
+
+
+def getProp(point):
+    index = pointCode.index(point)
+    prop = str(pointPrp[index])
+    return prop
+
+
+def getCablePointTechStart(cable):
+    try:
+        index = cableName.index(cable)
+        boite = cableOrigin[index]
+        pointTechCode = getPointCode(boite)
+        return pointTechCode
+    except ValueError:
+        return None
+
+
+
+def getCablePointTechEnd(cable):
+   try:
+       index = cableName.index(cable)
+       boite = cableExtremity[index]
+       pointTechCode = getPointCode(boite)
+       return pointTechCode
+   except ValueError:
+       return None
+
+
+def duplicates(lst, item):
+    return [i for i, x in enumerate(lst) if x == item]
+
+
+allcable = []
+cablePTCode = []
+typeFonc = []
+typeStruc = []
+cablePTProp = []
+
+
+def fillInAllTable(cable, pointCode, index):
+    allcable.append(cable)
+    cablePTCode.append(pointCode)
+    typeFonc.append(pointFonc[index])
+    typeStruc.append(pointStruc[index])
+    cablePTProp.append(pointPrp[index])
+
+
+def getAval(point):
+    index = suppAmount.index(point)
+    return suppAval[index]
+
+
+def getAmount(point):
+    index = suppAval.index(point)
+    return suppAmount[index]
+
+
+def checkAvalway( cablepointStart, cablepointEnd, test):
+    start = cablepointEnd
+    k = test
+    try:
+        while test and k:
+            if cablepointStart == start:
+                test = False
+                break
+            else:
+                start = getAmount(start)
+                listDb = duplicates(suppAmount, start)
+                if len(listDb) > 1:
+                    if cablepointStart == start:
+                        test = False
+                    k = False
+                    break
+
+        return test
+    except ValueError:
+        print(start)
+        return True
+
+
+def fillAvalWay(c, cablepointStart, cablepointEnd, test):
+    start = cablepointEnd
+    k = test
+    try:
+        while test and k:
+            if cablepointStart == start:
+                test = False
+                break
+            else:
+                start = getAmount(start)
+                listDb = duplicates(suppAmount, start)
+                if len(listDb) > 1:
+                    if cablepointStart == start:
+                        index = pointCode.index(cablepointStart)
+                        fillInAllTable(c, cablepointStart, index)
+                        test = False
+                    k = False
+                    break
+                index = pointCode.index(start)
+                fillInAllTable(c, start, index)
+        return test
+    except ValueError:
+        print(start)
+        return True
+
+
+def fillInTable(c):
+    global dupliend, nextstart, nextend, duplistart
+    test = True
+    cablePointStart = getCablePointTechStart(c)
+    cablePointEnd = getCablePointTechEnd(c)
+    index = pointCode.index(cablePointEnd)
+    fillInAllTable(c, cablePointEnd, index)
+    test = checkAvalway(cablePointStart, cablePointEnd, test)
+    if test:
+        try:
+            index = pointCode.index(cablePointStart)
+            fillInAllTable(c, cablePointStart, index)
+        except ValueError:
+            print("c")
+
+    else :
+        test = True
+        test = fillAvalWay(c,cablePointStart, cablePointEnd, test)
+    print(test)
+    print(cablePointStart)
+    try:
+        nextstart = getAval(cablePointStart)
+        print('#', nextstart)
+        duplistart = duplicates(suppAval, nextstart)
+    except ValueError:
+        try:
+            nextstart = getAmount(cablePointStart)
+            duplistart = duplicates(suppAmount, nextstart)
+            print(c, cablePointStart, nextstart, duplicates(suppAmount, nextstart))
+        except ValueError:
+            print("pass")
+
+
+    try:
+        nextend = getAmount(cablePointEnd)
+        dupliend = duplicates(suppAmount, nextend)
+
+    except ValueError:
+        try:
+            nextend = getAval(cablePointEnd)
+            print(c, cablePointEnd, nextend)
+            dupliend = duplicates(suppAval, nextend)
+        except ValueError:
+            print("pass")
+
+    k = 0
+
+    while test:
+
+        try:
+            if len(dupliend) <= 1 and len(duplistart) <= 1:
+                if nextend == nextstart:
+                    index = pointCode.index(nextend)
+                    fillInAllTable(c, nextend, index)
+                    test = False
+
+                elif nextstart == cablePointEnd or nextend == cablePointStart:
+                    test = False
+
+                else:
+                    index = pointCode.index(nextend)
+                    fillInAllTable(c, nextend, index)
+                    index = pointCode.index(nextstart)
+                    fillInAllTable(c, nextstart, index)
+                    nextstart = getAval(nextstart)
+                    nextend = getAmount(nextend)
+            elif len(dupliend) < 2 and len(duplistart) > 1:
+                if nextend == nextstart:
+                    index = pointCode.index(nextend)
+                    fillInAllTable(c, nextend, index)
+                    test = False
+                    break
+                elif nextstart == cablePointEnd or nextend == cablePointStart:
+                    test = False
+                    break
+                else:
+                    index = pointCode.index(nextend)
+                    fillInAllTable(c, nextend, index)
+                    nextend = getAmount(nextend)
+
+            elif len(duplistart) < 2 and len(dupliend) > 1:
+                if nextend == nextstart:
+                    index = pointCode.index(nextend)
+                    fillInAllTable(c, nextend, index)
+                    test = False
+                    break
+                elif nextstart == cablePointEnd or nextend == cablePointStart:
+                    test = False
+                    break
+                else:
+                    index = pointCode.index(nextstart)
+                    fillInAllTable(c, nextstart, index)
+                    nextstart = getAval(nextstart)
+
+
+
+            else:
+                if nextend == nextstart:
+                    index = pointCode.index(nextend)
+                    fillInAllTable(c, nextend, index)
+
+                test = False
+            dupliend = duplicates(suppAmount, nextend)
+            duplistart = duplicates(suppAval, nextstart)
+        except ValueError:
+            print(c)
+            print(' start', cablePointStart)
+            print('end', cablePointEnd)
+            print('next start', nextstart)
+            print('next end', nextend)
+            test = False
+
+
+def createTablesBase(cables):
+    for c in cables:
+        fillInTable(c)
+
+
+
+createTablesBase(cableName)
+
+
+# ############################# fill in function #################
+def boiteEtiqueteFill(boites, totale: sheet):
+    w = workbook.add_worksheet("EtiquetteBoite")
+    baseHeader(w)
+    baseHeader(totale)
+    lin = 2
+    for b in boites:
+        pointTech = getPointTech(b)
+        fcicode = getFci(pointTech)
+        if fcicode is not None:
+            w.write('A' + str(lin), getPointCode(b), border)
+            w.write('B' + str(lin), '1', border)
+            w.write('C' + str(lin), 'BLANC', border)
+            w.write('D' + str(lin), 'ALTITUDE FIBRE 21', border)
+            w.write('E' + str(lin), b, border)
+            w.write('F' + str(lin), str(fcicode) + str(date), border)
+            w.write('G' + str(lin), '', border)
+            # ############################
+            totale.write('A' + str(lin), pointTech, border)
+            totale.write('B' + str(lin), '1', border)
+            totale.write('C' + str(lin), 'BLANC', border)
+            totale.write('D' + str(lin), 'ALTITUDE FIBRE 21', border)
+            totale.write('E' + str(lin), b, border)
+            totale.write('F' + str(lin), str(fcicode) + " " + str(date), border)
+            totale.write('G' + str(lin), '', border)
+            lin += 1
+            k = lin
+    return k
+
+
+def pointEtiqueteFill(points, k, totale: sheet):
+    po = workbook.add_worksheet("Etiquette PT")
+    baseHeader(po)
+    lin = 2
+    for p in points:
+        prop = getProp(p)
+        if prop.startswith("ALTITUDE"):
+            po.write('A' + str(lin), p, border)
+            po.write('B' + str(lin), '1', border)
+            po.write('C' + str(lin), 'BLANC', border)
+            po.write('D' + str(lin), prop, border)
+            po.write('E' + str(lin), p, border)
+            po.write('F' + str(lin), "                  " + str(date), border)
+            po.write('G' + str(lin), '', border)
+            # ############################
+            totale.write('A' + str(k), p, border)
+            totale.write('B' + str(k), '1', border)
+            totale.write('C' + str(k), 'BLANC', border)
+            totale.write('D' + str(k), prop, border)
+            totale.write('E' + str(k), p, border)
+            totale.write('F' + str(k), "                  " + str(date), border)
+            totale.write('G' + str(k), '', border)
+            lin += 1
+            k += 1
+    return k
+
+
+def cableEtiqueteFill(cables, k, totale: sheet):
+    po = workbook.add_worksheet("Etiquette Cable")
+    baseHeader(po)
+
+    x = len(cables)
+    lin = 2
+    for i in range(0, x):
+        N = 1
+        cable = allcable[i]
+        y = str(cable)[3:14]
+        cap = getCapacity(cable)
+        point = cablePTCode[i]
+        nm = getNomPT(point)
+        fci = getFci(nm)
+        if fci is None:
+            fci = 'SRO' + y
+        typef = typeFonc[i]
+        typeStr = typeStruc[i]
+        if typeStr == 'CHAMBRE':
+            N = 2
+        cbPro = cablePTProp[i]
+        if typef == 'TIRAGE' and (typeStr == 'APPUI' or typeStr == 'ANCRAGE FACADE') and (
+                cbPro == 'ORANGE' or cbPro == 'ENEDIS' or cbPro == 'PROPRIETAIRE PRIVE'):
             continue
         else:
-            shRow.append(rw)
 
-    newBoite = ''
-    # full up the table with value
-    for p, s in zip(range(N + 1, Len + 2), shRow):
-        column = col
-        # CAS VALUE
-        x = bshet.cell(row=s, column=5).value
-        wr.write(p, column, x, cassette)
-        column = column + 1
-        # TUBE VALUE
-        x = bshet.cell(row=s, column=5).value
-        wr.write(p, column, x, stringCassette(str(x)))
-        column = column + 1
-        # FIBRE VALUE
-        x = bshet.cell(row=s, column=6).value
-        wr.write(p, column, x, stringCassette(str(x)))
-        column = column + 1
-        # CABLE VALUE
-        x = bshet.cell(row=12, column=1).value
-        wr.write(p, column, x, border)
-        column = column + 1
-        # BOITE VALUE
-        x = bshet.cell(row=7, column=1).value
-        wr.write(p, column, x, border)
-        column = column + 1
-        # TYPE VALUE
-        x = bshet.cell(row=s, column=8).value
-        wr.write(p, column, x, border)
-        column = column + 1
-        # CAS VALUE
-        x = bshet.cell(row=s, column=7).value
-        wr.write(p, column, x, cassette)
-        column = column + 1
-        # TUBE VALUE
-        x = bshet.cell(row=s, column=10).value
-        wr.write(p, column, x, stringCassette(str(x)))
-        column = column + 1
-        # FIBRE VALUE
-        x = bshet.cell(row=s, column=9).value
-        wr.write(p, column, x, stringCassette(str(x)))
-        column = column + 1
-        # CABLE VALUE 2
-        x = bshet.cell(row=s, column=14).value
-        wr.write(p, column, x, border)
-        column = column + 1
-        # BOITE VALUE 2
-        x = str(bshet.cell(row=s, column=14).value)
-        boite = x[-4:]
-        if boite is not None:
-            boit = getBoiteName(boite)
-            wr.write(p, column, boit, border)
-            column = column + 1
-            done = True
-            newBoite = str(boit)
-            trysh.append(newBoite)
-        if newBoite is not None:
-            print('#' * 20)
-            print(newBoite)
-            while done:
-                try:
-                    nextBoiteSheet = pdsBook[newBoite]
-                    # TYPE VALUE
-                    state = str(nextBoiteSheet.cell(row=s, column=8).value)
-                    if state == 'A STOCKER' or state.endswith('KER') or state.startswith('A STO'):
-                        wr.write(p, column, state, border)
-                        column = column + 1
-                        # CAS VALUE
-                        x = nextBoiteSheet.cell(row=s, column=7).value
-                        wr.write(p, column, x, cassette)
-                        column = column + 1
+            po.write('A' + str(lin), point, border)
+            po.write('B' + str(lin), N, border)
+            po.write('C' + str(lin), 'BLANC', border)
+            po.write('D' + str(lin), "ALTITUDE FIBRE 21", border)
+            po.write('E' + str(lin), str(cable) + "-" + str(cap) + " FO", border)
+            po.write('F' + str(lin), str(fci) + "-" + str(date), border)
+            po.write('G' + str(lin), '', border)
+            # ############################
+            totale.write('A' + str(k), point, border)
+            totale.write('B' + str(k), N, border)
+            totale.write('C' + str(k), 'BLANC', border)
+            totale.write('D' + str(k), "ALTITUDE FIBRE 21", border)
+            totale.write('E' + str(k), str(cable) + "-" + str(cap) + " FO", border)
+            totale.write('F' + str(k), str(fci) + "-" + str(date), border)
+            totale.write('G' + str(k), '', border)
+            lin += 1
+            k += 1
+    return k
 
-                    elif state == 'A STOCKER':
 
-                        if state == 'A STOCKER' or state.endswith('KER') or state.startswith('A STO'):
-                            break
-                        else:
-                            # TUBE VALUE
-                            x = nextBoiteSheet.cell(row=s, column=10).value
-                            wr.write(p, column, x, stringCassette(str(x)))
-                            column = column + 1
-                            # FIBRE VALUE
-                            x = nextBoiteSheet.cell(row=s, column=9).value
-                            wr.write(p, column, x, stringCassette(str(x)))
-                            column = column + 1
-                            # CABLE VALUE 2
-                            x = nextBoiteSheet.cell(row=s, column=14).value
-                            wr.write(p, column, x, border)
-                            column = column + 1
-                            # BOITE VALUE 2
-                            x = str(nextBoiteSheet.cell(row=s, column=14).value)
-                            boite = x[-4:]
-                            if boite is not None:
-                                boit = getBoiteName(boite)
-                                wr.write(p, column, boit, border)
-                                column = column + 1
-                                newBoite = str(boit)
-                except KeyError:
-                    print('one empthy value passed')
-                    done = False
-    N = Len
-for i in trysh:
-    try:
-        sheet = pdsBook[i]
-    except KeyError:
-        print(i)
-rootBook.close()
+def etiquettePtOrangeFill(cables, k, totale: sheet):
+    co = workbook.add_worksheet("Etiquette PT Orange")
+    baseHeader(co)
+    x = len(cables)
+    lin = 2
+    for i in range(0, x):
+        N = 1
+        cable = allcable[i]
+        cap = getCapacity(cable)
+        point = cablePTCode[i]
+        nm = getNomPT(point)
+        fci = getFci(nm)
+        typeStr = typeStruc[i]
+        if typeStr == 'CHAMBRE':
+            N = 2
+        cbPro = cablePTProp[i]
+        if typeStr == 'APPUI' and cbPro == 'ORANGE':
+            co.write('A' + str(lin), point, border)
+            co.write('B' + str(lin), N, border)
+            co.write('C' + str(lin), 'BLANC', border)
+            co.write('D' + str(lin), "ALTITUDE FIBRE 21", border)
+            co.write('E' + str(lin), str(cable) + "-" + str(cap) + " FO", border)
+            co.write('F' + str(lin), str(fci) + "-" + str(date), border)
+            co.write('G' + str(lin), '', border)
+            # ############################
+            totale.write('A' + str(k), point, border)
+            totale.write('B' + str(k), N, border)
+            totale.write('C' + str(k), 'BLANC', border)
+            totale.write('D' + str(k), "ALTITUDE FIBRE 21", border)
+            totale.write('E' + str(k), str(cable) + "-" + str(cap) + " FO", border)
+            totale.write('F' + str(k), str(fci) + "-" + str(date), border)
+            totale.write('G' + str(k), '', border)
+            lin += 1
+            k += 1
+
+
+# #######################################################################
+k = boiteEtiqueteFill(boiteCode, totaleSheet)
+k = pointEtiqueteFill(pointCode, k, totaleSheet)
+k = cableEtiqueteFill(allcable, k, totaleSheet)
+etiquettePtOrangeFill(allcable, k, totaleSheet)
+print('#' * 45)
+
+
+workbook.close()
+
+

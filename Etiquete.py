@@ -6,14 +6,14 @@ import datetime
 now = datetime.datetime.now()
 date = now.strftime("%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('etiqueteInputs/21_017_102_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('etiqueteInputs/21_017_102_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-pointTechTable = DBF('etiqueteInputs/21_017_102_POINT_TECHNIQUE_A.dbf', load=True, encoding='iso-8859-1')
-supportTable = DBF('etiqueteInputs/21_017_102_SUPPORT_A.dbf', load=True, encoding='iso-8859-1')
-fciTable = DBF('etiqueteInputs/FCI.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('etiqueteInputs/21_017_103_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('etiqueteInputs/21_017_103_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+pointTechTable = DBF('etiqueteInputs/21_017_103_POINT_TECHNIQUE_A.dbf', load=True, encoding='iso-8859-1')
+supportTable = DBF('etiqueteInputs/21_017_103_SUPPORT_A.dbf', load=True, encoding='iso-8859-1')
+fciTable = DBF('etiqueteInputs/FCI_103.dbf', load=True, encoding='iso-8859-1')
 
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('Etiquette/etiquetteDetail.xlsx')
+workbook = xlsxwriter.Workbook('Etiquette/etiquetteDetail103.xlsx')
 totaleSheet = workbook.add_worksheet("EtiquettePrintedFile")
 # ############### define the character and style of cell inside excel ################"
 border = workbook.add_format({"border": 1})
@@ -179,7 +179,7 @@ def getAmount(point):
     return suppAmount[index]
 
 
-def checkAvalway(c, cablepointStart, cablepointEnd, test):
+def checkAvalway( cablepointStart, cablepointEnd, test):
     start = cablepointEnd
     k = test
     try:
@@ -191,7 +191,35 @@ def checkAvalway(c, cablepointStart, cablepointEnd, test):
                 start = getAmount(start)
                 listDb = duplicates(suppAmount, start)
                 if len(listDb) > 1:
+                    if cablepointStart == start:
+                        test = False
                     k = False
+                    break
+
+        return test
+    except ValueError:
+        print(start)
+        return True
+
+
+def fillAvalWay(c, cablepointStart, cablepointEnd, test):
+    start = cablepointEnd
+    k = test
+    try:
+        while test and k:
+            if cablepointStart == start:
+                test = False
+                break
+            else:
+                start = getAmount(start)
+                listDb = duplicates(suppAmount, start)
+                if len(listDb) > 1:
+                    if cablepointStart == start:
+                        index = pointCode.index(cablepointStart)
+                        fillInAllTable(c, cablepointStart, index)
+                        test = False
+                    k = False
+                    break
                 index = pointCode.index(start)
                 fillInAllTable(c, start, index)
         return test
@@ -206,31 +234,38 @@ def fillInTable(c):
     cablePointEnd = getCablePointTechEnd(c)
     index = pointCode.index(cablePointEnd)
     fillInAllTable(c, cablePointEnd, index)
-    test = checkAvalway(c, cablePointStart, cablePointEnd, test)
+    test = checkAvalway(cablePointStart, cablePointEnd, test)
     if test:
         index = pointCode.index(cablePointStart)
         fillInAllTable(c, cablePointStart, index)
+    else :
+        test = True
+        test = fillAvalWay(c,cablePointStart, cablePointEnd, test)
     print(test)
+    print(cablePointStart)
     try:
         nextstart = getAval(cablePointStart)
+        print('#', nextstart)
         duplistart = duplicates(suppAval, nextstart)
     except ValueError:
+
         nextstart = getAmount(cablePointStart)
         duplistart = duplicates(suppAmount, nextstart)
         print(c, cablePointStart, nextstart, duplicates(suppAmount, nextstart))
     try:
         nextend = getAmount(cablePointEnd)
-
         dupliend = duplicates(suppAmount, nextend)
-        print(c, nextend, len(dupliend))
+        print(c, nextend, len(dupliend), len(duplistart))
     except ValueError:
         nextend = getAval(cablePointEnd)
         print(c, cablePointEnd, nextend)
         dupliend = duplicates(suppAval, nextend)
     k = 0
+
     while test:
+
         try:
-            if len(dupliend) < 1 and len(duplistart) < 1:
+            if len(dupliend) <= 1 and len(duplistart) <= 1:
                 if nextend == nextstart:
                     index = pointCode.index(nextend)
                     fillInAllTable(c, nextend, index)
@@ -246,20 +281,7 @@ def fillInTable(c):
                     fillInAllTable(c, nextstart, index)
                     nextstart = getAval(nextstart)
                     nextend = getAmount(nextend)
-            elif len(dupliend) < 1:
-                if nextend == nextstart:
-                    index = pointCode.index(nextend)
-                    fillInAllTable(c, nextend, index)
-                    test = False
-                    break
-                elif nextstart == cablePointEnd or nextend == cablePointStart:
-                    test = False
-                    break
-                else:
-                    index = pointCode.index(nextstart)
-                    fillInAllTable(c, nextstart, index)
-                    nextstart = getAval(nextstart)
-            elif len(duplistart) < 1:
+            elif len(dupliend) < 2 and len(duplistart) > 1:
                 if nextend == nextstart:
                     index = pointCode.index(nextend)
                     fillInAllTable(c, nextend, index)
@@ -272,7 +294,28 @@ def fillInTable(c):
                     index = pointCode.index(nextend)
                     fillInAllTable(c, nextend, index)
                     nextend = getAmount(nextend)
+
+            elif len(duplistart) < 2 and len(dupliend) > 1:
+                if nextend == nextstart:
+                    index = pointCode.index(nextend)
+                    fillInAllTable(c, nextend, index)
+                    test = False
+                    break
+                elif nextstart == cablePointEnd or nextend == cablePointStart:
+                    test = False
+                    break
+                else:
+                    index = pointCode.index(nextstart)
+                    fillInAllTable(c, nextstart, index)
+                    nextstart = getAval(nextstart)
+
+
+
             else:
+                if nextend == nextstart:
+                    index = pointCode.index(nextend)
+                    fillInAllTable(c, nextend, index)
+
                 test = False
             dupliend = duplicates(suppAmount, nextend)
             duplistart = duplicates(suppAval, nextstart)
@@ -282,6 +325,7 @@ def fillInTable(c):
             print('end', cablePointEnd)
             print('next start', nextstart)
             print('next end', nextend)
+            test = False
 
 
 def createTablesBase(cables):
@@ -289,7 +333,7 @@ def createTablesBase(cables):
         fillInTable(c)
 
 
-print(getAmount('POT-21065-5345'))
+
 createTablesBase(cableName)
 
 
@@ -359,21 +403,24 @@ def cableEtiqueteFill(cables, k, totale: sheet):
     for i in range(0, x):
         N = 1
         cable = allcable[i]
+        y = str(cable)[3:14]
         cap = getCapacity(cable)
         point = cablePTCode[i]
         nm = getNomPT(point)
         fci = getFci(nm)
+        if fci is None:
+            fci = 'SRO' + y
         typef = typeFonc[i]
         typeStr = typeStruc[i]
         if typeStr == 'CHAMBRE':
             N = 2
         cbPro = cablePTProp[i]
         if typef == 'TIRAGE' and (typeStr == 'APPUI' or typeStr == 'ANCRAGE FACADE') and (
-                cbPro == 'ORANGE' or cbPro == 'ENEDIS'):
+                cbPro == 'ORANGE' or cbPro == 'ENEDIS' or cbPro == 'PROPRIETAIRE PRIVE'):
             continue
         else:
 
-            po.write('A' + str(lin), nm, border)
+            po.write('A' + str(lin), point, border)
             po.write('B' + str(lin), N, border)
             po.write('C' + str(lin), 'BLANC', border)
             po.write('D' + str(lin), "ALTITUDE FIBRE 21", border)
@@ -410,7 +457,7 @@ def etiquettePtOrangeFill(cables, k, totale: sheet):
             N = 2
         cbPro = cablePTProp[i]
         if typeStr == 'APPUI' and cbPro == 'ORANGE':
-            co.write('A' + str(lin), nm, border)
+            co.write('A' + str(lin), point, border)
             co.write('B' + str(lin), N, border)
             co.write('C' + str(lin), 'BLANC', border)
             co.write('D' + str(lin), "ALTITUDE FIBRE 21", border)
@@ -435,6 +482,9 @@ k = pointEtiqueteFill(pointCode, k, totaleSheet)
 k = cableEtiqueteFill(allcable, k, totaleSheet)
 etiquettePtOrangeFill(allcable, k, totaleSheet)
 print('#' * 45)
-for i in range(0, 30):
+
+for i in range(590, 610):
     print(allcable[i], "    ", cablePTCode[i], "  ", typeFonc[i], " ", typeStruc[i], " ", cablePTProp[i])
 workbook.close()
+
+

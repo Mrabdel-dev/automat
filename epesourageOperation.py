@@ -8,20 +8,20 @@ from openpyxl import load_workbook
 
 # load your pds file here
 pdsFile = ''
-pds = load_workbook('epesIn/pds-85_048_568.xlsx')
+pds = load_workbook('epesIn/SRO-51_032_011_PLAN DE BOITE (3).xlsx')
 wpds = pds.sheetnames
-# dbf file to get information about the boit
-dbfFile = 'epesIn/21_011_079_BOITE_OPTIQUE_A.dbf'
-boiteTable = DBF('epesIn/85_048_568_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-filedBoiteNam = boiteTable.field_names
-boiteLen = len(boiteTable)
-boiteCode = []
-codeLocal = []
-for j in range(0, boiteLen):
-    boiteCode.append(boiteTable.records[j]['NOM'])
-    codeLocal.append(boiteTable.records[j]['ID_PARENT'])
+# # dbf file to get information about the boit
+# dbfFile = 'epesIn/21_011_079_BOITE_OPTIQUE_A.dbf'
+# boiteTable = DBF('epesIn/85_048_568_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+# filedBoiteNam = boiteTable.field_names
+# boiteLen = len(boiteTable)
+# boiteCode = []
+# codeLocal = []
+# for j in range(0, boiteLen):
+#     boiteCode.append(boiteTable.records[j]['NOM'])
+#     codeLocal.append(boiteTable.records[j]['ID_PARENT'])
 # create the epesourege file
-epesBook = xlsxwriter.Workbook('epesExcel/SRO-85_048_568_568Epesourage.xlsx')
+epesBook = xlsxwriter.Workbook('epesExcel/SRO-51_032_011-Epesourage.xlsx')
 wr = epesBook.add_worksheet()
 print(wpds)
 boiteList = sorted(wpds)
@@ -93,9 +93,9 @@ for s in boiteList:
     MaxRow = sheet.max_row
     print(MaxRow)
     MaxCol = sheet.max_column
-    for t in range(0, boiteLen):
-        if s == boiteCode[t]:
-            code = codeLocal[t]
+    # for t in range(0, boiteLen):
+    #     if s == boiteCode[t]:
+    #         code = codeLocal[t]
 
     for i in range(12, MaxRow + 1):
         cable = sheet.cell(row=i, column=1).value
@@ -120,11 +120,12 @@ for s in boiteList:
         wr.write('I' + str(b), '', border)
         wr.write('J' + str(b), '', border)
         # CODElOCAL
-        wr.write('K' + str(b), code, border)
+        wr.write('K' + str(b), 'code', border)
         # boite
         wr.write('L' + str(b), s, border)
         # cassete
         cassete = sheet.cell(row=i, column=7).value
+
         wr.write('M' + str(b), integerFormat(cassete), border)
         # position
         position = sheet.cell(row=i, column=4).value

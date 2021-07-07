@@ -908,9 +908,9 @@ workbook.close()
 # ftte = getNumbrFu('PBO-21-011-076-2015', 0)
 # index = boiteCode.index('PBO-21-011-076-3011')
 # ref = boiteReference[index]
-fuUsed = checkGlobalFtt(getLastStartBoite('PBO-85-081-855-1033')) - checkGlobalFtt(
-    getLastStartBoite('PBO-85-081-855-1032'))
-ftteLine = getFTTElineStart('PBO-85-081-855-1033') + checkGlobalFtt(getLastStartBoite('PBO-85-081-855-1033'))
-fuBoit = getNumbrFu('PBO-85-081-855-1033', 0) - checkGlobalFtt('PBO-85-081-855-1033')
-ftteBoite = getFTTEBoites('PBO-85-081-855-1033')
-print(ftteLine, ftteBoite, checkGlobalFtt('PBO-85-081-855-1033'), fuUsed)
+# fuUsed = checkGlobalFtt(getLastStartBoite('PBO-85-081-855-1033')) - checkGlobalFtt(
+# getLastStartBoite('PBO-85-081-855-1032'))
+# ftteLine = getFTTElineStart('PBO-85-081-855-1033') + checkGlobalFtt(getLastStartBoite('PBO-85-081-855-1033'))
+# fuBoit = getNumbrFu('PBO-85-081-855-1033', 0) - checkGlobalFtt('PBO-85-081-855-1033')
+# ftteBoite = getFTTEBoites('PBO-85-081-855-1033')
+# print(ftteLine, ftteBoite, checkGlobalFtt('PBO-85-081-855-1033'), fuUsed)

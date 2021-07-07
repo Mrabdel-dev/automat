@@ -6,18 +6,21 @@ import datetime
 now = datetime.datetime.now()
 date = now.strftime("%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('etiqueteInputs/21_017_103_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('etiqueteInputs/21_017_103_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-pointTechTable = DBF('etiqueteInputs/21_017_103_POINT_TECHNIQUE_A.dbf', load=True, encoding='iso-8859-1')
-supportTable = DBF('etiqueteInputs/21_017_103_SUPPORT_A.dbf', load=True, encoding='iso-8859-1')
-fciTable = DBF('etiqueteInputs/FCI_103.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('etiqueteInputs/21_017_104_CABLE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('etiqueteInputs/21_017_104_BOITE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
+pointTechTable = DBF('etiqueteInputs/21_017_104_POINT_TECHNIQUE_B.dbf', load=True, encoding='iso-8859-1')
+supportTable = DBF('etiqueteInputs/21_017_104_SUPPORT_B.dbf', load=True, encoding='iso-8859-1')
+fciTable = DBF('etiqueteInputs/FCI_104.dbf', load=True, encoding='iso-8859-1')
 
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('Etiquette/etiquetteDetail103.xlsx')
-totaleSheet = workbook.add_worksheet("EtiquettePrintedFile")
+workbook = xlsxwriter.Workbook('Etiquette/etiquetteDetail104.xlsx')
+workbook1 = xlsxwriter.Workbook('Etiquette/EtiquettePrintedFile104.xlsx')
+totaleSheet = workbook1.add_worksheet("EtiquettePrintedFile")
 # ############### define the character and style of cell inside excel ################"
 border = workbook.add_format({"border": 1})
-header = workbook.add_format({'bold': True, 'border': 1, 'bg_color': '#C4E5F7'})
+bold = workbook.add_format({'bold': True, "border": 1})
+border1 = workbook1.add_format({"border": 1})
+bold1 = workbook1.add_format({'bold': True, "border": 1})
 # charge the name of all filed in tables
 filedCableNam = cableTable.field_names
 filedBoiteNam = boiteTable.field_names
@@ -72,6 +75,8 @@ for f in range(0, fcilen):
 # ###################### define  the base header ##############################
 sheet = xlsxwriter.worksheet.Worksheet
 
+listErour = []
+
 
 # ################ vender ###########
 def venderBaseHeader():
@@ -80,13 +85,23 @@ def venderBaseHeader():
 
 # ################# normale ############
 def baseHeader(w: sheet):
-    w.write('A1', "CODE POINT TECHNIQUE", header)
-    w.write('B1', 'NB ETIQUETTE', header)
-    w.write('C1', 'COULEUR_ETIQUETTE', header)
-    w.write('D1', 'LIGNE 1', header)
-    w.write('E1', 'LIGNE 2', header)
-    w.write('F1', 'LIGNE 3', header)
-    w.write('G1', 'LIGNE 4', header)
+    w.write('A1', "CODE POINT TECHNIQUE", bold)
+    w.write('B1', 'NB ETIQUETTE', bold)
+    w.write('C1', 'COULEUR_ETIQUETTE', bold)
+    w.write('D1', 'LIGNE 1', bold)
+    w.write('E1', 'LIGNE 2', bold)
+    w.write('F1', 'LIGNE 3', bold)
+    w.write('G1', 'LIGNE 4', bold)
+
+
+def baseHeader1(w: sheet):
+    w.write('A1', "CODE POINT TECHNIQUE", bold1)
+    w.write('B1', 'NB ETIQUETTE', bold1)
+    w.write('C1', 'COULEUR_ETIQUETTE', bold1)
+    w.write('D1', 'LIGNE 1', bold1)
+    w.write('E1', 'LIGNE 2', bold1)
+    w.write('F1', 'LIGNE 3', bold1)
+    w.write('G1', 'LIGNE 4', bold1)
 
 
 # #################################### function  ########################
@@ -179,7 +194,30 @@ def getAmount(point):
     return suppAmount[index]
 
 
-def checkAvalway( cablepointStart, cablepointEnd, test):
+def checkAmountway(cablepointStart, cablepointEnd, test):
+    start = cablepointStart
+    k = test
+    try:
+        while test and k:
+            if cablepointEnd == start:
+                test = False
+                break
+            else:
+                start = getAval(start)
+                listDb = duplicates(suppAval, start)
+                if len(listDb) > 1:
+                    if cablepointEnd == start:
+                        test = False
+                    k = False
+                    break
+
+        return test
+    except ValueError:
+        print(start)
+        return True
+
+
+def checkAvalway(cablepointStart, cablepointEnd, test):
     start = cablepointEnd
     k = test
     try:
@@ -196,6 +234,34 @@ def checkAvalway( cablepointStart, cablepointEnd, test):
                     k = False
                     break
 
+        return test
+    except ValueError:
+        print(start)
+        return True
+
+
+def fillAmountWay(c, cablepointStart, cablepointEnd, test):
+    start = cablepointStart
+    k = test
+    try:
+        while test and k:
+            if cablepointEnd == start:
+                test = False
+                break
+            else:
+                start = getAval(start)
+                listDb = duplicates(suppAval, start)
+                if len(listDb) > 1:
+                    if cablepointEnd == start:
+                        test = False
+                    k = False
+                    break
+                else:
+                    if cablepointEnd == start:
+                        test = False
+                        break
+                index = pointCode.index(start)
+                fillInAllTable(c, start, index)
         return test
     except ValueError:
         print(start)
@@ -215,11 +281,13 @@ def fillAvalWay(c, cablepointStart, cablepointEnd, test):
                 listDb = duplicates(suppAmount, start)
                 if len(listDb) > 1:
                     if cablepointStart == start:
-                        index = pointCode.index(cablepointStart)
-                        fillInAllTable(c, cablepointStart, index)
                         test = False
                     k = False
                     break
+                else:
+                    if cablepointStart == start:
+                        test = False
+                        break
                 index = pointCode.index(start)
                 fillInAllTable(c, start, index)
         return test
@@ -230,19 +298,29 @@ def fillAvalWay(c, cablepointStart, cablepointEnd, test):
 
 def fillInTable(c):
     test = True
+    amount = True
     cablePointStart = getCablePointTechStart(c)
+    index = pointCode.index(cablePointStart)
+    fillInAllTable(c, cablePointStart, index)
     cablePointEnd = getCablePointTechEnd(c)
     index = pointCode.index(cablePointEnd)
     fillInAllTable(c, cablePointEnd, index)
-    test = checkAvalway(cablePointStart, cablePointEnd, test)
-    if test:
-        index = pointCode.index(cablePointStart)
-        fillInAllTable(c, cablePointStart, index)
-    else :
-        test = True
-        test = fillAvalWay(c,cablePointStart, cablePointEnd, test)
+    print(c,cablePointStart,cablePointEnd,test)
+    aval = checkAvalway(cablePointStart, cablePointEnd, test)
+    print('aval', aval, c)
+    if not aval:
+        fillAvalWay(c, cablePointStart, cablePointEnd, test)
+        test = False
+    else:
+        amount = checkAmountway(cablePointStart, cablePointEnd, test)
+        print('amount', amount)
+
+    if not aval and amount:
+        fillAmountWay(c, cablePointStart, cablePointEnd, test)
+        test = False
     print(test)
-    print(cablePointStart)
+    print(cablePointStart, cablePointEnd)
+
     try:
         nextstart = getAval(cablePointStart)
         print('#', nextstart)
@@ -320,11 +398,8 @@ def fillInTable(c):
             dupliend = duplicates(suppAmount, nextend)
             duplistart = duplicates(suppAval, nextstart)
         except ValueError:
-            print(c)
-            print(' start', cablePointStart)
-            print('end', cablePointEnd)
-            print('next start', nextstart)
-            print('next end', nextend)
+            print(c, ' start', cablePointStart, 'end', cablePointEnd)
+            listErour.append(c)
             test = False
 
 
@@ -333,15 +408,14 @@ def createTablesBase(cables):
         fillInTable(c)
 
 
-
 createTablesBase(cableName)
 
 
 # ############################# fill in function #################
-def boiteEtiqueteFill(boites, totale: sheet):
-    w = workbook.add_worksheet("EtiquetteBoite")
+def boiteEtiqueteFill(boites, k, totale: sheet):
+    w = workbook.add_worksheet("Etiquette Boite")
     baseHeader(w)
-    baseHeader(totale)
+
     lin = 2
     for b in boites:
         pointTech = getPointTech(b)
@@ -355,20 +429,19 @@ def boiteEtiqueteFill(boites, totale: sheet):
             w.write('F' + str(lin), str(fcicode) + str(date), border)
             w.write('G' + str(lin), '', border)
             # ############################
-            totale.write('A' + str(lin), pointTech, border)
-            totale.write('B' + str(lin), '1', border)
-            totale.write('C' + str(lin), 'BLANC', border)
-            totale.write('D' + str(lin), 'ALTITUDE FIBRE 21', border)
-            totale.write('E' + str(lin), b, border)
-            totale.write('F' + str(lin), str(fcicode) + " " + str(date), border)
-            totale.write('G' + str(lin), '', border)
+            totale.write('A' + str(k), pointTech, border1)
+            totale.write('B' + str(k), '1', border1)
+            totale.write('C' + str(k), 'BLANC', border1)
+            totale.write('D' + str(k), 'ALTITUDE FIBRE 21', border1)
+            totale.write('E' + str(k), b, border1)
+            totale.write('F' + str(k), str(fcicode) + " " + str(date), border1)
+            totale.write('G' + str(k), '', border1)
             lin += 1
-            k = lin
-    return k
+            k += 1
 
 
 def pointEtiqueteFill(points, k, totale: sheet):
-    po = workbook.add_worksheet("Etiquette PT")
+    po = workbook.add_worksheet("Etiquette PT FIBRE 21")
     baseHeader(po)
     lin = 2
     for p in points:
@@ -379,16 +452,16 @@ def pointEtiqueteFill(points, k, totale: sheet):
             po.write('C' + str(lin), 'BLANC', border)
             po.write('D' + str(lin), prop, border)
             po.write('E' + str(lin), p, border)
-            po.write('F' + str(lin), "                  " + str(date), border)
+            po.write('F' + str(lin), "SRO-21-017-104  " + str(date), border)
             po.write('G' + str(lin), '', border)
             # ############################
-            totale.write('A' + str(k), p, border)
-            totale.write('B' + str(k), '1', border)
-            totale.write('C' + str(k), 'BLANC', border)
-            totale.write('D' + str(k), prop, border)
-            totale.write('E' + str(k), p, border)
-            totale.write('F' + str(k), "                  " + str(date), border)
-            totale.write('G' + str(k), '', border)
+            totale.write('A' + str(k), p, border1)
+            totale.write('B' + str(k), '1', border1)
+            totale.write('C' + str(k), 'BLANC', border1)
+            totale.write('D' + str(k), prop, border1)
+            totale.write('E' + str(k), p, border1)
+            totale.write('F' + str(k), "SRO-21-017-104  " + str(date), border1)
+            totale.write('G' + str(k), '', border1)
             lin += 1
             k += 1
     return k
@@ -408,13 +481,13 @@ def cableEtiqueteFill(cables, k, totale: sheet):
         point = cablePTCode[i]
         nm = getNomPT(point)
         fci = getFci(nm)
-        if fci is None:
-            fci = 'SRO' + y
         typef = typeFonc[i]
         typeStr = typeStruc[i]
-        if typeStr == 'CHAMBRE':
+        if typeStr == 'CHAMBRE' or point.startswith('SRO'):
             N = 2
         cbPro = cablePTProp[i]
+        if fci is None and cbPro != 'ORANGE':
+            fci = 'SRO' + y
         if typef == 'TIRAGE' and (typeStr == 'APPUI' or typeStr == 'ANCRAGE FACADE') and (
                 cbPro == 'ORANGE' or cbPro == 'ENEDIS' or cbPro == 'PROPRIETAIRE PRIVE'):
             continue
@@ -428,21 +501,22 @@ def cableEtiqueteFill(cables, k, totale: sheet):
             po.write('F' + str(lin), str(fci) + "-" + str(date), border)
             po.write('G' + str(lin), '', border)
             # ############################
-            totale.write('A' + str(k), point, border)
-            totale.write('B' + str(k), N, border)
-            totale.write('C' + str(k), 'BLANC', border)
-            totale.write('D' + str(k), "ALTITUDE FIBRE 21", border)
-            totale.write('E' + str(k), str(cable) + "-" + str(cap) + " FO", border)
-            totale.write('F' + str(k), str(fci) + "-" + str(date), border)
-            totale.write('G' + str(k), '', border)
+            totale.write('A' + str(k), point, border1)
+            totale.write('B' + str(k), N, border1)
+            totale.write('C' + str(k), 'BLANC', border1)
+            totale.write('D' + str(k), "ALTITUDE FIBRE 21", border1)
+            totale.write('E' + str(k), str(cable) + "-" + str(cap) + " FO", border1)
+            totale.write('F' + str(k), str(fci) + "-" + str(date), border1)
+            totale.write('G' + str(k), '', border1)
             lin += 1
             k += 1
     return k
 
 
-def etiquettePtOrangeFill(cables, k, totale: sheet):
-    co = workbook.add_worksheet("Etiquette PT Orange")
+def etiquettePtOrangeFill(cables, totale: sheet):
+    co = workbook.add_worksheet("Etiquette Poteau ORANGE")
     baseHeader(co)
+    baseHeader(totale)
     x = len(cables)
     lin = 2
     for i in range(0, x):
@@ -452,6 +526,8 @@ def etiquettePtOrangeFill(cables, k, totale: sheet):
         point = cablePTCode[i]
         nm = getNomPT(point)
         fci = getFci(nm)
+        if fci is None:
+            fci = 'SRO-21-017-104  '
         typeStr = typeStruc[i]
         if typeStr == 'CHAMBRE':
             N = 2
@@ -465,26 +541,28 @@ def etiquettePtOrangeFill(cables, k, totale: sheet):
             co.write('F' + str(lin), str(fci) + "-" + str(date), border)
             co.write('G' + str(lin), '', border)
             # ############################
-            totale.write('A' + str(k), point, border)
-            totale.write('B' + str(k), N, border)
-            totale.write('C' + str(k), 'BLANC', border)
-            totale.write('D' + str(k), "ALTITUDE FIBRE 21", border)
-            totale.write('E' + str(k), str(cable) + "-" + str(cap) + " FO", border)
-            totale.write('F' + str(k), str(fci) + "-" + str(date), border)
-            totale.write('G' + str(k), '', border)
+            totale.write('A' + str(lin), point, border1)
+            totale.write('B' + str(lin), N, border1)
+            totale.write('C' + str(lin), 'BLANC', border1)
+            totale.write('D' + str(lin), "ALTITUDE FIBRE 21", border1)
+            totale.write('E' + str(lin), str(cable) + "-" + str(cap) + " FO", border1)
+            totale.write('F' + str(lin), str(fci) + "-" + str(date), border1)
+            totale.write('G' + str(lin), '', border1)
             lin += 1
-            k += 1
+    k = lin
+    return k
 
 
 # #######################################################################
-k = boiteEtiqueteFill(boiteCode, totaleSheet)
+k = etiquettePtOrangeFill(allcable, totaleSheet)
 k = pointEtiqueteFill(pointCode, k, totaleSheet)
 k = cableEtiqueteFill(allcable, k, totaleSheet)
-etiquettePtOrangeFill(allcable, k, totaleSheet)
+boiteEtiqueteFill(boiteCode, k, totaleSheet)
 print('#' * 45)
-
-for i in range(590, 610):
-    print(allcable[i], "    ", cablePTCode[i], "  ", typeFonc[i], " ", typeStruc[i], " ", cablePTProp[i])
+for i in range(0, len(allcable)):
+    print(allcable[i], cablePTCode[i], typeFonc[i], typeStruc[i], cablePTProp[i])
+print('#' * 45)
 workbook.close()
-
-
+workbook1.close()
+for c in listErour:
+    print(c)

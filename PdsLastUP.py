@@ -8,12 +8,12 @@ import datetime
 now = datetime.datetime.now()
 date = now.strftime("%d/%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('pdsInput/85_048_568_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('pdsInput/85_048_568_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-zaPboDbl = DBF('pdsInput/zapbodbl.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('pdsInput/85_081_855_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/85_081_855_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+zaPboDbl = DBF('pdsInput/zpbodbl.dbf', load=True, encoding='iso-8859-1')
 casseteTable = DBF('pdsInput/cassete file.dbf', load=True, encoding='iso-8859-1')
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('PDS/pds-85_048_568.xlsx')
+workbook = xlsxwriter.Workbook('PDS/85_081_855.xlsx')
 # ############### define the character and style of cell inside excel ################"
 bold = workbook.add_format({'bold': True, "border": 1})
 bold1 = workbook.add_format({'bold': True})
@@ -465,7 +465,7 @@ def ftteFillIn(w, Listboites, boite, startLin, T):
         capacity = getCapacity(cable)
         T = tubeRound(capacity - ftteN)
         for j in range(0, ftteN):
-            w.write(startLin, 5, 'CSE-' + str(N).zfill(2), border)
+            w.write(startLin, 5, 'CSE-' + str(N), border)
             k += 1
             w.write(startLin, 6, 'EPISSUREE', border)
             w.write(startLin, 10, capacity, border)
@@ -766,7 +766,6 @@ def passageCasseteFillIn(w: sheet, boites, line, size, cass):
 # <--################### PEC function #############################-->
 def boitePecFillIn(w: sheet, cable, boite, capacity, T):
     baseSheet(w, boite)
-    indexCass = getcassteIndex(boite)
     fuNumber = getNumbrFu(boite, 0)
     ftte = checkGlobalFtt(boite)
     ftteLine = getFTTElineStart(boite)

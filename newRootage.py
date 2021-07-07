@@ -21,7 +21,7 @@ found = True
 x = 0
 rowmax = 0
 # ##########################################################################################
-with open('routInput/SRO-51_032_011-Epesourage.csv', 'rt')as f:
+with open('routInput/SRO_51_032_316-Epesourage.csv', 'rt')as f:
     data = csv.DictReader(f, delimiter=';')
     # #<---------- get the value from csv epesourge table---------------------------------->#
     for row in data:
@@ -59,7 +59,7 @@ with open('routInput/SRO-51_032_011-Epesourage.csv', 'rt')as f:
 
 sortedSro = {k: v for k, v in sorted(dictCable.items(), key=lambda v: v[1])}
 sroCab = list(sortedSro.keys())
-sroCable = ['CDI-51-032-011-4025', 'CDI-51-032-011-2210', 'CDI-51-032-011-1010', 'CDI-51-032-011-3005']
+sroCable = ['CDI-51-032-316-2105', 'CDI-51-032-316-3705', 'CDI-51-032-316-1105', 'CDI-51-032-316-4045']
 
 print(dictCable)
 print(sortedSro)
@@ -67,7 +67,7 @@ print(sroCab)
 print(sroCable)
 # ########################################################################################
 # <-----------------------route file creation------------------------------------------->
-rootBook = xlsxwriter.Workbook('routage/Rootage-SRO-51_032_011.xlsx')
+rootBook = xlsxwriter.Workbook('routage/Rootage-SRO_51_032_316.xlsx')
 wr = rootBook.add_worksheet()
 # define the character and style of cell inside excel
 bold = rootBook.add_format({'bold': True, "border": 1})

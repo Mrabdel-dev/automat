@@ -21,9 +21,10 @@ found = True
 x = 0
 rowmax = 0
 # ##########################################################################################
-with open('routInput/SRO_51_032_316-Epesourage.csv', 'rt')as f:
+with open('routInput/21_011_079_Epesourage-por le routage.csv', 'rt')as f:
     data = csv.DictReader(f, delimiter=';')
     # #<---------- get the value from csv epesourge table---------------------------------->#
+    print(data.fieldnames)
     for row in data:
         cableName.append(row['CODE_CABLE_ORIGINE'])
         tubeNumberI.append(row['NUMERO_TUBE_ORIGINE'])
@@ -36,7 +37,7 @@ with open('routInput/SRO_51_032_316-Epesourage.csv', 'rt')as f:
         etat.append(row['ETAT'])
         rowmax += 1
     # ##########################################################################################
-    # get sro cable ande there capcity
+    # get sro cable and there capcity
     for i in cableName:
         for j in destinationCable:
             if i == j:
@@ -59,7 +60,7 @@ with open('routInput/SRO_51_032_316-Epesourage.csv', 'rt')as f:
 
 sortedSro = {k: v for k, v in sorted(dictCable.items(), key=lambda v: v[1])}
 sroCab = list(sortedSro.keys())
-sroCable = ['CDI-51-032-316-2105', 'CDI-51-032-316-3705', 'CDI-51-032-316-1105', 'CDI-51-032-316-4045']
+sroCable = sroCab
 
 print(dictCable)
 print(sortedSro)
@@ -67,7 +68,7 @@ print(sroCab)
 print(sroCable)
 # ########################################################################################
 # <-----------------------route file creation------------------------------------------->
-rootBook = xlsxwriter.Workbook('routage/Rootage-SRO_51_032_316.xlsx')
+rootBook = xlsxwriter.Workbook('routage/Rootage-21_011_079.xlsx')
 wr = rootBook.add_worksheet()
 # define the character and style of cell inside excel
 bold = rootBook.add_format({'bold': True, "border": 1})
@@ -158,6 +159,7 @@ def checkPassage(index):
     global OK
     tube = tubeNumberII[index]
     fibre = fibreNumberII[index]
+    cable2 = ''
     try:
         while OK:
             boite = boiteName[index]
@@ -233,7 +235,7 @@ l = 1
 E = 0
 column = 0
 TEST = ''
-SRO = 'SRO' + str(cableName[0])[4:14]
+SRO = 'SRO-' + str(cableName[0])[4:14]
 # # ##################################
 baseHeader()
 normalHeader(6)

@@ -21,7 +21,7 @@ found = True
 x = 0
 rowmax = 0
 # ##########################################################################################
-with open('routInput/21_011_079_Epesourage-por le routage.csv', 'rt')as f:
+with open('routInput/21_011_079_Epesourage-pour R-O-dernier version.csv', 'rt')as f:
     data = csv.DictReader(f, delimiter=';')
     # #<---------- get the value from csv epesourge table---------------------------------->#
     print(data.fieldnames)
@@ -60,7 +60,9 @@ with open('routInput/21_011_079_Epesourage-por le routage.csv', 'rt')as f:
 
 sortedSro = {k: v for k, v in sorted(dictCable.items(), key=lambda v: v[1])}
 sroCab = list(sortedSro.keys())
-sroCable = sroCab
+# sroCable = sroCab
+sroCable = ['CDI-21-011-079-5001', 'CDI-21-011-079-3001', 'CDI-21-011-079-6018', 'CDI-21-011-079-2042',
+            'CDI-21-011-079-1001']
 
 print(dictCable)
 print(sortedSro)
@@ -223,7 +225,7 @@ for i in range(65, 76):
     c.append(chr(i))
 c.append(chr(78))
 L = 1
-T = 0
+T = 1
 Tero = 1
 f = 0
 N = 0
@@ -233,6 +235,8 @@ b = 0
 Lin = 1
 l = 1
 E = 0
+teroi = 0
+incr = 0
 column = 0
 TEST = ''
 SRO = 'SRO-' + str(cableName[0])[4:14]
@@ -245,7 +249,6 @@ for cab in sroCable:
     done = True
     L = 1
     f = 0
-    T += 1
     while done:
         TEST = checkPassage(Line)
         print('#' * 25)
@@ -253,7 +256,9 @@ for cab in sroCable:
         # print(TEST)
         # print(cableName[Line])
         if TEST == 'PASS':
-
+            if incr == 12:
+                T += 1
+                incr = 0
             if f == 12:
                 f = 0
             b = l + 1
@@ -267,6 +272,9 @@ for cab in sroCable:
 
             # #################get the values#############################
             tube1 = tubeNumberI[Line]
+            if teroi != tube1:
+                incr += 1
+                teroi = tube1
             fibre1 = fibreNumberI[Line]
             cable1 = cableName[Line]
             boite = boiteName[Line]

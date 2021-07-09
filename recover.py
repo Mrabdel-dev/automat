@@ -19,6 +19,18 @@
 # pathlabel.pack()
 # top.mainloop()
 import datetime
+
 date = datetime.datetime.now()
 now = date.strftime("%m/%Y")
 print(now)
+
+
+def aroundTo(x: int, num):
+    y = x % num
+    if y != 0:
+        k = x + num - y
+        return k
+    else:
+        return x
+
+print(aroundTo(30,12))

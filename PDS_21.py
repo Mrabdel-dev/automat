@@ -13,7 +13,7 @@ boiteTable = DBF('pdsInput/85_081_855_BOITE_OPTIQUE_A.dbf', load=True, encoding=
 zaPboDbl = DBF('pdsInput/zpbodbl855.dbf', load=True, encoding='iso-8859-1')
 casseteTable = DBF('pdsInput/cassete file.dbf', load=True, encoding='iso-8859-1')
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('PDS/PDS-85_081_855.xls')
+workbook = xlsxwriter.Workbook('TestNewPds.xls')
 # ############### define the character and style of cell inside excel ################"
 bold = workbook.add_format({'bold': True, "border": 1})
 bold1 = workbook.add_format({'bold': True})
@@ -327,8 +327,11 @@ def getFTTElineStart(boite):
 
 
 # function to get boit that have ftte prise
-def getFTTEBoites(boite):
-    listBoit = getListComingBoite(boite)
+def getFTTEBoites(boite, Pass: bool):
+    if Pass:
+        listBoit = getListComingBoitePEC(boite)
+    else:
+        listBoit = getListComingBoite(boite)
     listFFTE = []
     for i in listBoit:
         x = checkGlobalFtt(i)
@@ -466,6 +469,8 @@ def ftteFillIn(w, Listboites, boite, startLin, T):
         capacity = getCapacity(cable)
         T = tubeRound(capacity - ftteN)
         for j in range(0, ftteN):
+            if startLin % 12 == 0:
+                startLin = (startLin) - 2 * 12
             w.write(startLin, 5, 'CSE-' + str(N), border)
             k += 1
             w.write(startLin, 6, 'EPISSUREE', border)
@@ -488,6 +493,7 @@ def ftteFillIn(w, Listboites, boite, startLin, T):
                 k = 1
                 N += 1
             startLin += 1
+
     return startLin
 
 
@@ -503,11 +509,12 @@ def tubeRound(num):
     return T
 
 
-def fillfPassedfttePassage(w, boite, nbrPassFTTE, i, T):
+def fillfPassedfttePassage(w, boite, nbrPassFTTE, T):
     cable = getCable(boite)
     cap = getCapacity(cable)
     n = 1
     startLine = (cap - 12 * n) + 1
+    i = startLine - 1
     for k in range(0, nbrPassFTTE):
         w.write(startLine, 5, 'FOND DE BOITE', border)
         w.write(startLine, 6, 'EN PASSAGE', border)
@@ -556,6 +563,41 @@ def fillPecPassage(w, boite, startLine, endLine, i, T):
         w.write(startLine, 13, 'EN PASSAGE', border)
         startLine += 1
         i += 1
+
+
+def PboFillFTTeStocker(w: sheet, boite, stokker, Lin, T=1):
+    i = Lin - 1
+    index = getcassteIndex(boite)
+    N = nbrCassete[index]
+    size = tailleCassete[index]
+    k = 1
+    for s in range(0, stokker):
+        if Lin % 12 == 0:
+            Lin = Lin - 2 * 12
+        n = 'CSE-' + str(N)
+        w.write(Lin, 5, n, border)
+        k += 1
+        w.write(Lin, 6, 'STOCKEE', border)
+        w.write(Lin, 10, '', border)
+        num = (i % 12) + 1
+        w.write(Lin, 9, '', border)
+        w.write(Lin, 8, '', border)
+        if num % 12 == 0:
+            if T == 12:
+                T = 1
+            else:
+                T += 1
+        w.write(Lin, 7, '', border)
+        w.write(Lin, 11, '', border)
+        w.write(Lin, 12, '', border)
+        w.write(Lin, 14, '', border)
+        w.write(Lin, 13, 'STOCKEE', border)
+        if k > size:
+            N = N - 1
+            k = 1
+        Lin += 1
+        i += 1
+    return Lin
 
 
 # function to write stoker state
@@ -634,6 +676,31 @@ def passageFillIn(w: sheet, boit, startLine, T=1):
     return startLine
 
 
+def librePassFTTEFill(w: sheet, boit, endLine, T=1):
+    cable = getCable(boite)
+    cap = getCapacity(cable)
+    n = 1
+    startLine = (cap - 12 * n) + 1
+    i = startLine - 1
+    for k in range(0, endLine):
+        w.write(startLine, 5, 'FOND DE BOITE', border)
+        w.write(startLine, 6, 'LIBRE', border)
+        w.write(startLine, 8, '', border)
+        w.write(startLine, 7, '', border)
+        w.write(startLine, 9, '', border)
+        w.write(startLine, 10, '', border)
+        w.write(startLine, 11, '', border)
+        w.write(startLine, 12, '', border)
+        w.write(startLine, 14, '', border)
+        w.write(startLine, 13, 'LIBRE', border)
+        startLine += 1
+        i += 1
+        if (startLine - 1) % 12 == 0:
+            n += 1
+            startLine = (cap - 12 * n) + 1
+    return startLine
+
+
 # function to write the libre state for next cable
 def libreFillIn(w: sheet, boit, startLine, endLine, T=1):
     i = 1
@@ -687,7 +754,7 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine):
     y = getBoitePassage(boite)
     index1 = boiteCode.index(boite)
     func = boiteFunction[index1]
-    k = getFTTEBoites(boite)
+    k = getFTTEBoites(boite, True)
     fuNumbr = nbf[index1]
     fuNumbr1 = getNumbrFu(boite, 0) - 1
     test = False
@@ -800,7 +867,7 @@ def boitePecFillIn(w: sheet, cable, boite, capacity, T):
     fuNumber = getNumbrFu(boite, 0)
     fttetotal = checkGlobalFtt(boite) + (checkGlobalFtt(getLastStartBoite(boite)) - checkGlobalFtt(boite))
     fttepass = (checkGlobalFtt(getLastStartBoite(boite)) - checkGlobalFtt(boite))
-    ftteLine = getFTTElineStart(boite)
+    ftteLineD = getFTTElineStart(boite)
     Test = fuNumber + aroundTo(fttetotal, 12)
     if Test > capacity:
         print("Erouuuuuuuuur cable capacity not enough")
@@ -818,16 +885,20 @@ def boitePecFillIn(w: sheet, cable, boite, capacity, T):
     if x is not None:
         fillPecPassage(w, x, 1, Lin, Lin - 1, tubeRound(Lin))
         Lin = fillInAllCableEpess(w, nextBoits, boite, Lin)
-        ftteLine = fillfPassedfttePassage(w, boite, fttepass, ftteLine - 1, T)
+        ftteLine = fillfPassedfttePassage(w, boite, fttepass, T)
         endFTTLine = ftteFillIn(w, nextBoits, boite, ftteLine, T)
-        fillPecPassage(w, x, Lin, ftteLine, Lin - 1, tubeRound(Lin))
-        fillPecPassage(w, x, endFTTLine, capacity + 1, endFTTLine - 1, tubeRound(endFTTLine))
+        end = aroundTo(endFTTLine, 12)
+        fillPecPassage(w, x, Lin, ftteLineD, Lin - 1, tubeRound(Lin))
+        fillPecPassage(w, x, endFTTLine, end + 1, endFTTLine - 1, tubeRound(endFTTLine))
+
     else:
         libreFillIn(w, boite, 1, Lin, T)
         Lin = fillInAllCableEpess(w, boites, boite, Lin)
+        ftteLine = librePassFTTEFill(w, boite, fttepass, T)
         endFTTLine = ftteFillIn(w, boites, boite, ftteLine, T)
-        libreFillIn(w, boite, Lin, ftteLine, T)
-        libreFillIn(w, boite, endFTTLine, capacity + 1, T)
+        end = aroundTo(endFTTLine, 12)
+        libreFillIn(w, boite, Lin, ftteLineD, T)
+        libreFillIn(w, boite, endFTTLine, end + 1, T)
     extracablePECPBOFillIn(w, boites, boite, capacity + 1)
 
 
@@ -840,34 +911,35 @@ def boitePecPboFillIn(w: sheet, cable, boite, capacity, T):
     cableBaseInfo(w, cable, capacity, T)
     linestockstart = getStockStartLine(boite) + 1
     index = boiteCode.index(boite)
-    ftte = checkGlobalFtt(boite)
+    ftte = checkGlobalFtt(boite) + (checkGlobalFtt(getLastStartBoite(boite)) - checkGlobalFtt(boite))
     ftt = checkFtt(boite)
+    fttepass = (checkGlobalFtt(getLastStartBoite(boite)) - checkGlobalFtt(boite))
+    ftteLine = getFTTElineStart(boite)
     stoker = nbf[index] - checkFtt(boite)
     Lin = PboFillStokker(w, boite, stoker, linestockstart, 1)
     boites = getListComingBoitePEC(boite)
-    Lin = PboFillEpes(w, boites, boite, Lin, 0, 1)
-    ftteBoite = getFTTEBoites(boite)
-    k = len(ftteBoite)
-    if k > 0:
-        ftteLine = getFTTElineStart(boite)
-        boites = getListComingBoite(boite)
-        endftteLineS = PboFillStokker(w, boite, ftt, ftteLine, 1)
-        endftteLine = ftteFillIn(w, boites, boite, endftteLineS, 1)
-    else:
-        ftteLine = getFTTElineStart(boite)
-        endftteLine = PboFillStokker(w, boite, ftte, ftteLine, 1)
+    boitesF = getListComingBoite(boite)
     x = getBoitePassage(boite)
     if x is not None:
+        Lin = PboFillEpes(w, boites, boite, Lin, 0, 1)
+        fttePas = fillfPassedfttePassage(w, boite, fttepass, T)
+        endftteLineS = PboFillFTTeStocker(w,boite,ftt,fttePas,T)
+        endftteLine = ftteFillIn(w, boites, boite, endftteLineS, 1)
+        end = aroundTo(endftteLine,12)
         fillPecPassage(w, x, 1, linestockstart, 0, T)
-
         fillPecPassage(w, x, Lin, ftteLine, Lin - 1, tubeRound(Lin))
-        fillPecPassage(w, x, endftteLine, capacity + 1, endftteLine - 1, tubeRound(endftteLine))
+        fillPecPassage(w, x, endftteLine, end+1, endftteLine - 1, tubeRound(endftteLine))
     else:
+        Lin = PboFillEpes(w, boitesF, boite, Lin, 0, 1)
+        fttePas = fillfPassedfttePassage(w, boite, fttepass, T)
+        endftteLineS = PboFillFTTeStocker(w, boite, ftt, fttePas, T)
+        endftteLine = ftteFillIn(w, boitesF, boite, endftteLineS, 1)
+        end = aroundTo(endftteLine, 12)
         libreFillIn(w, boite, 1, linestockstart, 1)
         libreFillIn(w, boite, Lin, ftteLine, T)
-        libreFillIn(w, boite, endftteLine, capacity + 1, T)
-    boites = getListComingBoite(boite)
-    extracablePECPBOFillIn(w, boites, boite, capacity + 1)
+        libreFillIn(w, boite, endftteLine, end + 1, T)
+
+    extracablePECPBOFillIn(w, boitesF, boite, capacity + 1)
 
 
 # <--################### PBO function #############################-->
@@ -877,26 +949,33 @@ def boitePboFillIn(w: sheet, cable, boite, capacity, T):
     cableBaseInfo(w, cable, capacity, T)
     linestockstart = getStockStartLine(boite) + 1
     index = boiteCode.index(boite)
-    ftte = checkGlobalFtt(boite)
+    ftte = checkGlobalFtt(boite) + (checkGlobalFtt(getLastStartBoite(boite)) - checkGlobalFtt(boite))
     ftt = checkFtt(boite)
+    fttepass = (checkGlobalFtt(getLastStartBoite(boite)) - checkGlobalFtt(boite))
     stoker = nbf[index] - checkFtt(boite)
-    Lin = PboFillStokker(w, boite, stoker, linestockstart, 1)
     ftteLine = getFTTElineStart(boite)
-    boites = getFTTEBoites(boite)
-    if len(boites) < 1:
-        endftteLine = PboFillStokker(w, boite, ftte, ftteLine, 1)
-    else:
-        endftteLine = PboFillStokker(w, boite, ftt, ftteLine, 1)
+    boites = getListComingBoite(boite)
+    boitsF = getListComingBoitePEC(boite)
     x = getBoitePassage(boite)
     if x is not None:
+        Lin = PboFillStokker(w, boite, stoker, linestockstart, 1)
+        fttePas = fillfPassedfttePassage(w, boite, fttepass, T)
+        endftteLineS = PboFillFTTeStocker(w, boite, ftt, fttePas, T)
+        endftteLine = ftteFillIn(w, boitsF, boite, endftteLineS, 1)
+        end = aroundTo(endftteLine, 12)
         fillPecPassage(w, x, 1, linestockstart, 0, T)
         fillPecPassage(w, x, Lin, ftteLine, Lin - 1, tubeRound(Lin))
-        fillPecPassage(w, x, endftteLine, capacity + 1, endftteLine - 1, tubeRound(endftteLine))
+        fillPecPassage(w, x, endftteLine, end + 1, endftteLine - 1, tubeRound(endftteLine))
     else:
+        Lin = PboFillStokker(w, boite, stoker, linestockstart, 1)
+        fttePas = fillfPassedfttePassage(w, boite, fttepass, T)
+        endftteLineS = PboFillFTTeStocker(w, boite, ftt, fttePas, T)
+        endftteLine = ftteFillIn(w, boites, boite, endftteLineS, 1)
+        end = aroundTo(endftteLine, 12)
         libreFillIn(w, boite, 1, linestockstart, 1)
         libreFillIn(w, boite, Lin, ftteLine, T)
-        libreFillIn(w, boite, endftteLine, capacity + 1, T)
-    boites = getListComingBoite(boite)
+        libreFillIn(w, boite, endftteLine, end + 1, T)
+
     extracablePECPBOFillIn(w, boites, boite, capacity + 1)
 
 

@@ -1,20 +1,32 @@
 import operator
 import string
 
-from dbfread import DBF
+from dbfread import DBF, FieldParser
 import xlsxwriter
 import datetime
+
+
+class MyFieldParser(FieldParser):
+    def parseN(self, field, data):
+        data = data.strip().strip(
+            b'*\x00')  # Had to strip out the other characters first before \x00, as per super function specs.
+        return super(MyFieldParser, self).parseN(field, data)
+
+    def parseD(self, field, data):
+        data = data.strip(b'\x00')
+        return super(MyFieldParser, self).parseD(field, data)
+
 
 # date configuration
 now = datetime.datetime.now()
 date = now.strftime("%d/%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('pdsInput/85_081_855_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('pdsInput/85_081_855_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-zaPboDbl = DBF('pdsInput/zpbodbl855.dbf', load=True, encoding='iso-8859-1')
-casseteTable = DBF('pdsInput/cassete file.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('pdsInput/21_011_067_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/21_011_067_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+zaPboDbl = DBF('pdsInput/zpbodbl067.dbf', load=True, encoding='iso-8859-1')
+casseteTable = DBF('pdsInput/cassete_file.dbf', load=True, encoding='iso-8859-1')
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('TestNewPds.xlsx')
+workbook = xlsxwriter.Workbook('PDS/SRO-21_011_067-Pds.xlsx')
 # ############### define the character and style of cell inside excel ################"
 bold = workbook.add_format({'bold': True, "border": 1})
 bold1 = workbook.add_format({'bold': True})
@@ -283,6 +295,7 @@ def getLastStartBoite(boite):
     index = getCableIndex(boite)
     capacity = cableCapacity[index]
     orginBoite = cableOrigin[index]
+    nbrfu = getNumbrFu(orginBoite,0)
     if orginBoite.startswith('SRO'):
         return boite
     else:
@@ -296,6 +309,12 @@ def getLastStartBoite(boite):
         else:
             return boite
 
+def getPassedFu(boiteStart,boite,fu):
+    if boiteStart == boite:
+        fu += getNumbrFu(boiteStart,0)
+        return fu
+    else :
+        listB = getc
 
 # function return where i should start write to write stocked state
 def getStockStartLine(boite):
@@ -369,8 +388,7 @@ def baseSheet(w: sheet, boite):
     # w.freeze_panes = w['R']
     # w.freeze_panes = w['Q']
 
-    w.freeze_panes(14, 16)
-    w.freeze_panes(1, 0)
+    w.freeze_panes(0, 1)
     w.write('Q1', 'Etiquette : ', header)
     w.write('R1', boite, bold)
     # boite Ref
@@ -445,7 +463,11 @@ def fillInEpess(w: sheet, Lin, i, boite, T, N, k, size, p):
     nbrEps = funb - ftt
     N = int(N)
     for j in range(0, nbrEps):
-        n = 'CSE-' + str(N)
+        if N < 10:
+            n = 'CSE-0' + str(N)
+        else:
+            n = 'CSE-' + str(N)
+
         w.write(Lin, 2, p, border)
         w.write(Lin, 5, n, border)
         k += 1
@@ -506,7 +528,11 @@ def ftteFillIn(w, Listboites, boite, startLin, T):
             if startLin % 12 == 0:
                 startLin = startLin - 2 * 12
             w.write(startLin, 2, p, border)
-            w.write(startLin, 5, 'CSE-' + str(N), border)
+            if N < 10:
+                n = 'CSE-0' + str(N)
+            else:
+                n = 'CSE-' + str(N)
+            w.write(startLin, 5, n, border)
             k += 1
             w.write(startLin, 6, 'EPISSUREE', border)
             w.write(startLin, 10, capacity, border)
@@ -558,7 +584,11 @@ def fillfPassedfttePassage(w, boite, nbrPassFTTE, T):
     N = 1
     p = 1
     for f in range(0, nbrPassFTTE):
-        w.write(startLine, 5, 'CSE-' + str(N), border)
+        if N < 10:
+            e = 'CSE-0' + str(N)
+        else:
+            e = 'CSE-' + str(N)
+        w.write(startLine, 5, e, border)
         w.write(startLine, 6, 'EN PASSAGE', border)
         num = (i % 12) + 1
         w.write(startLine, 8, T, stringCassette(str(T)))
@@ -616,14 +646,25 @@ def fillPecPassage(w, boite, startLine, endLine, i, T, p):
 def PboFillFTTeStocker(w: sheet, boite, stokker, Lin, T=1):
     i = Lin - 1
     index = getcassteIndex(boite)
-    N = nbrCassete[index] - 1
+    N = nbrCassete[index]
+    fu = getNumbrFu(boite, 0)
+    ftte = checkGlobalFtt(boite)
+    y = fu - ftte
+    if y > 0:
+        N = N - int(aroundTo(y, N) / N)
+    else:
+        N = nbrCassete[index]
+
     size = tailleCassete[index]
     k = 1
     p = 1
     for s in range(0, stokker):
         if Lin % 12 == 0:
             Lin = Lin - 2 * 12
-        n = 'CSE-' + str(N)
+        if N < 10:
+            n = 'CSE-0' + str(N)
+        else:
+            n = 'CSE-' + str(N)
         w.write(Lin, 2, p, border)
         w.write(Lin, 5, n, border)
         k += 1
@@ -661,7 +702,10 @@ def PboFillStokker(w: sheet, boite, stokker, Lin, T=1):
     k = 1
     p = 1
     for s in range(0, stokker):
-        n = 'CSE-' + str(N)
+        if N < 10:
+            n = 'CSE-0' + str(N)
+        else:
+            n = 'CSE-' + str(N)
         w.write(Lin, 2, p, border)
         w.write(Lin, 5, n, border)
         k += 1
@@ -697,9 +741,9 @@ def PboFillEpes(w: sheet, boites, boite, Lin, i, T=1):
     ftte = checkGlobalFtt(boite)
     N = aroundTo(ftte, size) / size
     k = 1
-    p=1
+    p = 1
     for s in boites:
-        x, k, N, p = fillInEpess(w, Lin, i, s, 1, N, k, size,p)
+        x, k, N, p = fillInEpess(w, Lin, i, s, 1, N, k, size, p)
         Lin = x
     return Lin
 
@@ -1099,16 +1143,16 @@ for b in range(0, boiteLen):
 workbook.close()
 
 # ################# some test for verification ##############################################
-boite = 'PBO-85-081-855-2008'
+boite = 'PEC-21-011-067-2033'
 cab = getCable(boite)
 cap = getCapacity(cab)
 index1 = boiteCode.index(boite)
 # # index2 = boiteCode.index('PBO-21-011-076-3006')
 # cable = getCable('PBO-21-011-076-2015')
 # cap = getCapacity(cable)
-print(nbf[index1], checkFtt(boite), getPassedFtte(boite, cap), getNumbrFu(boite, 0), getStockStartLine(boite),
+print(nbf[index1], checkGlobalFtt(boite), getPassedFtte(boite, cap),getNumbrFu(getLastStartBoite(boite), 0), getNumbrFu(boite, 0), getStockStartLine(boite),
       getLastStartBoite(boite))
-# # print(getFTTEBoites('PBO-21-011-076-3035'))
+# print(getFTTEBoites('PBO-21-011-076-3035'))
 # x = checkGlobalFtt('PBO-21-011-076-2015')
 
 # ftte = getNumbrFu('PBO-21-011-076-2015', 0)

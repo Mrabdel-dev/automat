@@ -33,4 +33,5 @@ def aroundTo(x: int, num):
     else:
         return x
 
-print(aroundTo(30,12))
+
+print(aroundTo(12, 6)/6)

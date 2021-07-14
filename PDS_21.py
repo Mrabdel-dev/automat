@@ -200,9 +200,12 @@ def getNumbrFu(boite, nbmrEpes):
                 else:
                     continue
     else:
-        for org, extr in zip(cableOrigin, cableExtremity):
+        for org, extr,cap in zip(cableOrigin, cableExtremity, cableCapacity):
             if boite == org:
-                comingBoiteList.append(extr)
+                if capacity != cap:
+                    comingBoiteList.append(extr)
+                else:
+                    continue
 
     y = len(comingBoiteList)
 
@@ -295,7 +298,6 @@ def getLastStartBoite(boite):
     index = getCableIndex(boite)
     capacity = cableCapacity[index]
     orginBoite = cableOrigin[index]
-    nbrfu = getNumbrFu(orginBoite,0)
     if orginBoite.startswith('SRO'):
         return boite
     else:
@@ -309,12 +311,6 @@ def getLastStartBoite(boite):
         else:
             return boite
 
-def getPassedFu(boiteStart,boite,fu):
-    if boiteStart == boite:
-        fu += getNumbrFu(boiteStart,0)
-        return fu
-    else :
-        listB = getc
 
 # function return where i should start write to write stocked state
 def getStockStartLine(boite):
@@ -322,7 +318,7 @@ def getStockStartLine(boite):
     cap = getCapacity(cab)
     fuUsed = getNumbrFu(getLastStartBoite(boite), 0) - getPassedFtte(boite, cap)
     fuBoit = getNumbrFu(boite, 0)
-    lineStart = fuUsed - fuBoit
+    lineStart =fuUsed - fuBoit
     return lineStart
 
 
@@ -925,7 +921,7 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine, p):
                     # lin = Lin + getNumbrFu(getLastStartBoite(b), 0)-ftte
                     # startLine = extracableFillIn(w, cable, cap, fuNumbr1-ftte, startLine, Lin)
 
-
+listCasseteNotfound = []
 def getcassteIndex(boite):
     index = boiteCode.index(boite)
     ref = boiteReference[index]
@@ -933,6 +929,7 @@ def getcassteIndex(boite):
         indexCass = reference.index(ref)
         return indexCass
     except ValueError:
+        listCasseteNotfound.append(ref)
         indexCass = 0
         return indexCass
 
@@ -1150,11 +1147,13 @@ index1 = boiteCode.index(boite)
 # # index2 = boiteCode.index('PBO-21-011-076-3006')
 # cable = getCable('PBO-21-011-076-2015')
 # cap = getCapacity(cable)
-print(nbf[index1], checkGlobalFtt(boite), getPassedFtte(boite, cap),getNumbrFu(getLastStartBoite(boite), 0), getNumbrFu(boite, 0), getStockStartLine(boite),
+print(nbf[index1], checkGlobalFtt(boite), getPassedFtte(boite, cap), getNumbrFu(getLastStartBoite(boite), 0),
+      getNumbrFu(boite, 0), getStockStartLine(boite),
       getLastStartBoite(boite))
 # print(getFTTEBoites('PBO-21-011-076-3035'))
 # x = checkGlobalFtt('PBO-21-011-076-2015')
-
+for r in listCasseteNotfound:
+    print(r)
 # ftte = getNumbrFu('PBO-21-011-076-2015', 0)
 # index = boiteCode.index('PBO-21-011-076-3011')
 # ref = boiteReference[index]

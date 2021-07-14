@@ -29,9 +29,12 @@ def aroundTo(x: int, num):
     y = x % num
     if y != 0:
         k = x + num - y
-        return k
+        return int((k / num) - 1)
     else:
-        return x
+        return int((x / num) - 1)
 
 
-print(aroundTo(12, 6)/6)
+diameter = {12: 6, 24: 8.5, 36: 8.5, 48: 9.5, 72: 10.5, 96: 11.5, 144: 11.5, 288: 14.5}
+
+diameter.update({24:2.5})
+print(diameter[24])

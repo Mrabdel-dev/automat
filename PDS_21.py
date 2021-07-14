@@ -190,22 +190,11 @@ def getboiteOrigine(boite):
 def getNumbrFu(boite, nbmrEpes):
     comingBoiteList = []
     indexB = boiteCode.index(boite)
-    capacity = cableCapacity[cableName.index(boiteCable[indexB])]
     fonc = str(boiteFunction[indexB])
     if fonc == 'PEC':
-        for org, extr, cap in zip(cableOrigin, cableExtremity, cableCapacity):
-            if boite == org:
-                if capacity != cap:
-                    comingBoiteList.append(extr)
-                else:
-                    continue
+        comingBoiteList = getListComingBoitePEC(boite)
     else:
-        for org, extr,cap in zip(cableOrigin, cableExtremity, cableCapacity):
-            if boite == org:
-                if capacity != cap:
-                    comingBoiteList.append(extr)
-                else:
-                    continue
+        comingBoiteList = getListComingBoite(boite)
 
     y = len(comingBoiteList)
 
@@ -221,7 +210,27 @@ def getNumbrFu(boite, nbmrEpes):
             f = 0
         nbmrEpes += f
         for b in comingBoiteList:
-            nbmrEpes = getNumbrFu(b, nbmrEpes)
+            nbmrEpes = getfuNum(b, nbmrEpes)
+        return nbmrEpes
+
+
+def getfuNum(boite, nbmrEpes):
+    comingBoiteList = getListComingBoite(boite)
+    y = len(comingBoiteList)
+
+    if y == 0:
+        f = nbf[boiteCode.index(boite)]
+        if f is None:
+            f = 0
+        nbmrEpes += f
+        return nbmrEpes
+    else:
+        f = nbf[boiteCode.index(boite)]
+        if f is None:
+            f = 0
+        nbmrEpes += f
+        for b in comingBoiteList:
+            nbmrEpes = getfuNum(b, nbmrEpes)
         return nbmrEpes
 
 
@@ -318,7 +327,7 @@ def getStockStartLine(boite):
     cap = getCapacity(cab)
     fuUsed = getNumbrFu(getLastStartBoite(boite), 0) - getPassedFtte(boite, cap)
     fuBoit = getNumbrFu(boite, 0)
-    lineStart =fuUsed - fuBoit
+    lineStart = fuUsed - fuBoit
     return lineStart
 
 
@@ -921,7 +930,10 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine, p):
                     # lin = Lin + getNumbrFu(getLastStartBoite(b), 0)-ftte
                     # startLine = extracableFillIn(w, cable, cap, fuNumbr1-ftte, startLine, Lin)
 
+
 listCasseteNotfound = []
+
+
 def getcassteIndex(boite):
     index = boiteCode.index(boite)
     ref = boiteReference[index]
@@ -1133,25 +1145,24 @@ for b in range(0, boiteLen):
     capacity = getCapacity(cable)
     if func == 'PEC':
         boitePecFillIn(w, cable, boite, capacity, T)
-    elif func == 'PEC-PBO':
+    elif func == 'PEC-PBO' or func == 'BTI':
         boitePecPboFillIn(w, cable, boite, capacity, T)
     else:
         boitePboFillIn(w, cable, boite, capacity, T)
 workbook.close()
 
 # ################# some test for verification ##############################################
-boite = 'PEC-21-011-067-2033'
-cab = getCable(boite)
-cap = getCapacity(cab)
-index1 = boiteCode.index(boite)
-# # index2 = boiteCode.index('PBO-21-011-076-3006')
-# cable = getCable('PBO-21-011-076-2015')
-# cap = getCapacity(cable)
-print(nbf[index1], checkGlobalFtt(boite), getPassedFtte(boite, cap), getNumbrFu(getLastStartBoite(boite), 0),
-      getNumbrFu(boite, 0), getStockStartLine(boite),
-      getLastStartBoite(boite))
-# print(getFTTEBoites('PBO-21-011-076-3035'))
-# x = checkGlobalFtt('PBO-21-011-076-2015')
+# boite = 'PEC-21-011-075-1006'
+# cab = getCable(boite)
+# cap = getCapacity(cab)
+# index1 = boiteCode.index(boite)
+# # # index2 = boiteCode.index('PBO-21-011-076-3006')
+# # cable = getCable('PBO-21-011-076-2015')
+# # cap = getCapacity(cable)
+# print(nbf[index1], checkGlobalFtt(boite), getPassedFtte(boite, cap), getNumbrFu(getLastStartBoite(boite), 0),
+#       getNumbrFu(boite, 0), getStockStartLine(boite),
+#       getLastStartBoite(boite))
+
 for r in listCasseteNotfound:
     print(r)
 # ftte = getNumbrFu('PBO-21-011-076-2015', 0)

@@ -6,15 +6,15 @@ import datetime
 now = datetime.datetime.now()
 date = now.strftime("%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('etiqueteInputs/21_017_104_CABLE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('etiqueteInputs/21_017_104_BOITE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
-pointTechTable = DBF('etiqueteInputs/21_017_104_POINT_TECHNIQUE_B.dbf', load=True, encoding='iso-8859-1')
-supportTable = DBF('etiqueteInputs/21_017_104_SUPPORT_B.dbf', load=True, encoding='iso-8859-1')
-fciTable = DBF('etiqueteInputs/FCI_104.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('etiqueteInputs/21_011_075_CABLE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('etiqueteInputs/21_011_075_BOITE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
+pointTechTable = DBF('etiqueteInputs/21_011_075_POINT_TECHNIQUE_B.dbf', load=True, encoding='iso-8859-1')
+supportTable = DBF('etiqueteInputs/21_011_075_SUPPORT_B.dbf', load=True, encoding='iso-8859-1')
+fciTable = DBF('etiqueteInputs/fCI-075.dbf', load=True, encoding='iso-8859-1')
 
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('Etiquette/etiquetteDetail104.xlsx')
-workbook1 = xlsxwriter.Workbook('Etiquette/EtiquettePrintedFile104.xlsx')
+workbook = xlsxwriter.Workbook('Etiquette/etiquetteDetail075.xlsx')
+workbook1 = xlsxwriter.Workbook('Etiquette/EtiquettePrintedFile075.xlsx')
 totaleSheet = workbook1.add_worksheet("EtiquettePrintedFile")
 # ############### define the character and style of cell inside excel ################"
 border = workbook.add_format({"border": 1})
@@ -69,7 +69,7 @@ for p in range(0, pointlen):
 fciNom = []
 fciCode = []
 for f in range(0, fcilen):
-    fciNom.append(fciTable.records[f]['POTEAU_CHA'])
+    fciNom.append(fciTable.records[f]['N__'])
     fciCode.append(fciTable.records[f]['FCI'])
 
 # ###################### define  the base header ##############################

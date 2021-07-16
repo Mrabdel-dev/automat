@@ -436,7 +436,7 @@ def boiteEtiqueteFill(boites, k, totale: sheet):
             w.write('C' + str(lin), 'BLANC', border)
             w.write('D' + str(lin), 'ALTITUDE FIBRE 21', border)
             w.write('E' + str(lin), b, border)
-            w.write('F' + str(lin), str(fcicode) + "  " + str(date), border)
+            w.write('F' + str(lin), str(fcicode) + "-" + str(date), border)
             w.write('G' + str(lin), '', border)
             # ############################
             totale.write('A' + str(k), pointTech, border1)
@@ -444,7 +444,7 @@ def boiteEtiqueteFill(boites, k, totale: sheet):
             totale.write('C' + str(k), 'BLANC', border1)
             totale.write('D' + str(k), 'ALTITUDE FIBRE 21', border1)
             totale.write('E' + str(k), b, border1)
-            totale.write('F' + str(k), str(fcicode) + "  " + str(date), border1)
+            totale.write('F' + str(k), str(fcicode) + "-" + str(date), border1)
             totale.write('G' + str(k), '', border1)
             lin += 1
         else:
@@ -483,7 +483,7 @@ def pointEtiqueteFill(points, k, totale: sheet):
             po.write('C' + str(lin), 'BLANC', border)
             po.write('D' + str(lin), prop, border)
             po.write('E' + str(lin), p, border)
-            po.write('F' + str(lin), sro + "  " + str(date), border)
+            po.write('F' + str(lin), sro + "-" + str(date), border)
             po.write('G' + str(lin), '', border)
             # ############################
             totale.write('A' + str(k), p, border1)
@@ -491,7 +491,7 @@ def pointEtiqueteFill(points, k, totale: sheet):
             totale.write('C' + str(k), 'BLANC', border1)
             totale.write('D' + str(k), prop, border1)
             totale.write('E' + str(k), p, border1)
-            totale.write('F' + str(k), sro + "   " + str(date), border1)
+            totale.write('F' + str(k), sro + "-" + str(date), border1)
             totale.write('G' + str(k), '', border1)
             lin += 1
             k += 1

@@ -5,16 +5,18 @@ from dbfread import DBF, FieldParser
 import xlsxwriter
 import datetime
 
-
-class MyFieldParser(FieldParser):
-    def parseN(self, field, data):
-        data = data.strip().strip(
-            b'*\x00')  # Had to strip out the other characters first before \x00, as per super function specs.
-        return super(MyFieldParser, self).parseN(field, data)
-
-    def parseD(self, field, data):
-        data = data.strip(b'\x00')
-        return super(MyFieldParser, self).parseD(field, data)
+"""
+only activated whene have some problem with DBF
+"""
+# class MyFieldParser(FieldParser):
+#     def parseN(self, field, data):
+#         data = data.strip().strip(
+#             b'*\x00')  # Had to strip out the other characters first before \x00, as per super function specs.
+#         return super(MyFieldParser, self).parseN(field, data)
+#
+#     def parseD(self, field, data):
+#         data = data.strip(b'\x00')
+#         return super(MyFieldParser, self).parseD(field, data)
 
 
 # date configuration

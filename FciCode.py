@@ -31,9 +31,9 @@ while i < len(listeFichiers):
     fci = str(BookC3.cell(row=4, column=3).value)
     print(fci)
     for k in range(15, maxRow):
-        a = str(BookC3.cell(row=k, column=3).value)
-        b = str(BookC3.cell(row=k, column=5).value)
-        if a is not None :
+        a = BookC3.cell(row=k, column=3).value
+        b = BookC3.cell(row=k, column=5).value
+        if a is not None:
             listP.add(a)
         if b is not None:
             listP.add(b)

@@ -2,7 +2,7 @@ import editpyxl
 from openpyxl import load_workbook
 
 # load the C6 book
-workbook = load_workbook('F99999JJMMAA_C6 TEST CODE.xlsx')
+workbook = load_workbook('F99999JJMMAA_C6 TEST boite.xlsx')
 BookC6 = workbook['Export 2']
 # load the C3A book
 wb = editpyxl.Workbook()
@@ -75,6 +75,15 @@ def getType(nappui):
             return type
 
 
+def getBoitePose(nappui):
+    try:
+        pose = poseAPP[nappui]
+        return pose
+    except KeyError:
+        pose = None
+        return pose
+
+
 def getTypeAPP(nappui):
     try:
         type = typeAPP[nappui]
@@ -82,6 +91,14 @@ def getTypeAPP(nappui):
     except KeyError:
         type = None
         return type
+
+
+def checkPose(boite):
+    test = False
+    if str(boite) == 'PB' or str(boite) == 'PEO':
+        test = True
+        return test
+    return test
 
 
 ariene = 'aérien'
@@ -95,8 +112,8 @@ for i in range(0, Len):
         TypeB = str(getType(NappuiDist[i]))
         typeAppA = getTypeAPP(NappuiOrigi[i])
         typeAppB = getTypeAPP(NappuiDist[i])
-        # boitA = poseAPP[NappuiOrigi[i]]
-        # boitB = poseAPP[NappuiDist[i]]
+        boitA = getBoitePose(NappuiOrigi[i])
+        boitB = getBoitePose(NappuiDist[i])
         diaM = int(numC[9:-4])
         orig = codeInsee + "/" + str(NappuiOrigi[i])
         test = checkFill(NappuiDist[i], i)
@@ -110,6 +127,21 @@ for i in range(0, Len):
             if TypeA == 'AT' and TypeB == 'AT':
                 pass
             else:
+                if checkPose(boitA):
+                    if str(boitA) == 'PB':
+                        BookC3A.cell(row=Lin, column=14).value = 'A PB Appui'
+                        poseAPP.update({NappuiOrigi[i]: None})
+                    elif str(boitA) == 'PEO':
+                        BookC3A.cell(row=Lin, column=14).value = 'A PEO'
+                        poseAPP.update({NappuiOrigi[i]: None})
+                elif checkPose(boitB):
+                    if str(boitB) == 'PB':
+                        BookC3A.cell(row=Lin, column=14).value = 'B PB Appui'
+                        poseAPP.update({NappuiDist[i]: None})
+                    elif str(boitB) == 'PEO':
+                        BookC3A.cell(row=Lin, column=14).value = 'B PEO'
+                        poseAPP.update({NappuiDist[i]: None})
+
                 BookC3A.cell(row=Lin, column=2).value = TypeA
                 BookC3A.cell(row=Lin, column=3).value = orig
                 BookC3A.cell(row=Lin, column=4).value = TypeB

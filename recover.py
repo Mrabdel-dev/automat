@@ -35,6 +35,5 @@ def aroundTo(x: int, num):
 
 
 diameter = {12: 6, 24: 8.5, 36: 8.5, 48: 9.5, 72: 10.5, 96: 11.5, 144: 11.5, 288: 14.5}
-
 diameter.update({24:2.5})
 print(diameter[24])

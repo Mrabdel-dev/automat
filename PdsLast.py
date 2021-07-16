@@ -130,6 +130,23 @@ def stringCassette(x: str):
     return colorList[12]
 
 
+def sortdict(boit: dict):
+    x = 0
+    sortedL = {}
+    for k in boit:
+        b = boit[k]
+        for k1 in boit:
+            b1 = boit[k1]
+            if b[0] > b1[0]:
+                x += 1
+            elif b[0] == b1[0]:
+                if b[1] > b1[1]:
+                    x += 1
+        sortedL.update({k: x})
+    sortedL = {k: v for k, v in sorted(sortedL.items(), key=lambda v: v[1], reverse=True)}
+    return sortedL
+
+
 # get all Sro boite
 def getSroBoite():
     sroBoite = []
@@ -151,8 +168,8 @@ def getListComingBoite(pbo):
         nbfu = getfuNum(b, 0)
         cab = getCable(b)
         cap = getCapacity(cab)
-        dectBoit.update({b: nbfu})
-    comingL = {k: v for k, v in sorted(dectBoit.items(), key=lambda v: v[1], reverse=True)}
+        dectBoit.update({b: [cap, nbfu]})
+    comingL = sortdict(dectBoit)
     comingList = list(comingL.keys())
     return comingList
 
@@ -175,9 +192,10 @@ def getListComingBoitePEC(pbo):
         nbfu = getfuNum(b, 0)
         cab = getCable(b)
         cap = getCapacity(cab)
-        dectBoit.update({b: nbfu})
-        print(dectBoit)
-    comingL = {k: v for k, v in sorted(dectBoit.items(), key=lambda v: v[1], reverse=True)}
+        dectBoit.update({b: [cap, nbfu]})
+    print(dectBoit)
+    comingL = sortdict(dectBoit)
+    print(comingL)
     comingList = list(comingL.keys())
     return comingList
 
@@ -918,7 +936,7 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine, p):
                         Lin = 1
                     else:
                         Lin = getNumbrFu(getLastStartBoite(start), 0)
-                    startLine, p = extracableFillIn(w, cable, cap, fuNumbr1+1, startLine, Lin, p)
+                    startLine, p = extracableFillIn(w, cable, cap, fuNumbr1 + 1, startLine, Lin, p)
                 else:
                     Lin = getStockStartLine(boite)
                     startLine, p = extracableFillIn(w, cable, cap, total, startLine, Lin, p)
@@ -948,7 +966,7 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine, p):
                         Lin = 1
                     else:
                         Lin = getNumbrFu(getLastStartBoite(start), 0)
-                    startLine, p = extracableFillIn(w, cable, cap, fuNumbr1+1, startLine, Lin, p)
+                    startLine, p = extracableFillIn(w, cable, cap, fuNumbr1 + 1, startLine, Lin, p)
                 else:
                     Lin = getStockStartLine(boite)
                     startLine, p = extracableFillIn(w, cable, cap, total, startLine, Lin, p)
@@ -1187,7 +1205,7 @@ workbook.close()
 # print(nbf[index1], checkGlobalFtt(boite), getPassedFtte(boite, cap), getNumbrFu(getLastStartBoite(boite), 0),
 #       getNumbrFu(boite, 0), getStockStartLine(boite),
 #       getLastStartBoite(boite))
-
+print(getListComingBoitePEC('PEC-21-011-067-1036'))
 for r in listCasseteNotfound:
     print(r)
 # ftte = getNumbrFu('PBO-21-011-076-2015', 0)

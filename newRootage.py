@@ -21,7 +21,7 @@ found = True
 x = 0
 rowmax = 0
 # ##########################################################################################
-with open('routInput/21_011_070_Epesourage-pour routage (1).csv', 'rt')as f:
+with open('routInput/21_011_075_Epesourage.csv', 'rt')as f:
     data = csv.DictReader(f, delimiter=';')
     # #<---------- get the value from csv epesourge table---------------------------------->#
     print(data.fieldnames)
@@ -61,7 +61,7 @@ with open('routInput/21_011_070_Epesourage-pour routage (1).csv', 'rt')as f:
 sortedSro = {k: v for k, v in sorted(dictCable.items(), key=lambda v: v[1])}
 sroCab = list(sortedSro.keys())
 # sroCable = sroCab
-sroCable = ['CDI-21-011-070-2000', 'CDI-21-011-070-3000', 'CDI-21-011-070-1000', 'CDI-21-011-070-3024']
+sroCable = ['CDI-21-011-075-2000', 'CDI-21-011-075-1000', 'CDI-21-011-075-3000']
 
 print(dictCable)
 print(sortedSro)
@@ -69,7 +69,7 @@ print(sroCab)
 print(sroCable)
 # ########################################################################################
 # <-----------------------route file creation------------------------------------------->
-rootBook = xlsxwriter.Workbook('routage/Rootage-SRO-21_011_070.xlsx')
+rootBook = xlsxwriter.Workbook('routage/Rootage-21_011_075_.xlsx')
 wr = rootBook.add_worksheet()
 # define the character and style of cell inside excel
 bold = rootBook.add_format({'bold': True, "border": 1})
@@ -255,7 +255,11 @@ for cab in sroCable:
         # print(TEST)
         # print(cableName[Line])
         if TEST == 'PASS':
-            if incr == 12:
+            tube1 = tubeNumberI[Line]
+            if teroi != tube1:
+                incr += 1
+                teroi = tube1
+            if incr > 12:
                 T += 1
                 incr = 0
             if f == 12:
@@ -270,10 +274,7 @@ for cab in sroCable:
             f = f + 1
 
             # #################get the values#############################
-            tube1 = tubeNumberI[Line]
-            if teroi != tube1:
-                incr += 1
-                teroi = tube1
+
             fibre1 = fibreNumberI[Line]
             cable1 = cableName[Line]
             boite = boiteName[Line]

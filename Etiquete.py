@@ -13,8 +13,8 @@ supportTable = DBF('etiqueteInputs/21_011_075_SUPPORT_B.dbf', load=True, encodin
 fciTable = DBF('etiqueteInputs/fCI-075.dbf', load=True, encoding='iso-8859-1')
 
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('Etiquette/etiquetteDetail075.xlsx')
-workbook1 = xlsxwriter.Workbook('Etiquette/EtiquettePrintedFile075.xlsx')
+workbook = xlsxwriter.Workbook('Etiquette/SRO-21-011-075-DETAIL-ETIQUETTE.xlsx')
+workbook1 = xlsxwriter.Workbook('Etiquette/SRO-21-011-075-ETIQUETTE.xlsx')
 totaleSheet = workbook1.add_worksheet("EtiquettePrintedFile")
 # ############### define the character and style of cell inside excel ################"
 border = workbook.add_format({"border": 1})
@@ -31,6 +31,7 @@ pointlen = len(pointTechTable)
 fcilen = len(fciTable)
 supplen = len(supportTable)
 # #######################declare the table that i need te full#############################################
+sro = 'SRO-21_011_075'
 # FROM THE BOITE OPTIQUE
 boiteCode = []  # name of the boite
 boiteIdParent = []  # AMOUNT CABLE
@@ -134,6 +135,13 @@ def getPointTech(boite):
     pointTech = pointNom[indexPoint]
     pointTech = pointTech[0:6] + pointTech[6:].lstrip("0")
     return pointTech
+
+
+def getpointIndex(boite):
+    index = boiteCode.index(boite)
+    idPrent = boiteIdParent[index]
+    indexPoint = pointCode.index(idPrent)
+    return indexPoint
 
 
 def getFci(pointTech):
@@ -305,7 +313,7 @@ def fillInTable(c):
     cablePointEnd = getCablePointTechEnd(c)
     index = pointCode.index(cablePointEnd)
     fillInAllTable(c, cablePointEnd, index)
-    print(c,cablePointStart,cablePointEnd,test)
+    print(c, cablePointStart, cablePointEnd, test)
     aval = checkAvalway(cablePointStart, cablePointEnd, test)
     print('aval', aval, c)
     if not aval:
@@ -419,6 +427,8 @@ def boiteEtiqueteFill(boites, k, totale: sheet):
     lin = 2
     for b in boites:
         pointTech = getPointTech(b)
+        index = getpointIndex(b)
+        prop = str(pointPrp[index])
         fcicode = getFci(pointTech)
         if fcicode is not None:
             w.write('A' + str(lin), getPointCode(b), border)
@@ -437,6 +447,27 @@ def boiteEtiqueteFill(boites, k, totale: sheet):
             totale.write('F' + str(k), str(fcicode) + " " + str(date), border1)
             totale.write('G' + str(k), '', border1)
             lin += 1
+        else:
+            if prop.startswith('ALT'):
+                fcicode = sro
+            else :
+                fcicode = "  "
+            w.write('A' + str(lin), getPointCode(b), border)
+            w.write('B' + str(lin), '1', border)
+            w.write('C' + str(lin), 'BLANC', border)
+            w.write('D' + str(lin), 'ALTITUDE FIBRE 21', border)
+            w.write('E' + str(lin), b, border)
+            w.write('F' + str(lin), fcicode, border)
+            w.write('G' + str(lin), '', border)
+            # ############################
+            totale.write('A' + str(k), pointTech, border1)
+            totale.write('B' + str(k), '1', border1)
+            totale.write('C' + str(k), 'BLANC', border1)
+            totale.write('D' + str(k), 'ALTITUDE FIBRE 21', border1)
+            totale.write('E' + str(k), b, border1)
+            totale.write('F' + str(k), fcicode, border1)
+            totale.write('G' + str(k), '', border1)
+            lin += 1
             k += 1
 
 
@@ -452,7 +483,7 @@ def pointEtiqueteFill(points, k, totale: sheet):
             po.write('C' + str(lin), 'BLANC', border)
             po.write('D' + str(lin), prop, border)
             po.write('E' + str(lin), p, border)
-            po.write('F' + str(lin), "SRO-21-017-104  " + str(date), border)
+            po.write('F' + str(lin), sro+" " + str(date), border)
             po.write('G' + str(lin), '', border)
             # ############################
             totale.write('A' + str(k), p, border1)
@@ -460,7 +491,7 @@ def pointEtiqueteFill(points, k, totale: sheet):
             totale.write('C' + str(k), 'BLANC', border1)
             totale.write('D' + str(k), prop, border1)
             totale.write('E' + str(k), p, border1)
-            totale.write('F' + str(k), "SRO-21-017-104  " + str(date), border1)
+            totale.write('F' + str(k), sro+" " + str(date), border1)
             totale.write('G' + str(k), '', border1)
             lin += 1
             k += 1
@@ -527,7 +558,7 @@ def etiquettePtOrangeFill(cables, totale: sheet):
         nm = getNomPT(point)
         fci = getFci(nm)
         if fci is None:
-            fci = 'SRO-21-017-104  '
+            fci = sro+" "
         typeStr = typeStruc[i]
         if typeStr == 'CHAMBRE':
             N = 2

@@ -945,7 +945,7 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine, p):
     func = boiteFunction[index1]
     ftteB = checkGlobalFtt(boite)
     fuNumbr = nbf[index1]
-    fuNumbr1 = getNumbrFu(boite, 0) - 1
+    fuNumbr1 = getNumbrFu(boite, 0)
     test = False
     for b in boites:
         ffteb = checkGlobalFtt(b)
@@ -960,15 +960,16 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine, p):
             else:
                 cable = getCable(b)
                 cap = getCapacity(cable)
+                ftte = checkGlobalFtt(boite)
                 ftt = checkFtt(boite)
-                total = fuNumbr1 + 1
+                total = fuNumbr1
                 if func == 'PEC':
                     start = getLastStartBoite(boite)
                     if start == boite:
                         Lin = 1
                     else:
                         Lin = getNumbrFu(getLastStartBoite(start), 0)
-                    startLine, p = extracableFillIn(w, cable, cap, fuNumbr1 + 1, startLine, Lin, p)
+                    startLine, p = extracableFillIn(w, cable, cap, fuNumbr1-ftte, startLine, Lin-1, p)
                     Lin = getFTTElineStart(boite)
                     x = ftteB % 12
                     startLine, p = extracableFillIn(w, cable, cap, x, startLine, Lin - 1, p)
@@ -1005,14 +1006,20 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine, p):
                 cap = getCapacity(cable)
                 ftte = checkGlobalFtt(boite)
                 ftt = checkFtt(boite)
-                total = (fuNumbr1 + 1)
+                total = fuNumbr1
                 if func == 'PEC':
                     start = getLastStartBoite(boite)
                     if start == boite:
                         Lin = 1
                     else:
                        Lin = (getNumbrFu(getLastStartBoite(start), 0) - (checkGlobalFtt(start) - checkGlobalFtt(boite)))
-                    startLine, p = extracableFillIn(w, cable, cap, (total+ffteb)-ftte, startLine, Lin, p)
+                    index = boiteCode.index(b)
+                    fun = boiteFunction[index]
+                    if fun == "PEC":
+                        startLine, p = extracableFillIn(w, cable, cap, (total + ffteb ) - ftte, startLine, Lin-1, p)
+                    else:
+                        startLine, p = extracableFillIn(w, cable, cap, (total + ffteb ) - ftte, startLine, Lin, p)
+
                     if (ftteB - ffteb) != 0:
                         Lin = getFTTElineStart(boite)
                         x = (ftteB - ffteb) % 12

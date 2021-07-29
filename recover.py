@@ -103,3 +103,5 @@
     # tECHNO.append(zaPboDbl.records[k]['techno'])
     # typeBat.append(zaPboDbl.records[k]['type_bat'])
     # statut.append(zaPboDbl.records[k]['statut'])
+
+print(26%12)

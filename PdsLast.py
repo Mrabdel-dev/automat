@@ -21,12 +21,12 @@ class MyFieldParser(FieldParser):
 now = datetime.datetime.now()
 date = now.strftime("%d/%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('pdsInput/31_206_327_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('pdsInput/31_206_327_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-zaPboDbl = DBF('pdsInput/zpbodbl327.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('pdsInput/21_017_101_CABLE_OPTIQUE_C.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/21_017_101_BOITE_OPTIQUE_C.dbf', load=True, encoding='iso-8859-1')
+zaPboDbl = DBF('pdsInput/zpbodbl101.dbf', load=True, encoding='iso-8859-1')
 casseteTable = DBF('pdsInput/cassete_file.dbf', load=True, encoding='iso-8859-1')
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('PDS/SRO-31_206_327-Pds.xlsx')
+workbook = xlsxwriter.Workbook('PDS/SRO-21_017_101-Pds.xlsx')
 # ############### define the character and style of cell inside excel ################"
 bold = workbook.add_format({'bold': True, "border": 1})
 bold1 = workbook.add_format({'bold': True})
@@ -90,14 +90,14 @@ typeBat = []
 statut = []
 for k in range(0, zapLen):
     boiteName.append(zaPboDbl.records[k]['NOM'])
-    # nbPrise.append(zaPboDbl.records[k]['NB_PRISE'])
-    # tECHNO.append(zaPboDbl.records[k]['TECHNO'])
-    # typeBat.append(zaPboDbl.records[k]['TYPE_BAT'])
-    # statut.append(zaPboDbl.records[k]['STATUT'])
-    nbPrise.append(zaPboDbl.records[k]['nb_prise'])
-    tECHNO.append(zaPboDbl.records[k]['techno'])
-    typeBat.append(zaPboDbl.records[k]['type_bat'])
-    statut.append(zaPboDbl.records[k]['statut'])
+    nbPrise.append(zaPboDbl.records[k]['NB_PRISE'])
+    tECHNO.append(zaPboDbl.records[k]['TECHNO'])
+    typeBat.append(zaPboDbl.records[k]['TYPE_BAT'])
+    statut.append(zaPboDbl.records[k]['STATUT'])
+    # nbPrise.append(zaPboDbl.records[k]['nb_prise'])
+    # tECHNO.append(zaPboDbl.records[k]['techno'])
+    # typeBat.append(zaPboDbl.records[k]['type_bat'])
+    # statut.append(zaPboDbl.records[k]['statut'])
 
 # from the cassete file
 reference = []  # reference of the boite
@@ -501,7 +501,7 @@ def cableBaseInfo(w: sheet, cable, capacity, T=1, ):
         num = (i % 12) + 1
         w.write(i + 1, 3, T, stringCassette(str(T)))
         if num % 12 == 0:
-            if T == 24:
+            if T == 96:
                 T = 1
             else:
                 T += 1
@@ -622,7 +622,7 @@ def tubeRound(num):
     for i in range(0, num):
         x = (i % 12) + 1
         if x % 12 == 0:
-            if T == 24:
+            if T == 96:
                 T = 1
             else:
                 T += 1
@@ -645,7 +645,7 @@ def fillfPassedfttePassage(w, boite, nbrPassFTTE, p):
             num = (i % 12) + 1
             w.write(startLine, 8, T, stringCassette(str(T)))
             if num % 12 == 0:
-                if T == 24:
+                if T == 96:
                     T = 1
                 else:
                     T += 1
@@ -706,7 +706,7 @@ def fillPecPassage(w, boite, startLine, endLine, i, T, p):
         num = (i % 12) + 1
         w.write(startLine, 8, T, stringCassette(str(T)))
         if num % 12 == 0:
-            if T == 24:
+            if T == 96:
                 T = 1
             else:
                 T += 1
@@ -728,7 +728,7 @@ def PboFillFTTeStocker(w: sheet, boite, stokker, Lin, T=1):
     index = getcassteIndex(boite)
     N = nbrCassete[index]
     fu = getNumbrFu(boite, 0)
-    ftte = checkGlobalFtt(boite)
+    ftte = checkFtt(boite)
     y = fu - ftte
     if y > 0:
         N = N - int(aroundTo(y, N) / N)
@@ -752,7 +752,7 @@ def PboFillFTTeStocker(w: sheet, boite, stokker, Lin, T=1):
         w.write(Lin, 9, '', border)
         w.write(Lin, 8, '', border)
         if num % 12 == 0:
-            if T == 12:
+            if T == 96:
                 T = 1
             else:
                 T += 1
@@ -795,7 +795,7 @@ def PboFillStokker(w: sheet, boite, stokker, Lin, T=1):
         w.write(Lin, 9, '', border)
         w.write(Lin, 8, '', border)
         if num % 12 == 0:
-            if T == 12:
+            if T == 96:
                 T = 1
             else:
                 T += 1
@@ -846,7 +846,7 @@ def passageFillIn(w: sheet, boit, startLine, T=1):
             w.write(startLine, 9, num, border)
             w.write(startLine, 8, T, stringCassette(str(T)))
             if num % 12 == 0:
-                if T == 12:
+                if T == 96:
                     T = 1
                 else:
                     T += 1
@@ -882,7 +882,7 @@ def librePassFTTEFill(w: sheet, boit, fttePass, p):
         if (startLine - 1) % 12 == 0:
             n += 1
             startLine = (cap - 12 * n) + 1
-    return startLine,p
+    return startLine, p
 
 
 # function to write the libre state for next cable
@@ -923,7 +923,7 @@ def extracableFillIn(w: sheet, cable, cap, extarline, startLine, funm, p):
         w.write(startLine, 8, T, stringCassette(str(T)))
         w.write(startLine, 9, num, border)
         if num % 12 == 0:
-            if T == 12:
+            if T == 96:
                 T = 1
             else:
                 T += 1
@@ -943,25 +943,20 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine, p):
     y = getBoitePassage(boite)
     index1 = boiteCode.index(boite)
     func = boiteFunction[index1]
-    k = getFTTEBoites(boite, True)
+    ftteB = checkGlobalFtt(boite)
     fuNumbr = nbf[index1]
     fuNumbr1 = getNumbrFu(boite, 0) - 1
     test = False
     for b in boites:
-        for l in k:
-            if b == l:
-                test = True
-            else:
-                test = False
+        ffteb = checkGlobalFtt(b)
 
-        if not test:
+        if ffteb == 0:
             if y != b:
                 fuN = getfuNum(b, 0)
                 cable = getCable(b)
                 cap = getCapacity(cable)
                 extraN = cap - fuN
                 startLine, p = extracableFillIn(w, cable, cap, extraN, startLine, fuN, p)
-
             else:
                 cable = getCable(b)
                 cap = getCapacity(cable)
@@ -974,12 +969,18 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine, p):
                     else:
                         Lin = getNumbrFu(getLastStartBoite(start), 0)
                     startLine, p = extracableFillIn(w, cable, cap, fuNumbr1 + 1, startLine, Lin, p)
+                    Lin = getFTTElineStart(boite)
+                    x = ftteB % 12
+                    startLine, p = extracableFillIn(w, cable, cap, x, startLine, Lin - 1, p)
+                    Lin += 12
+                    x = ftteB - x
+                    startLine, p = extracableFillIn(w, cable, cap, x, startLine, Lin - 1, p)
+
                 else:
                     Lin = getStockStartLine(boite)
-                    startLine, p = extracableFillIn(w, cable, cap, total-ftt, startLine, Lin, p)
+                    startLine, p = extracableFillIn(w, cable, cap, total - ftt, startLine, Lin, p)
                     Lin = getFTTElineStart(boite)
-                    startLine, p = extracableFillIn(w, cable, cap,  ftt, startLine, Lin-1, p)
-
+                    startLine, p = extracableFillIn(w, cable, cap, ftt, startLine, Lin - 1, p)
 
         else:
             if y != b:
@@ -987,11 +988,17 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine, p):
                 cap = getCapacity(cable)
                 ftte = checkGlobalFtt(b)
                 nbfu = getfuNum(b, 0) - ftte
-                extraN2 = cap - (aroundTo(ftte, 12) + nbfu)
-                startLine, p = extracableFillIn(w, cable, cap, extraN2, startLine, nbfu, p)
-                extraN = aroundTo(ftte, 12) - ftte
-                tt = cap - aroundTo(ftte, 12) + ftte
-                startLine, p = extracableFillIn(w, cable, cap, extraN, startLine, tt, p)
+                if nbfu != 0:
+                    extraN2 = cap - (aroundTo(ftte, 12) + nbfu)
+                    startLine, p = extracableFillIn(w, cable, cap, extraN2, startLine, nbfu, p)
+                    extraN = aroundTo(ftte, 12) - ftte
+                    tt = cap - aroundTo(ftte, 12) + ftte
+                    startLine, p = extracableFillIn(w, cable, cap, extraN, startLine, tt, p)
+                else:
+                    extraN = aroundTo(ftte, 12) - ftte
+                    tt = cap - aroundTo(ftte, 12) + ftte
+                    startLine, p = extracableFillIn(w, cable, cap, extraN, startLine, tt, p)
+
 
             else:
                 cable = getCable(b)
@@ -1004,11 +1011,25 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine, p):
                     if start == boite:
                         Lin = 1
                     else:
-                        Lin = getNumbrFu(getLastStartBoite(start), 0)
-                    startLine, p = extracableFillIn(w, cable, cap, fuNumbr1 + 1, startLine, Lin, p)
+                       Lin = (getNumbrFu(getLastStartBoite(start), 0) - (checkGlobalFtt(start) - checkGlobalFtt(boite)))
+                    startLine, p = extracableFillIn(w, cable, cap, (total+ffteb)-ftte, startLine, Lin, p)
+                    if (ftteB - ffteb) != 0:
+                        Lin = getFTTElineStart(boite)
+                        x = (ftteB - ffteb) % 12
+                        startLine, p = extracableFillIn(w, cable, cap, x, startLine, Lin - 1, p)
+                        Lin += 12
+                        x = (ftteB - ffteb) - x
+                        startLine, p = extracableFillIn(w, cable, cap, x, startLine, Lin - 1, p)
+
                 else:
-                    Lin = getStockStartLine(boite)
-                    startLine, p = extracableFillIn(w, cable, cap, total, startLine, Lin, p)
+                    if total - ftt != 0:
+                        Lin = getStockStartLine(boite)
+                        startLine, p = extracableFillIn(w, cable, cap, total - ftt, startLine, Lin, p)
+                        Lin = getFTTElineStart(boite)
+                        startLine, p = extracableFillIn(w, cable, cap, ftt, startLine, Lin - 1, p)
+                    else:
+                        Lin = getFTTElineStart(boite)
+                        startLine, p = extracableFillIn(w, cable, cap, ftt, startLine, Lin - 1, p)
 
                     # lin = Lin + getNumbrFu(getLastStartBoite(b), 0)-ftte
                     # startLine = extracableFillIn(w, cable, cap, fuNumbr1-ftte, startLine, Lin)
@@ -1082,7 +1103,7 @@ def boitePecFillIn(w: sheet, cable, boite, capacity, T):
     x = getBoitePassage(boite)
     if x is not None:
         if ftte != 0:
-            p = fillPecPassage(w, x, 1, Lin, Lin - 1, tubeRound(Lin), p)
+            p = fillPecPassage(w, x, 1, Lin, 0, T, p)
             Lin = fillInAllCableEpess(w, nextBoits, boite, Lin)
             p = fillPecPassage(w, x, Lin, ftteLineD, Lin - 1, tubeRound(Lin), p)
             ftteLine, p = fillfPassedfttePassage(w, x, fttepass, p)
@@ -1236,21 +1257,25 @@ for b in range(0, boiteLen):
 workbook.close()
 print("#" * 35)
 # ################# some test for verification ##############################################
-boite = 'PBO-31-206-327-3005'
+boite = 'PEC-21-017-101-2046'
 cable = getCable(boite)
 index1 = boiteCode.index(boite)
 cap = getCapacity(cable)
 ftte = checkGlobalFtt(boite)
 ftt = checkFtt(boite)
 nbfu = getfuNum(boite, 0)
+nb = getNumbrFu(boite, 0)
 ftteLine = getFTTElineStart(boite)
-fttepass = getPassedFtte(boite, cap)
-
+nbr = (nb+6)-ftte
+extraN2 = cap - (aroundTo(ftte, 12) + nbfu - ftte)
+extraN = aroundTo(ftte, 12) - ftte
+tt = cap - aroundTo(ftte, 12) + ftte
+lin = getLastStartBoite(boite)
 # startLine, p = extracableFillIn(w, cable, cap, extraN2, startLine, nbfu, p)
 
 # startLine, p = extracableFillIn(w, cable, cap, extraN, startLine, tt, p)
-print(nbfu, ftte, nbf[index1], ftt, ftteLine, fttepass)
-# cab = getCable(boite)
+print(nb, nbfu, ftte, nbf[index1], ftt, ftteLine, nbr, extraN2, "   lin", lin)
+# # cab = getCable(boite)
 # cap = getCapacity(cab)
 # index1 = boiteCode.index(boite)
 # index2 = boiteCode.index('PBO-21-011-076-3006')

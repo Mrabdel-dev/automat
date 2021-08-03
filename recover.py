@@ -99,9 +99,9 @@
 # print(f"the number of element found is {f} and the number of element not found is {N}")
 
 
-    # nbPrise.append(zaPboDbl.records[k]['nb_prise'])
-    # tECHNO.append(zaPboDbl.records[k]['techno'])
-    # typeBat.append(zaPboDbl.records[k]['type_bat'])
-    # statut.append(zaPboDbl.records[k]['statut'])
+# nbPrise.append(zaPboDbl.records[k]['nb_prise'])
+# tECHNO.append(zaPboDbl.records[k]['techno'])
+# typeBat.append(zaPboDbl.records[k]['type_bat'])
+# statut.append(zaPboDbl.records[k]['statut'])
 
-print(26%12)
+print(26 % 12)

@@ -21,12 +21,12 @@ class MyFieldParser(FieldParser):
 now = datetime.datetime.now()
 date = now.strftime("%d/%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('pdsInput/21_017_101_CABLE_OPTIQUE_C.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('pdsInput/21_017_101_BOITE_OPTIQUE_C.dbf', load=True, encoding='iso-8859-1')
-zaPboDbl = DBF('pdsInput/zpbodbl101.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('pdsInput/31_206_295_CABLE_OPTIQUE_G.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/31_206_295_BOITE_OPTIQUE_G.dbf', load=True, encoding='iso-8859-1')
+zaPboDbl = DBF('pdsInput/zpbodbl295.dbf', load=True, encoding='iso-8859-1')
 casseteTable = DBF('pdsInput/cassete_file.dbf', load=True, encoding='iso-8859-1')
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('PDS/SRO-21_017_101-Pds.xlsx')
+workbook = xlsxwriter.Workbook('PDS/SRO-31_206_295-Pds.xlsx')
 # ############### define the character and style of cell inside excel ################"
 bold = workbook.add_format({'bold': True, "border": 1})
 bold1 = workbook.add_format({'bold': True})
@@ -90,14 +90,14 @@ typeBat = []
 statut = []
 for k in range(0, zapLen):
     boiteName.append(zaPboDbl.records[k]['NOM'])
-    nbPrise.append(zaPboDbl.records[k]['NB_PRISE'])
-    tECHNO.append(zaPboDbl.records[k]['TECHNO'])
-    typeBat.append(zaPboDbl.records[k]['TYPE_BAT'])
-    statut.append(zaPboDbl.records[k]['STATUT'])
-    # nbPrise.append(zaPboDbl.records[k]['nb_prise'])
-    # tECHNO.append(zaPboDbl.records[k]['techno'])
-    # typeBat.append(zaPboDbl.records[k]['type_bat'])
-    # statut.append(zaPboDbl.records[k]['statut'])
+    # nbPrise.append(zaPboDbl.records[k]['NB_PRISE'])
+    # tECHNO.append(zaPboDbl.records[k]['TECHNO'])
+    # typeBat.append(zaPboDbl.records[k]['TYPE_BAT'])
+    # statut.append(zaPboDbl.records[k]['STATUT'])
+    nbPrise.append(zaPboDbl.records[k]['nb_prise'])
+    tECHNO.append(zaPboDbl.records[k]['techno'])
+    typeBat.append(zaPboDbl.records[k]['type_bat'])
+    statut.append(zaPboDbl.records[k]['statut'])
 
 # from the cassete file
 reference = []  # reference of the boite
@@ -1264,24 +1264,24 @@ for b in range(0, boiteLen):
 workbook.close()
 print("#" * 35)
 # ################# some test for verification ##############################################
-boite = 'PEC-21-017-101-2046'
-cable = getCable(boite)
-index1 = boiteCode.index(boite)
-cap = getCapacity(cable)
-ftte = checkGlobalFtt(boite)
-ftt = checkFtt(boite)
-nbfu = getfuNum(boite, 0)
-nb = getNumbrFu(boite, 0)
-ftteLine = getFTTElineStart(boite)
-nbr = (nb+6)-ftte
-extraN2 = cap - (aroundTo(ftte, 12) + nbfu - ftte)
-extraN = aroundTo(ftte, 12) - ftte
-tt = cap - aroundTo(ftte, 12) + ftte
-lin = getLastStartBoite(boite)
-# startLine, p = extracableFillIn(w, cable, cap, extraN2, startLine, nbfu, p)
-
-# startLine, p = extracableFillIn(w, cable, cap, extraN, startLine, tt, p)
-print(nb, nbfu, ftte, nbf[index1], ftt, ftteLine, nbr, extraN2, "   lin", lin)
+# boite = 'PEC-21-017-101-2046'
+# cable = getCable(boite)
+# index1 = boiteCode.index(boite)
+# cap = getCapacity(cable)
+# ftte = checkGlobalFtt(boite)
+# ftt = checkFtt(boite)
+# nbfu = getfuNum(boite, 0)
+# nb = getNumbrFu(boite, 0)
+# ftteLine = getFTTElineStart(boite)
+# nbr = (nb+6)-ftte
+# extraN2 = cap - (aroundTo(ftte, 12) + nbfu - ftte)
+# extraN = aroundTo(ftte, 12) - ftte
+# tt = cap - aroundTo(ftte, 12) + ftte
+# lin = getLastStartBoite(boite)
+# # startLine, p = extracableFillIn(w, cable, cap, extraN2, startLine, nbfu, p)
+#
+# # startLine, p = extracableFillIn(w, cable, cap, extraN, startLine, tt, p)
+# print(nb, nbfu, ftte, nbf[index1], ftt, ftteLine, nbr, extraN2, "   lin", lin)
 # # cab = getCable(boite)
 # cap = getCapacity(cab)
 # index1 = boiteCode.index(boite)

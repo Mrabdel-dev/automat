@@ -8,20 +8,29 @@ from openpyxl import load_workbook
 
 # load your pds file here
 pdsFile = ''
-pds = load_workbook('epesIn/SRO-21_011_076_PLAN DE BOITE-22-04-2021.xlsx')
+pds = load_workbook('PDS/SRO-21_011_080_PLAN DE BOITE.xlsx')
 wpds = pds.sheetnames
-# # dbf file to get information about the boit
-# dbfFile = 'epesIn/21_011_079_BOITE_OPTIQUE_A.dbf'
-# boiteTable = DBF('epesIn/85_048_568_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-# filedBoiteNam = boiteTable.field_names
-# boiteLen = len(boiteTable)
-# boiteCode = []
-# codeLocal = []
-# for j in range(0, boiteLen):
-#     boiteCode.append(boiteTable.records[j]['NOM'])
-#     codeLocal.append(boiteTable.records[j]['ID_PARENT'])
+# dbf file to get information about the boitE AND POINT
+boiteTable = DBF('pdsInput/21_011_080_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+pointTable = DBF('routInput/21_011_080_POINT_TECHNIQUE_A.dbf', load=True, encoding='iso-8859-1')
+filedBoiteNam = boiteTable.field_names
+boiteLen = len(boiteTable)
+boiteCode = []
+codeLocal = []
+filedPointNam = boiteTable.field_names
+print(filedPointNam)
+PointLen = len(boiteTable)
+pointCode = []
+codeSite = []
+for j in range(0, boiteLen):
+    boiteCode.append(boiteTable.records[j]['NOM'])
+    codeLocal.append(boiteTable.records[j]['ID_PARENT'])
+
+for K in range(0, boiteLen):
+    pointCode.append(boiteTable.records[K]['CODE'])
+    codeSite.append(boiteTable.records[K]['ID_PARENT'])
 # create the epesourege file
-epesBook = xlsxwriter.Workbook('epesExcel/SRO-21_011_076_Epesourage.xlsx')
+epesBook = xlsxwriter.Workbook('epesExcel/21_011_080_EPISSURES_C.xlsx')
 wr = epesBook.add_worksheet()
 print(wpds)
 boiteList = sorted(wpds)
@@ -68,6 +77,15 @@ def integerFormat(x):
         return x
 
 
+def getCodeSite(codelocal):
+    try:
+        index = pointCode.index(codelocal)
+        codesite = codeSite[index]
+    except ValueError:
+        codesite = ""
+    return codesite
+
+
 def getBagueByTube(tube: str):
     if tube.isdigit():
         tube = int(tube)
@@ -93,10 +111,12 @@ for s in boiteList:
     MaxRow = sheet.max_row
     print(MaxRow)
     MaxCol = sheet.max_column
-    # for t in range(0, boiteLen):
-    #     if s == boiteCode[t]:
-    #         code = codeLocal[t]
-
+    codesite = ''
+    for t in range(0, boiteLen):
+        if s == boiteCode[t]:
+            code = codeLocal[t]
+    if code.startswith("CMO") or code.startswith("IMM"):
+        codesite = getCodeSite(code)
     for i in range(12, MaxRow + 1):
         cable = sheet.cell(row=i, column=1).value
         wr.write('A' + str(b), cable, border)
@@ -117,10 +137,11 @@ for s in boiteList:
         wr.write('F' + str(b), '', border)
         wr.write('G' + str(b), '', border)
         wr.write('H' + str(b), '', border)
-        wr.write('I' + str(b), '', border)
         wr.write('J' + str(b), '', border)
+        # CODESITE
+        wr.write('I' + str(b), codesite, border)
         # CODElOCAL
-        wr.write('K' + str(b), 'code', border)
+        wr.write('K' + str(b), code, border)
         # boite
         wr.write('L' + str(b), s, border)
         # cassete

@@ -6,15 +6,15 @@ from os import walk
 # the folder source that you want take resize inside it
 from openpyxl import load_workbook
 
-monRepertoire = 'C:/Users/etudes20/Desktop/FCI 075/'
+monRepertoire = 'C:/Users/etudes20/Desktop/C3A de 69/'
 # the folder out that u want to put new images in it
-sortRepetoire = 'C:/Users/etudes20/Desktop/FCI 075/fCI-075.xslx'
-workbook1 = xlsxwriter.Workbook('fCI-075.xlsx')
-w = workbook1.add_worksheet('FCI-075')
+sortRepetoire = 'C:/Users/etudes20/Desktop/C3A de 69/fCI-069.xlsx'
+workbook1 = xlsxwriter.Workbook(sortRepetoire)
+w = workbook1.add_worksheet('FCI-069')
 bold = workbook1.add_format({'bold': True, "border": 1})
 bold1 = workbook1.add_format({'bold': True})
 border = workbook1.add_format({"border": 1})
-w.write(0, 0, 'N° ', bold)
+w.write(0, 0, 'POTEAU_CHA', bold)
 w.write(0, 1, 'FCI', bold)
 listP = set()
 listeFichiers = []

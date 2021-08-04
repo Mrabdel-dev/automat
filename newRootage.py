@@ -21,12 +21,12 @@ found = True
 x = 0
 rowmax = 0
 # ##########################################################################################
-with open('epesourageCSV/21_017_101_EPISSURES_C.csv', 'rt')as f:
+with open('epesourageCSV/SRO-21_011_077_EPISSURES_C.csv', 'rt')as f:
     data = csv.DictReader(f, delimiter=';')
     # #<---------- get the value from csv epesourge table---------------------------------->#
     print(data.fieldnames)
     for row in data:
-        cableName.append(row['ï»¿CODE_CABLE_ORIGINE'])
+        cableName.append(row['CODE_CABLE_ORIGINE'])
         tubeNumberI.append(row['NUMERO_TUBE_ORIGINE'])
         fibreNumberI.append(row['NUMERO_FIBRE_ORIGINE'])
         boiteName.append(row['CODE_BOITE'])
@@ -60,8 +60,8 @@ with open('epesourageCSV/21_017_101_EPISSURES_C.csv', 'rt')as f:
 
 sortedSro = {k: v for k, v in sorted(dictCable.items(), key=lambda v: v[1])}
 sroCab = list(sortedSro.keys())
-# sroCable = sroCab
-sroCable = ['CDI-21-017-101-1000', 'CDI-21-017-101-1010']
+sroCable = sroCab
+# sroCable = ['CDI-21-011-080-3000', 'CDI-21-011-080-2000', 'CDI-21-011-080-1000']
 
 print(dictCable)
 print(sortedSro)
@@ -69,7 +69,7 @@ print(sroCab)
 print(sroCable)
 # ########################################################################################
 # <-----------------------route file creation------------------------------------------->
-rootBook = xlsxwriter.Workbook('routage/Rootage-SRO-21_017_101_.xlsx')
+rootBook = xlsxwriter.Workbook('routage/Rootage-SRO-21_011_077_.xlsx')
 wr = rootBook.add_worksheet()
 # define the character and style of cell inside excel
 bold = rootBook.add_format({'bold': True, "border": 1})

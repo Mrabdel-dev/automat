@@ -12,23 +12,24 @@ pds = load_workbook('PDS/SRO-21_011_080_PLAN DE BOITE.xlsx')
 wpds = pds.sheetnames
 # dbf file to get information about the boitE AND POINT
 boiteTable = DBF('pdsInput/21_011_080_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-pointTable = DBF('routInput/21_011_080_POINT_TECHNIQUE_A.dbf', load=True, encoding='iso-8859-1')
+dblTable = DBF('pdsInput/zpbodbl295.dbf', load=True, encoding='iso-8859-1')
 filedBoiteNam = boiteTable.field_names
 boiteLen = len(boiteTable)
 boiteCode = []
 codeLocal = []
-filedPointNam = boiteTable.field_names
-print(filedPointNam)
-PointLen = len(boiteTable)
-pointCode = []
-codeSite = []
 for j in range(0, boiteLen):
     boiteCode.append(boiteTable.records[j]['NOM'])
     codeLocal.append(boiteTable.records[j]['ID_PARENT'])
 
-for K in range(0, boiteLen):
-    pointCode.append(boiteTable.records[K]['CODE'])
-    codeSite.append(boiteTable.records[K]['ID_PARENT'])
+filedPointNam = dblTable.field_names
+print(filedPointNam)
+dblLen = len(dblTable)
+dblCode = []
+codeSite = []
+for K in range(0, dblLen):
+    dblCode.append(dblTable.records[K]['NOM'])
+    codeSite.append(dblTable.records[K]['ref_imb'])
+    # codeSite.append(boiteTable.records[K]['REF_IMB'])
 # create the epesourege file
 epesBook = xlsxwriter.Workbook('epesExcel/21_011_080_EPISSURES_C.xlsx')
 wr = epesBook.add_worksheet()
@@ -77,12 +78,11 @@ def integerFormat(x):
         return x
 
 
-def getCodeSite(codelocal):
-    try:
-        index = pointCode.index(codelocal)
-        codesite = codeSite[index]
-    except ValueError:
-        codesite = ""
+def getCodeSite(code):
+    index = codeLocal.index(code)
+    boite = boiteCode[index]
+    indexB = dblCode.index(boite)
+    codesite = codeSite[indexB]
     return codesite
 
 

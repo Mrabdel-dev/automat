@@ -8,10 +8,11 @@ from openpyxl import load_workbook
 
 # load your pds file here
 pdsFile = ''
-pds = load_workbook('PDS/SRO-31_206_295-Pds.xlsx')
+pds = load_workbook('PDS/SRO-21_011_077-Pds.xlsx')
 wpds = pds.sheetnames
 # dbf file to get information about the boit
-boiteTable = DBF('pdsInput/31_206_295_BOITE_OPTIQUE_G.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/21_011_077_BOITE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
+dblTable = DBF('pdsInput/zpbodbl077.dbf', load=True, encoding='iso-8859-1')
 filedBoiteNam = boiteTable.field_names
 boiteLen = len(boiteTable)
 boiteCode = []
@@ -19,8 +20,19 @@ codeLocal = []
 for j in range(0, boiteLen):
     boiteCode.append(boiteTable.records[j]['NOM'])
     codeLocal.append(boiteTable.records[j]['ID_PARENT'])
+
+filedPointNam = dblTable.field_names
+print(filedPointNam)
+dblLen = len(dblTable)
+dblCode = []
+codeSite = []
+for K in range(0, dblLen):
+    dblCode.append(dblTable.records[K]['NOM'])
+    # codeSite.append(dblTable.records[K]['ref_imb'])
+    codeSite.append(dblTable.records[K]['REF_IMB'])
 # create the epesourege file
-epesBook = xlsxwriter.Workbook('epesExcel/SRO-31_206_295_EPISSURES_C.xlsx')
+
+epesBook = xlsxwriter.Workbook('epesExcel/SRO-21_011_077_EPISSURES_C.xlsx')
 wr = epesBook.add_worksheet()
 print(wpds)
 boiteList = sorted(wpds)
@@ -86,16 +98,26 @@ def getBagueByTube(tube: str):
         return ''
 
 
+def getcodeSite(code):
+    index = codeLocal.index(code)
+    boite = boiteCode[index]
+    indexB = dblCode.index(boite)
+    codesite = codeSite[indexB]
+    return codesite
+
+
 code = ''
 for s in boiteList:
     sheet = pds[s]
     MaxRow = sheet.max_row
     print(MaxRow)
     MaxCol = sheet.max_column
+    codesite = ''
     for t in range(0, boiteLen):
         if s == boiteCode[t]:
             code = codeLocal[t]
-
+    if code.startswith("CMO") or code.startswith("IM"):
+        codesite = getcodeSite(code)
     for i in range(2, MaxRow + 1):
         cable = sheet.cell(row=i, column=1).value
         wr.write('A' + str(b), cable, border)
@@ -116,8 +138,9 @@ for s in boiteList:
         wr.write('F' + str(b), '', border)
         wr.write('G' + str(b), '', border)
         wr.write('H' + str(b), '', border)
-        wr.write('I' + str(b), '', border)
         wr.write('J' + str(b), '', border)
+        # CODESITE
+        wr.write('I' + str(b), codesite, border)
         # CODElOCAL
         wr.write('K' + str(b), code, border)
         # boite

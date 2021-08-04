@@ -21,12 +21,12 @@ class MyFieldParser(FieldParser):
 now = datetime.datetime.now()
 date = now.strftime("%d/%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('pdsInput/31_206_295_CABLE_OPTIQUE_G.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('pdsInput/31_206_295_BOITE_OPTIQUE_G.dbf', load=True, encoding='iso-8859-1')
-zaPboDbl = DBF('pdsInput/zpbodbl295.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('pdsInput/21_011_077_CABLE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/21_011_077_BOITE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
+zaPboDbl = DBF('pdsInput/zpbodbl077.dbf', load=True, encoding='iso-8859-1')
 casseteTable = DBF('pdsInput/cassete_file.dbf', load=True, encoding='iso-8859-1')
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('PDS/SRO-31_206_295-Pds.xlsx')
+workbook = xlsxwriter.Workbook('PDS/SRO-21_011_077-Pds.xlsx')
 # ############### define the character and style of cell inside excel ################"
 bold = workbook.add_format({'bold': True, "border": 1})
 bold1 = workbook.add_format({'bold': True})
@@ -90,14 +90,14 @@ typeBat = []
 statut = []
 for k in range(0, zapLen):
     boiteName.append(zaPboDbl.records[k]['NOM'])
-    # nbPrise.append(zaPboDbl.records[k]['NB_PRISE'])
-    # tECHNO.append(zaPboDbl.records[k]['TECHNO'])
-    # typeBat.append(zaPboDbl.records[k]['TYPE_BAT'])
-    # statut.append(zaPboDbl.records[k]['STATUT'])
-    nbPrise.append(zaPboDbl.records[k]['nb_prise'])
-    tECHNO.append(zaPboDbl.records[k]['techno'])
-    typeBat.append(zaPboDbl.records[k]['type_bat'])
-    statut.append(zaPboDbl.records[k]['statut'])
+    nbPrise.append(zaPboDbl.records[k]['NB_PRISE'])
+    tECHNO.append(zaPboDbl.records[k]['TECHNO'])
+    typeBat.append(zaPboDbl.records[k]['TYPE_BAT'])
+    statut.append(zaPboDbl.records[k]['STATUT'])
+    # nbPrise.append(zaPboDbl.records[k]['nb_prise'])
+    # tECHNO.append(zaPboDbl.records[k]['techno'])
+    # typeBat.append(zaPboDbl.records[k]['type_bat'])
+    # statut.append(zaPboDbl.records[k]['statut'])
 
 # from the cassete file
 reference = []  # reference of the boite
@@ -1163,7 +1163,7 @@ def boitePecPboFillIn(w: sheet, cable, boite, capacity, T):
             p = fillPecPassage(w, x, 1, linestockstart, 0, T, p)
             Lin = PboFillEpes(w, boites, boite, Lin, 0, 1)
             p = fillPecPassage(w, x, Lin, ftteLine, Lin - 1, tubeRound(Lin), p)
-            fttePas, p = fillfPassedfttePassage(w, x, fttepass, T, p)
+            fttePas, p = fillfPassedfttePassage(w, x, fttepass, p)
             endftteLineS = PboFillFTTeStocker(w, boite, ftt, fttePas, T)
             endftteLine = ftteFillIn(w, boites, boite, endftteLineS, 1)
             end = aroundTo(endftteLine, 12)

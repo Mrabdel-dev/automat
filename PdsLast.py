@@ -579,7 +579,7 @@ def ftteFillIn(w, Listboites, boite, startLin, T):
         ftteN = checkGlobalFtt(b)
         cable = getCable(b)
         capacity = getCapacity(cable)
-        T = tubeRound(capacity - ftteN)
+        T = tubeRound(capacity - 11)
         for j in range(0, ftteN):
 
             w.write(startLin, 2, p, border)
@@ -595,10 +595,10 @@ def ftteFillIn(w, Listboites, boite, startLin, T):
             w.write(startLin, 9, num, border)
             w.write(startLin, 8, T, stringCassette(str(T)))
             if num % 12 == 0:
-                if T == 24:
+                if T == 1:
                     T = 1
                 else:
-                    T += 1
+                    T -= 1
             w.write(startLin, 7, num, stringCassette(str(num)))
             w.write(startLin, 12, cable, border)
             w.write(startLin, 11, '', border)
@@ -752,10 +752,10 @@ def PboFillFTTeStocker(w: sheet, boite, stokker, Lin, T=1):
         w.write(Lin, 9, '', border)
         w.write(Lin, 8, '', border)
         if num % 12 == 0:
-            if T == 96:
+            if T == 1:
                 T = 1
             else:
-                T += 1
+                T -= 1
         w.write(Lin, 7, '', border)
         w.write(Lin, 11, '', border)
         w.write(Lin, 12, '', border)
@@ -993,11 +993,11 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine, p):
                     extraN2 = cap - (aroundTo(ftte, 12) + nbfu)
                     startLine, p = extracableFillIn(w, cable, cap, extraN2, startLine, nbfu, p)
                     extraN = aroundTo(ftte, 12) - ftte
-                    tt = cap - aroundTo(ftte, 12) + ftte
+                    tt = cap - aroundTo(ftte, 12) + (ftte%12)
                     startLine, p = extracableFillIn(w, cable, cap, extraN, startLine, tt, p)
                 else:
                     extraN = aroundTo(ftte, 12) - ftte
-                    tt = cap - aroundTo(ftte, 12) + ftte
+                    tt = cap - aroundTo(ftte, 12) + (ftte%12)
                     startLine, p = extracableFillIn(w, cable, cap, extraN, startLine, tt, p)
 
 
@@ -1264,24 +1264,26 @@ for b in range(0, boiteLen):
 workbook.close()
 print("#" * 35)
 # ################# some test for verification ##############################################
-# boite = 'PEC-21-017-101-2046'
-# cable = getCable(boite)
-# index1 = boiteCode.index(boite)
-# cap = getCapacity(cable)
-# ftte = checkGlobalFtt(boite)
-# ftt = checkFtt(boite)
-# nbfu = getfuNum(boite, 0)
-# nb = getNumbrFu(boite, 0)
-# ftteLine = getFTTElineStart(boite)
-# nbr = (nb+6)-ftte
-# extraN2 = cap - (aroundTo(ftte, 12) + nbfu - ftte)
-# extraN = aroundTo(ftte, 12) - ftte
-# tt = cap - aroundTo(ftte, 12) + ftte
-# lin = getLastStartBoite(boite)
-# # startLine, p = extracableFillIn(w, cable, cap, extraN2, startLine, nbfu, p)
-#
-# # startLine, p = extracableFillIn(w, cable, cap, extraN, startLine, tt, p)
-# print(nb, nbfu, ftte, nbf[index1], ftt, ftteLine, nbr, extraN2, "   lin", lin)
+boite = 'PEC-21-011-077-1000'
+boit = "PBO-21-011-077-1021"
+cable = getCable(boite)
+index1 = boiteCode.index(boite)
+cap = getCapacity(cable)
+ftte = checkGlobalFtt(boite)
+ftt = checkFtt(boite)
+nbfu = getfuNum(boite, 0)
+nb = getNumbrFu(boite, 0)
+ftteLine = getFTTElineStart(boite)
+nbr = (nb+6)-ftte
+extraN2 = cap - (aroundTo(ftte, 12) + nbfu - ftte)
+extraN = aroundTo(ftte, 12) - ftte
+tt = cap - aroundTo(ftte, 12) + ftte
+lin = getLastStartBoite(boite)
+fttb = checkGlobalFtt(boit)
+# startLine, p = extracableFillIn(w, cable, cap, extraN2, startLine, nbfu, p)
+
+# startLine, p = extracableFillIn(w, cable, cap, extraN, startLine, tt, p)
+print(nb, nbfu, ftte,fttb,f"def {(ftte-fttb)%12}", nbf[index1], ftt, ftteLine, nbr, extraN2, "   lin", lin)
 # # cab = getCable(boite)
 # cap = getCapacity(cab)
 # index1 = boiteCode.index(boite)

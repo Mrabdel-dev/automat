@@ -1310,7 +1310,7 @@ for b in range(0, boiteLen):
 workbook.close()
 print("#" * 35)
 # ################# some test for verification ##############################################
-boite = 'PEC-21-011-069-1017'
+boite = 'PBO-21-011-069-3001'
 # boit = "PBO-21-011-077-1021"
 # cable = getCable(boit)
 # index1 = boiteCode.index(boit)
@@ -1321,8 +1321,9 @@ ftte = checkGlobalFtt(boite)
 # listb = []
 # getAllboitestart(getLastStartBoite(boite), boite, listb)
 nbfu = (getfuNum(getLastStartBoite(boite), 0) - getNumbrFu(boite, 0) - (checkGlobalFtt(getLastStartBoite(boite)) - checkGlobalFtt(boite))) + 1
-nb = getlinEpessStart(boite)
-print(ftte, nbfu, nb)
+nb = getStockStartLine(boite)
+b = getLastStartBoite(boite)
+print(ftte, nbfu, nb,b)
 
 # indexk = getcassteIndex(boit)
 # N= nbrCassete[indexk]

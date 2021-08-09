@@ -60,9 +60,8 @@ with open('epesourageCSV/SRO-21_011_077_EPISSURES_C.csv', 'rt')as f:
 
 sortedSro = {k: v for k, v in sorted(dictCable.items(), key=lambda v: v[1])}
 sroCab = list(sortedSro.keys())
-sroCable = sroCab
-# sroCable = ['CDI-21-011-080-3000', 'CDI-21-011-080-2000', 'CDI-21-011-080-1000']
-
+# sroCable = sroCab
+sroCable = ['CDI-21-011-077-2000', 'CDI-21-011-077-1000', 'CDI-21-011-077-3000']
 print(dictCable)
 print(sortedSro)
 print(sroCab)

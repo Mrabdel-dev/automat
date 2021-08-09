@@ -1,23 +1,23 @@
 # just try to learn well
-# from tkinter import *
-# from tkinter import filedialog
+from tkinter import *
+from tkinter import filedialog
 
-# top = Tk()
-# top.title("Maneo File Generator")
-# top.minsize(800, 400)
-#
-#
-# def browsefunc():
-#     filename = filedialog.askopenfilename()
-#     pathlabel.config(text=filename)
-#
-#
-# browsebutton = Button(top, text="Browse", command=browsefunc)
-# browsebutton.pack()
-#
-# pathlabel = Label(top)
-# pathlabel.pack()
-# top.mainloop()
+top = Tk()
+top.title("Maneo File Generator")
+top.minsize(800, 400)
+
+
+def browsefunc():
+    filename = filedialog.askopenfilename()
+    pathlabel.config(text=filename)
+
+
+browsebutton = Button(top, text="Browse", command=browsefunc)
+browsebutton.pack()
+
+pathlabel = Label(top)
+pathlabel.pack()
+top.mainloop()
 # import datetime
 #
 # date = datetime.datetime.now()
@@ -103,5 +103,9 @@
 # tECHNO.append(zaPboDbl.records[k]['techno'])
 # typeBat.append(zaPboDbl.records[k]['type_bat'])
 # statut.append(zaPboDbl.records[k]['statut'])
-
-print(26 % 12)
+#
+# print(26 % 12)
+# import tkinter as tk
+# window = tk.Tk()
+# lbl = tk.Label(text="firstStart")
+# lbl.pack()

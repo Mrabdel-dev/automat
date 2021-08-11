@@ -280,7 +280,7 @@ def checkFtt(boit):
     for b, n, t, y, c, s in zip(boiteName, nbPrise, tECHNO, typeBat, typeCli, statut):
         if boit == b:
             if (t == 'FTTE' or c == "PUBLIC" or c == "PRO") and s != 'ABANDONNE':
-                if y == 'PYLONE' or y.startswith('CHT'):
+                if y == 'PYLONE' or y.startswith('CHATEAU D EAU'):
                     fuFttE += n * 4
 
                 else:
@@ -377,7 +377,7 @@ def getStockStartLine(boite):
         listB = []
         listB = getAllboitestart(b, boite, listB)
         for l in listB:
-            fuUsed += getNumbrFu(l, 0) - checkGlobalFtt(l)
+            fuUsed += getNumbrFu(l, 0) - checkFtt(l)
         fuBoit = getNumbrFu(boite, 0) - checkGlobalFtt(boite)
         # fuUsed -= getPassedFtte(boite, cap)
         lineStart = fuUsed
@@ -1094,10 +1094,20 @@ def getlinEpessStart(boite):
         return Lin
     listB = getListComingBoite(boiteS)
     if len(listB) < 2:
-        Lin = (getfuNum(getLastStartBoite(boite), 0) - getNumbrFu(boite, 0) - (checkGlobalFtt(getLastStartBoite(boite)) - checkGlobalFtt(boite))) + 1
+        Lin = (getfuNum(getLastStartBoite(boite), 0) - getNumbrFu(boite, 0) - (
+                    checkGlobalFtt(getLastStartBoite(boite)) - checkGlobalFtt(boite))) + 1
         return Lin
     else:
-        Lin = (getNumbrFu(boiteS, 0) - (checkGlobalFtt(boiteS) - checkGlobalFtt(boite))) + 1
+        listC = []
+        getAllboitestart(boiteS, boite, listC)
+        fuUsed = 0
+        if len(listC) < 2:
+            fuUsed = getNumbrFu(boiteS, 0)
+        else:
+            for b in listC:
+                fuUsed += getNumbrFu(b, 0)
+
+        Lin = (fuUsed - (checkGlobalFtt(boiteS)-checkGlobalFtt(boite))) + 1
         return Lin
 
 
@@ -1172,7 +1182,7 @@ def boitePecFillIn(w: sheet, cable, boite, capacity, T):
             print("#" * 40)
             if c == capacity:
                 c = capacity + 1
-            p = libreFillIn(w, boite, end, c, p)
+            p = libreFillIn(w, boite, endFTTLine, c, p)
         else:
             p = libreFillIn(w, boite, 1, Lin, p)
             Lin = fillInAllCableEpess(w, boites, boite, Lin)
@@ -1310,20 +1320,22 @@ for b in range(0, boiteLen):
 workbook.close()
 print("#" * 35)
 # ################# some test for verification ##############################################
-boite = 'PBO-21-011-069-3001'
-# boit = "PBO-21-011-077-1021"
+boite = 'PBO-21-011-069-3029'
+boit = "PEC-21-011-069-2041"
 # cable = getCable(boit)
 # index1 = boiteCode.index(boit)
+fuUsed = getNumbrFu(boit, 0)
 # fu= nbf[index1]
 # cap = getCapacity(cable)
 ftte = checkGlobalFtt(boite)
 # ftt = getPassedFtte(boite, cap)
-# listb = []
+listb = []
+getAllboitestart(getLastStartBoite(boite), boit, listb)
 # getAllboitestart(getLastStartBoite(boite), boite, listb)
-nbfu = (getfuNum(getLastStartBoite(boite), 0) - getNumbrFu(boite, 0) - (checkGlobalFtt(getLastStartBoite(boite)) - checkGlobalFtt(boite))) + 1
-nb = getStockStartLine(boite)
+nbfu = getNumbrFu("PEC-21-011-069-2039", 0)
+nb = getlinEpessStart(boite)
 b = getLastStartBoite(boite)
-print(ftte, nbfu, nb,b)
+print(ftte, nbfu, nb, b, fuUsed, getlinEpessStart(boit), listb)
 
 # indexk = getcassteIndex(boit)
 # N= nbrCassete[indexk]

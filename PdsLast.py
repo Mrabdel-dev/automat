@@ -21,12 +21,12 @@ class MyFieldParser(FieldParser):
 now = datetime.datetime.now()
 date = now.strftime("%d/%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('pdsInput/21_011_069_CABLE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('pdsInput/21_011_069_BOITE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
-zaPboDbl = DBF('pdsInput/zpbodbl069.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('pdsInput/85_048_567_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/85_048_567_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+zaPboDbl = DBF('pdsInput/zpbodbl567.dbf', load=True, encoding='iso-8859-1')
 casseteTable = DBF('pdsInput/cassete_file.dbf', load=True, encoding='iso-8859-1')
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('PDS/SRO-21_011_069-Pds.xlsx')
+workbook = xlsxwriter.Workbook('PDS/SRO-85_048_567-Pds.xlsx')
 # ############### define the character and style of cell inside excel ################"
 bold = workbook.add_format({'bold': True, "border": 1})
 bold1 = workbook.add_format({'bold': True})
@@ -343,7 +343,11 @@ def getLastStartBoite(boite):
         if capacity == capacity2:
             try:
                 return getLastStartBoite(orginBoite)
-            except ValueError:
+            except ValueError :
+                return orginBoite
+            except RecursionError :
+                print("*"*25)
+                print(boite)
                 return orginBoite
         else:
             return boite
@@ -375,7 +379,7 @@ def getStockStartLine(boite):
     b = getLastStartBoite(boite)
     if b != boite:
         listB = []
-        listB = getAllboitestart(b, boite, listB)
+        listk = getAllboitestart(b, boite, listB)
         for l in listB:
             fuUsed += getNumbrFu(l, 0) - checkFtt(l)
         fuBoit = getNumbrFu(boite, 0) - checkGlobalFtt(boite)
@@ -1311,30 +1315,30 @@ for b in range(0, boiteLen):
     capacity = getCapacity(cable)
     if func == 'PEC':
         boitePecFillIn(w, cable, boite, capacity, T)
-    elif func == 'PEC-PBO' or func == 'BTI':
+    elif func == 'PEC-PBO' or func == 'BTI' or func == 'BET':
         boitePecPboFillIn(w, cable, boite, capacity, T)
     else:
         boitePboFillIn(w, cable, boite, capacity, T)
 workbook.close()
 print("#" * 35)
 # ################# some test for verification ##############################################
-boite = 'PBO-21-011-069-3029'
-boit = "PEC-21-011-069-2041"
-# cable = getCable(boit)
-# index1 = boiteCode.index(boit)
-fuUsed = getNumbrFu(boit, 0)
-# fu= nbf[index1]
-# cap = getCapacity(cable)
-ftte = checkGlobalFtt(boite)
-# ftt = getPassedFtte(boite, cap)
-listb = []
-getAllboitestart(getLastStartBoite(boite), boit, listb)
-# getAllboitestart(getLastStartBoite(boite), boite, listb)
-nbfu = getfuNum("PEC-21-011-069-3039", 0)
-nb = getlinEpessStart(boite)
-b = getLastStartBoite(boite)
-print(ftte, nbfu, checkGlobalFtt("PEC-21-011-069-3039"), getFTTElineStart("PEC-21-011-069-3039"), nb, b, fuUsed,
-      getlinEpessStart(boit), listb)
+# boite = 'PBO-21-011-069-3029'
+# boit = "PEC-21-011-069-2041"
+# # cable = getCable(boit)
+# # index1 = boiteCode.index(boit)
+# fuUsed = getNumbrFu(boit, 0)
+# # fu= nbf[index1]
+# # cap = getCapacity(cable)
+# ftte = checkGlobalFtt(boite)
+# # ftt = getPassedFtte(boite, cap)
+# listb = []
+# getAllboitestart(getLastStartBoite(boite), boit, listb)
+# # getAllboitestart(getLastStartBoite(boite), boite, listb)
+# nbfu = getfuNum("PEC-21-011-069-3039", 0)
+# nb = getlinEpessStart(boite)
+# b = getLastStartBoite(boite)
+# print(ftte, nbfu, checkGlobalFtt("PEC-21-011-069-3039"), getFTTElineStart("PEC-21-011-069-3039"), nb, b, fuUsed,
+#       getlinEpessStart(boit), listb)
 
 # indexk = getcassteIndex(boit)
 # N= nbrCassete[indexk]

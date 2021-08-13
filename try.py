@@ -12,8 +12,9 @@
 # c.append(chr(78))
 # import openpyxl.worksheet.worksheet
 # import xlsxwriter.worksheet
-from openpyxl import load_workbook
+from tkinter import filedialog
 
+from openpyxl import load_workbook
 
 # pdsBook = load_workbook('fileGenerated/PDS.xlsx')
 # pdsSheets = pdsBook.sheetnames
@@ -30,18 +31,18 @@ from openpyxl import load_workbook
 # # rootBook.close()
 # # sheet = openpyxl.worksheet.worksheet.Worksheet
 # worksheet = xlsxwriter.worksheet.Worksheet
-def aroundTo(x: int, num):
-    y = x % num
-    if y != 0:
-        k = x + num - y
-        return k
-    else:
-        return x
-
-
-x = [1, 2, 3, 5, 9, 10, 20, 30]
-for i in x:
-    print(aroundTo(i, 12))
+# def aroundTo(x: int, num):
+#     y = x % num
+#     if y != 0:
+#         k = x + num - y
+#         return k
+#     else:
+#         return x
+#
+#
+# x = [1, 2, 3, 5, 9, 10, 20, 30]
+# for i in x:
+#     print(aroundTo(i, 12))
 #
 # def xlssx(t: x, r: y):
 #     t = t.cell(row=5, column=7).value
@@ -110,3 +111,53 @@ import openpyxl
 #     else:
 #         return x
 # print(aroundToThree(0))
+from tkinter import *
+
+
+def save():
+    first = firstName.get()
+    last = lastName.get()
+    ag = str(age.get())
+    total = first + " " + last + " " + ag
+    firstName_entry.delete(0, END)
+    lastName_entry.delete(0, END)
+    age_entry.delete(0, END)
+    print(total)
+
+def openFile():
+    filePath = filedialog.askopenfilename()
+    fileshow = Label(text=filePath,fg="black")
+    fileshow.place(x=160,y=400)
+    firstName.set(value= filePath)
+screen = Tk()
+screen.geometry("500x500")
+screen.title("firstStart")
+bg = PhotoImage(file="NM.png")
+Image = Label(screen, image=bg)
+Image.place(x=0, y=120, relwidth=1, relheight=1)
+heading = Label(text="form", bg="grey", fg="black", width="500", height="3")
+firstName = Label(text="firstName : ")
+lastName = Label(text="lastName : ")
+age = Label(text="age : ")
+heading.pack()
+firstName.place(x=20, y=60)
+lastName.place(x=20, y=120)
+age.place(x=20, y=170)
+
+firstName = StringVar()
+lastName = StringVar()
+age = IntVar()
+
+firstName_entry = Entry(textvariable=firstName, width="50")
+lastName_entry = Entry(textvariable=lastName, width="50")
+age_entry = Entry(textvariable=age, width="50")
+
+firstName_entry.place(x=100, y=60)
+lastName_entry.place(x=100, y=120)
+age_entry.place(x=100, y=170)
+
+register = Button(screen, text="Register", bg="green", command=save)
+register.place(x=200, y=200)
+Browser = Button(screen, text="Browser", bg="green", command=openFile)
+Browser.place(x=200, y=300)
+screen.mainloop()

@@ -21,12 +21,12 @@ class MyFieldParser(FieldParser):
 now = datetime.datetime.now()
 date = now.strftime("%d/%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('pdsInput/85_048_567_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('pdsInput/85_048_567_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-zaPboDbl = DBF('pdsInput/zpbodbl567.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('pdsInput/21_011_068_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/21_011_068_BOITE_OPTIQUE_A_AI.dbf', load=True, encoding='iso-8859-1')
+zaPboDbl = DBF('pdsInput/zpbodbl068.dbf', load=True, encoding='iso-8859-1')
 casseteTable = DBF('pdsInput/cassete_file.dbf', load=True, encoding='iso-8859-1')
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('PDS/SRO-85_048_567-Pds.xlsx')
+workbook = xlsxwriter.Workbook('PDS/SRO-21_011_068-Pds.xlsx')
 # ############### define the character and style of cell inside excel ################"
 bold = workbook.add_format({'bold': True, "border": 1})
 bold1 = workbook.add_format({'bold': True})
@@ -57,7 +57,7 @@ cableLen = len(cableTable)
 zapLen = len(zaPboDbl)
 cassLen = len(casseteTable)
 
-# #######################declare the table that i need te full#############################################
+# ####################### declare the table that i need te full #############################################
 # FROM THE BOITE OPTIQUE
 boiteCode = []  # name of the boite
 boiteCable = []  # AMOUNT CABLE

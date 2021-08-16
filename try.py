@@ -12,7 +12,6 @@
 # c.append(chr(78))
 # import openpyxl.worksheet.worksheet
 # import xlsxwriter.worksheet
-from tkinter import filedialog
 
 from openpyxl import load_workbook
 
@@ -111,53 +110,93 @@ import openpyxl
 #     else:
 #         return x
 # print(aroundToThree(0))
+from tkinter import filedialog
 from tkinter import *
+from tkinter import ttk
+import xlsxwriter
+
+
+def start():
+    workbook = xlsxwriter.Workbook('start.xlsx')
+    header = workbook.add_format({'bold': True, 'border': 1, 'bg_color': '#C4E5F7'})
+    bold = workbook.add_format({'bold': True, "border": 1})
+    w = workbook.add_worksheet('statistique')
+    first = cableTable.get()
+    print(first)
+    last = boiteTable.get()
+    ag = str(ZPBoDBL_JOINTURE.get())
+    w.write("A1", ag, bold)
+    w.write("B1", last, bold)
+    firstName_entry.delete(0, END)
+    lastName_entry.delete(0, END)
+    age_entry.delete(0, END)
+    workbook.close()
 
 
 def save():
-    first = firstName.get()
-    last = lastName.get()
-    ag = str(age.get())
+    first = cableTable.get()
+    last = boiteTable.get()
+    ag = str(ZPBoDBL_JOINTURE.get())
     total = first + " " + last + " " + ag
     firstName_entry.delete(0, END)
     lastName_entry.delete(0, END)
     age_entry.delete(0, END)
     print(total)
 
+
 def openFile():
     filePath = filedialog.askopenfilename()
-    fileshow = Label(text=filePath,fg="black")
-    fileshow.place(x=160,y=400)
-    firstName.set(value= filePath)
+    fileshow = Label(text=filePath, fg="black")
+    fileshow.place(x=160, y=400)
+    cableTable.set(value=filePath)
+
+
 screen = Tk()
-screen.geometry("500x500")
-screen.title("firstStart")
+screen.geometry("600x600")
+screen.title("PLAN DE BOITE")
 bg = PhotoImage(file="NM.png")
 Image = Label(screen, image=bg)
-Image.place(x=0, y=120, relwidth=1, relheight=1)
-heading = Label(text="form", bg="grey", fg="black", width="500", height="3")
-firstName = Label(text="firstName : ")
-lastName = Label(text="lastName : ")
-age = Label(text="age : ")
+Image.place(x=0, y=140, relwidth=1, relheight=1)
+heading = Label(text="PDS GENERATOR", bg="grey", fg="black", width="500", height="3")
+cableTable = Label(text="cableTable : ")
+boiteTable = Label(text="boiteTable : ")
+ZPBoDBL_JOINTURE = Label(text="ZPBoDBL_JOIN : ")
+casseteTable = Label(text="CasseteTable : ")
 heading.pack()
-firstName.place(x=20, y=60)
-lastName.place(x=20, y=120)
-age.place(x=20, y=170)
+cableTable.place(x=0, y=70)
+boiteTable.place(x=0, y=120)
+ZPBoDBL_JOINTURE.place(x=0, y=170)
+casseteTable.place(x=0, y=220)
 
-firstName = StringVar()
-lastName = StringVar()
-age = IntVar()
+cableTable = StringVar()
+boiteTable = StringVar()
+casseteTable = StringVar()
+ZPBoDBL_JOINTURE = StringVar()
 
-firstName_entry = Entry(textvariable=firstName, width="50")
-lastName_entry = Entry(textvariable=lastName, width="50")
-age_entry = Entry(textvariable=age, width="50")
+firstName_entry = Entry(textvariable=cableTable, width="70")
+lastName_entry = Entry(textvariable=boiteTable, width="70")
+age_entry = Entry(textvariable=ZPBoDBL_JOINTURE, width="70")
+cassete_entry = Entry(textvariable=casseteTable, width="70")
 
-firstName_entry.place(x=100, y=60)
-lastName_entry.place(x=100, y=120)
-age_entry.place(x=100, y=170)
+firstName_entry.place(x=110, y=70)
+lastName_entry.place(x=110, y=120)
+age_entry.place(x=110, y=170)
+cassete_entry.place(x=110, y=220)
 
-register = Button(screen, text="Register", bg="green", command=save)
-register.place(x=200, y=200)
-Browser = Button(screen, text="Browser", bg="green", command=openFile)
-Browser.place(x=200, y=300)
+Browser = Button(screen, text="Browser", command=openFile)
+Browser.place(x=500, y=60)
+Browser = Button(screen, text="Browser", command=openFile)
+Browser.place(x=500, y=120)
+Browser = Button(screen, text="Browser", command=openFile)
+Browser.place(x=500, y=170)
+Browser = Button(screen, text="Browser", command=openFile)
+Browser.place(x=500, y=220)
+my_progress = ttk.Progressbar(screen, orient=HORIZONTAL, length=400, mode='determinate')
+my_progress.pack(pady=20)
+my_progress.place(x=110, y=280)
+start = Button(screen, text="start", bg="#e4e8ff", fg="black", width=10, command=start)
+start.place(x=20, y=280)
+close = Button(screen, text="close", bg="#89a8ff", fg="black", width=10, command=start)
+close.place(x=440, y=550)
+
 screen.mainloop()

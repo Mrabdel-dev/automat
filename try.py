@@ -1247,7 +1247,7 @@ def start():
     # ############## start fill In the pds ##########################################################
     valADD = boiteLen % 100
     for b in range(0, boiteLen):
-        my_progress['value'] += 2
+        my_progress['value'] += 1.3
         screen.update_idletasks()
         # ################## constant work with ####################
         N = 1
@@ -1273,8 +1273,8 @@ def start():
         else:
             boitePboFillIn(w, cable, boite, capacity, T)
 
-
     workbook.close()
+    myPop()
 
 
 def save():
@@ -1286,6 +1286,18 @@ def save():
     lastName_entry.delete(0, END)
     age_entry.delete(0, END)
     print(total)
+
+
+def myPop():
+    global pop
+    pop = Toplevel(screen)
+    pop.title("PDS State")
+    pop.geometry("260x150")
+    pop.config(bg="#DCF7FF")
+    pop_Label = Label(pop, text="PDS HAS Sucssefuly generated", fg="black", width=30)
+    pop_Label.place(x=6, y=60)
+    done = Button(pop, text="close", bg="#89a8ff", fg="black", width=10, command=pop.destroy)
+    done.place(x=180, y=100)
 
 
 def openFile(num: int):
@@ -1350,5 +1362,5 @@ start = Button(screen, text="start", bg="#e4e8ff", fg="black", width=10, command
 start.place(x=20, y=280)
 close = Button(screen, text="close", bg="#89a8ff", fg="black", width=10, command=screen.destroy)
 close.place(x=440, y=550)
-
+myPop()
 screen.mainloop()

@@ -8,11 +8,11 @@ from openpyxl import load_workbook
 
 # load your pds file here
 pdsFile = ''
-pds = load_workbook('PDS/21_011_074_PLAN_BOITE MODIFIE POUR R.O.xlsx')
+pds = load_workbook('PDS/31_206_326_PLAN DE BOITE_A.xlsx')
 wpds = pds.sheetnames
 # dbf file to get information about the boitE AND POINT
-boiteTable = DBF('pdsInput/21_011_080_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-dblTable = DBF('pdsInput/zpbodbl295.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/31_206_326_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+dblTable = DBF('pdsInput/zpbodbl326.dbf', load=True, encoding='iso-8859-1')
 filedBoiteNam = boiteTable.field_names
 boiteLen = len(boiteTable)
 boiteCode = []
@@ -31,7 +31,7 @@ for K in range(0, dblLen):
     codeSite.append(dblTable.records[K]['ref_imb'])
     # codeSite.append(boiteTable.records[K]['REF_IMB'])
 # create the epesourege file
-epesBook = xlsxwriter.Workbook('epesExcel/21_011_074_EPISSURES_C.xlsx')
+epesBook = xlsxwriter.Workbook('epesExcel/31_206_326_EPISSURES_C.xlsx')
 wr = epesBook.add_worksheet()
 print(wpds)
 boiteList = sorted(wpds)
@@ -177,7 +177,7 @@ for s in boiteList:
             type = 'EN PASSAGE'
         elif type.startswith("LIB") or type.startswith("A ST") or type.startswith("STO"):
             type = 'STOCKEE'
-        elif type.startswith("A EP") or type.startswith("EP") :
+        elif type.startswith("A EP") or type.startswith("EP"):
             type = 'EPISSUREE'
         wr.write('W' + str(b), type, border)
         b += 1

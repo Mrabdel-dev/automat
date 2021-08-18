@@ -21,12 +21,12 @@ class MyFieldParser(FieldParser):
 now = datetime.datetime.now()
 date = now.strftime("%d/%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('pdsInput/21_011_068_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('pdsInput/21_011_068_BOITE_OPTIQUE_A_AI.dbf', load=True, encoding='iso-8859-1')
-zaPboDbl = DBF('pdsInput/zpbodbl068.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('pdsInput/31_206_326_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/31_206_326_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+zaPboDbl = DBF('pdsInput/zpbodbl326.dbf', load=True, encoding='iso-8859-1')
 casseteTable = DBF('pdsInput/cassete_file.dbf', load=True, encoding='iso-8859-1')
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('PDS/SRO-21_011_068-Pds.xlsx')
+workbook = xlsxwriter.Workbook('PDS/SRO-31_206_326-Pds.xlsx')
 # ############### define the character and style of cell inside excel ################"
 bold = workbook.add_format({'bold': True, "border": 1})
 bold1 = workbook.add_format({'bold': True})
@@ -91,16 +91,20 @@ typeCli = []
 statut = []
 for k in range(0, zapLen):
     boiteName.append(zaPboDbl.records[k]['NOM'])
-    nbPrise.append(zaPboDbl.records[k]['NB_PRISE'])
-    tECHNO.append(zaPboDbl.records[k]['TECHNO'])
-    typeBat.append(zaPboDbl.records[k]['TYPE_BAT'])
-    typeCli.append(zaPboDbl.records[k]['TYPE_CLI'])
-    statut.append(zaPboDbl.records[k]['STATUT'])
-    # nbPrise.append(zaPboDbl.records[k]['nb_prise'])
-    # tECHNO.append(zaPboDbl.records[k]['techno'])
-    # typeBat.append(zaPboDbl.records[k]['type_bat'])
-    # typeCli.append(zaPboDbl.records[k]['type_cli'])
-    # statut.append(zaPboDbl.records[k]['statut'])
+    try:
+        nbPrise.append(zaPboDbl.records[k]['NB_PRISE'])
+        tECHNO.append(zaPboDbl.records[k]['TECHNO'])
+        typeBat.append(zaPboDbl.records[k]['TYPE_BAT'])
+        typeCli.append(zaPboDbl.records[k]['TYPE_CLI'])
+        statut.append(zaPboDbl.records[k]['STATUT'])
+    except KeyError:
+        nbPrise.append(zaPboDbl.records[k]['nb_prise'])
+        tECHNO.append(zaPboDbl.records[k]['techno'])
+        typeBat.append(zaPboDbl.records[k]['type_bat'])
+        typeCli.append(zaPboDbl.records[k]['type_cli'])
+        statut.append(zaPboDbl.records[k]['statut'])
+
+
 
 # from the cassete file
 reference = []  # reference of the boite
@@ -1073,7 +1077,7 @@ def getcassteIndex(boite):
         return indexCass
     except ValueError:
         listCasseteNotfound.append(ref)
-        indexCass = 0
+        indexCass = 2
         return indexCass
 
 

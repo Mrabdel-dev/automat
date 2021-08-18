@@ -26,7 +26,7 @@ with open('epesourageCSV/21_017_101_EPISSUREE_D.csv', 'rt')as f:
     # #<---------- get the value from csv epesourge table---------------------------------->#
     print(data.fieldnames)
     for row in data:
-        cableName.append(row['ï»¿CODE_CABLE_ORIGINE'])
+        cableName.append(row['CODE_CABLE_ORIGINE'])
         tubeNumberI.append(row['NUMERO_TUBE_ORIGINE'])
         fibreNumberI.append(row['NUMERO_FIBRE_ORIGINE'])
         boiteName.append(row['CODE_BOITE'])

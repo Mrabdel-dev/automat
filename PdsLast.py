@@ -1324,7 +1324,9 @@ for b in range(0, boiteLen):
     else:
         boitePboFillIn(w, cable, boite, capacity, T)
 workbook.close()
-print("#" * 35)
+print("#" * 50)
+print(listCasseteNotfound)
+
 # ################# some test for verification ##############################################
 # boite = 'PBO-21-011-069-3029'
 # boit = "PEC-21-011-069-2041"

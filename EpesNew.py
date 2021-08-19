@@ -8,11 +8,11 @@ from openpyxl import load_workbook
 
 # load your pds file here
 pdsFile = ''
-pds = load_workbook('PDS/85_081_855_PLAN_BOITE.xlsx')
+pds = load_workbook('PDS/85_081_855_PLAN_BOITE (2).xlsx')
 wpds = pds.sheetnames
 # dbf file to get information about the boit
-boiteTable = DBF('pdsInput/85_081_855_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-dblTable = DBF('pdsInput/zpbodbl855.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/85_081_855_BOITE_OPTIQUE_A2.dbf', load=True, encoding='iso-8859-1')
+dblTable = DBF('pdsInput/ZAPBODBL855.dbf', load=True, encoding='iso-8859-1')
 filedBoiteNam = boiteTable.field_names
 boiteLen = len(boiteTable)
 boiteCode = []
@@ -42,10 +42,10 @@ border = epesBook.add_format({"border": 1})
 # ################# the part of coping values from pds to new file ######################
 wr.write('A1', 'CODE_CABLE_ORIGINE', header)
 wr.write('B1', 'NUMERO_TUBE_ORIGINE', header)
-wr.write('C1', 'BAGUE_TUBE_ORIGINE ', header)
+wr.write('C1', 'BAGUE_TUBE_ORIGINE', header)
 wr.write('D1', 'COULEUR_TUBE_ORIGINE', header)
 wr.write('E1', 'NUMERO_FIBRE_ORIGINE', header)
-wr.write('F1', 'BAGUE_FIBRE_ORIGINE ', header)
+wr.write('F1', 'BAGUE_FIBRE_ORIGINE', header)
 wr.write('G1', 'COULEUR_FIBRE_ORIGINE', header)
 wr.write('H1', 'LOVAGE_FIBRE_ORIGINE', header)
 wr.write('I1', 'CODE_SITE', header)
@@ -56,10 +56,10 @@ wr.write('M1', 'CODE_CASSETTE', header)
 wr.write('N1', 'POSITION_CASSETTE', header)
 wr.write('O1', 'CODE_CABLE_DESTINATION', header)
 wr.write('P1', 'NUMERO_TUBE_DESTINATION', header)
-wr.write('Q1', 'BAGUE_TUBE_DESTINATION ', header)
+wr.write('Q1', 'BAGUE_TUBE_DESTINATION', header)
 wr.write('R1', 'COULEUR_TUBE_DESTINATION', header)
 wr.write('S1', 'NUMERO_FIBRE_DESTINATION', header)
-wr.write('T1', 'BAGUE_FIBRE_DESTINATION ', header)
+wr.write('T1', 'BAGUE_FIBRE_DESTINATION', header)
 wr.write('U1', 'COULEUR_FIBRE_DESTINATION', header)
 wr.write('V1', 'LOVAGE_FIBRE_DESTINATION', header)
 wr.write('W1', 'ETAT', header)

@@ -6,9 +6,9 @@ import subprocess as sub
 # except:  # catch *all* exceptions
 #     e = sys.exc_info()
 #     print(e)  # (Exception Type, Exception Value, TraceBack)
-import traceback
-
-try:
-    print(4/0)
-except ZeroDivisionError:
-    print(traceback.format_exc())
+# import traceback
+#
+# try:
+#     print(4/0)
+# except ZeroDivisionError:
+#     print(traceback.format_exc())

@@ -21,12 +21,12 @@ class MyFieldParser(FieldParser):
 now = datetime.datetime.now()
 date = now.strftime("%d/%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('pdsInput/31_206_326_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('pdsInput/31_206_326_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-zaPboDbl = DBF('pdsInput/zpbodbl326.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('pdsInput/85_081_855_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/85_081_855_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+zaPboDbl = DBF('pdsInput/zpbodbl855.dbf', load=True, encoding='iso-8859-1')
 casseteTable = DBF('pdsInput/cassete_file.dbf', load=True, encoding='iso-8859-1')
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('PDS/SRO-31_206_326-Pds.xlsx')
+workbook = xlsxwriter.Workbook('PDS/SRO-85_081_855-Pds.xlsx')
 # ############### define the character and style of cell inside excel ################"
 bold = workbook.add_format({'bold': True, "border": 1})
 bold1 = workbook.add_format({'bold': True})
@@ -1076,7 +1076,8 @@ def getcassteIndex(boite):
         indexCass = reference.index(ref)
         return indexCass
     except ValueError:
-        listCasseteNotfound.append(ref)
+        x=str(boite)+"---/---"+str(ref)
+        listCasseteNotfound.append(x)
         indexCass = 2
         return indexCass
 

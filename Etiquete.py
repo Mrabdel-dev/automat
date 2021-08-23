@@ -6,19 +6,19 @@ import datetime
 now = datetime.datetime.now()
 date = now.strftime("%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('etiqueteInputs/21_011_068_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('etiqueteInputs/21_011_068_BOITE_OPTIQUE_A_AI.dbf', load=True, encoding='iso-8859-1')
-pointTechTable = DBF('etiqueteInputs/21_011_068_POINT_TECHNIQUE_A.dbf', load=True, encoding='iso-8859-1')
-supportTable = DBF('etiqueteInputs/21_011_068_SUPPORT_A.dbf', load=True, encoding='iso-8859-1')
-fciTable = DBF('etiqueteInputs/fCI-068.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('etiqueteInputs/21_011_072_CABLE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('etiqueteInputs/21_011_072_BOITE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
+pointTechTable = DBF('etiqueteInputs/21_011_072_POINT_TECHNIQUE_B.dbf', load=True, encoding='iso-8859-1')
+supportTable = DBF('etiqueteInputs/21_011_072_SUPPORT_B.dbf', load=True, encoding='iso-8859-1')
+fciTable = DBF('etiqueteInputs/fCI-072.dbf', load=True, encoding='iso-8859-1')
 Fibre = "ALTITUDE FIBRE 21"
 propFibre= "ALTI"
-sro = 'SRO-21_011_068'
+sro = 'SRO-21_011_072'
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('Etiquette/SRO-21_011_068-DETAIL-ETIQUETTE.xlsx')
-workbook1 = xlsxwriter.Workbook('Etiquette/SRO-21_011_068-ETIQUETTE.xlsx')
+workbook = xlsxwriter.Workbook('Etiquette/SRO-21_011_072-DETAIL-ETIQUETTE.xlsx')
+workbook1 = xlsxwriter.Workbook('Etiquette/SRO-21_011_072-ETIQUETTE.xlsx')
 totaleSheet = workbook1.add_worksheet("EtiquettePrintedFile")
-# ############### define the character and style of cell inside excel ################"
+# ############### define the character and style of cell inside excel ################"0
 border = workbook.add_format({"border": 1})
 bold = workbook.add_format({'bold': True, "border": 1})
 border1 = workbook1.add_format({"border": 1})
@@ -72,7 +72,11 @@ for p in range(0, pointlen):
 fciNom = []
 fciCode = []
 for f in range(0, fcilen):
-    fciNom.append(fciTable.records[f]['POTEAU_CHA'])
+    try:
+        fciNom.append(fciTable.records[f]['POTEAU_CHA'])
+    except KeyError:
+        fciNom.append(fciTable.records[f]['N__'])
+
     fciCode.append(fciTable.records[f]['FCI'])
 
 # ###################### define  the base header ##############################
@@ -428,50 +432,51 @@ def boiteEtiqueteFill(boites, k, totale: sheet):
 
     lin = 2
     for b in boites:
-        pointTech = getPointTech(b)
-        index = getpointIndex(b)
-        prop = str(pointPrp[index])
-        fcicode = getFci(pointTech)
-        if fcicode is not None:
-            w.write('A' + str(lin), getPointCode(b), border)
-            w.write('B' + str(lin), '1', border)
-            w.write('C' + str(lin), 'BLANC', border)
-            w.write('D' + str(lin), Fibre, border)
-            w.write('E' + str(lin), b, border)
-            w.write('F' + str(lin), str(fcicode) + "-" + str(date), border)
-            w.write('G' + str(lin), '', border)
-            # ############################
-            totale.write('A' + str(k), pointTech, border1)
-            totale.write('B' + str(k), '1', border1)
-            totale.write('C' + str(k), 'BLANC', border1)
-            totale.write('D' + str(k), Fibre, border1)
-            totale.write('E' + str(k), b, border1)
-            totale.write('F' + str(k), str(fcicode) + "-" + str(date), border1)
-            totale.write('G' + str(k), '', border1)
-            lin += 1
-            k += 1
-        else:
-            if prop.startswith(propFibre):
-                fcicode = sro
+        if not str(b).startswith('SRO'):
+            pointTech = getPointTech(b)
+            index = getpointIndex(b)
+            prop = str(pointPrp[index])
+            fcicode = getFci(pointTech)
+            if fcicode is not None:
+                w.write('A' + str(lin), getPointCode(b), border)
+                w.write('B' + str(lin), '1', border)
+                w.write('C' + str(lin), 'BLANC', border)
+                w.write('D' + str(lin), Fibre, border)
+                w.write('E' + str(lin), b, border)
+                w.write('F' + str(lin), str(fcicode) + "-" + str(date), border)
+                w.write('G' + str(lin), '', border)
+                # ############################
+                totale.write('A' + str(k), pointTech, border1)
+                totale.write('B' + str(k), '1', border1)
+                totale.write('C' + str(k), 'BLANC', border1)
+                totale.write('D' + str(k), Fibre, border1)
+                totale.write('E' + str(k), b, border1)
+                totale.write('F' + str(k), str(fcicode) + "-" + str(date), border1)
+                totale.write('G' + str(k), '', border1)
+                lin += 1
+                k += 1
             else:
-                fcicode = "  "
-            w.write('A' + str(lin), getPointCode(b), border)
-            w.write('B' + str(lin), '1', border)
-            w.write('C' + str(lin), 'BLANC', border)
-            w.write('D' + str(lin), Fibre, border)
-            w.write('E' + str(lin), b, border)
-            w.write('F' + str(lin), fcicode, border)
-            w.write('G' + str(lin), '', border)
-            # ############################
-            totale.write('A' + str(k), pointTech, border1)
-            totale.write('B' + str(k), '1', border1)
-            totale.write('C' + str(k), 'BLANC', border1)
-            totale.write('D' + str(k), Fibre, border1)
-            totale.write('E' + str(k), b, border1)
-            totale.write('F' + str(k), fcicode, border1)
-            totale.write('G' + str(k), '', border1)
-            lin += 1
-            k += 1
+                if prop.startswith(propFibre):
+                    fcicode = sro
+                else:
+                    fcicode = "  "
+                w.write('A' + str(lin), getPointCode(b), border)
+                w.write('B' + str(lin), '1', border)
+                w.write('C' + str(lin), 'BLANC', border)
+                w.write('D' + str(lin), Fibre, border)
+                w.write('E' + str(lin), b, border)
+                w.write('F' + str(lin), fcicode, border)
+                w.write('G' + str(lin), '', border)
+                # ############################
+                totale.write('A' + str(k), pointTech, border1)
+                totale.write('B' + str(k), '1', border1)
+                totale.write('C' + str(k), 'BLANC', border1)
+                totale.write('D' + str(k), Fibre, border1)
+                totale.write('E' + str(k), b, border1)
+                totale.write('F' + str(k), fcicode, border1)
+                totale.write('G' + str(k), '', border1)
+                lin += 1
+                k += 1
 
 
 def pointEtiqueteFill(points, k, totale: sheet):
@@ -561,7 +566,7 @@ def etiquettePtOrangeFill(cables, totale: sheet):
         nm = getNomPT(point)
         fci = getFci(nm)
         if fci is None:
-            fci = sro
+            fci = ''
         typeStr = typeStruc[i]
         if typeStr == 'CHAMBRE':
             N = 2

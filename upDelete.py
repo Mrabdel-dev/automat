@@ -1,13 +1,13 @@
 from openpyxl import load_workbook
 
 # load the old book you gona modify
-workbookOldFree = load_workbook('C:/Users/etudes20/Desktop/free/Suivi Projet FREE-IDF-09-07.xlsx')
+workbookOldFree = load_workbook('C:/Users/etudes20/Desktop/free/Suivi Projet FREE-IDF-17-08.xlsx')
 oldBookFree = workbookOldFree.active
 # load the old book you gona modify
-workbookOldPaca = load_workbook('C:/Users/etudes20/Desktop/free/Suivi projets Free PACA-05-08.xlsx')
+workbookOldPaca = load_workbook('C:/Users/etudes20/Desktop/free/Suivi projets Free PACA-18-08-.xlsx')
 oldBookPaca = workbookOldPaca.active
 # load the new book that you want get value from it
-workbookNew = load_workbook('C:/Users/etudes20/Desktop/free/export_projets_2021-08-12-16-05-50.xlsx')
+workbookNew = load_workbook('C:/Users/etudes20/Desktop/free/export_projets_2021-08-24-16-40-54.xlsx')
 newBook = workbookNew.active
 # define parameter for loop
 maxRow = newBook.max_row
@@ -28,6 +28,7 @@ NbrDelPaca = 0
 # the first loop is add all the new value that doesn't exist in the old file
 for i in range(2, maxRow + 1):
     Test = str(newBook.cell(row=i, column=7).value)
+    print(Test)
     if Test == "Sebastien GELSI":
         valNew = newBook.cell(row=i, column=4).value
         for j in range(2, maxRowOldFree + 1):

@@ -21,12 +21,12 @@ class MyFieldParser(FieldParser):
 now = datetime.datetime.now()
 date = now.strftime("%d/%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('pdsInput/85_081_855_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('pdsInput/85_081_855_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-zaPboDbl = DBF('pdsInput/zpbodbl855.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('pdsInput/31_206_327_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/31_206_327_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+zaPboDbl = DBF('pdsInput/zpbodbl327.dbf', load=True, encoding='iso-8859-1')
 casseteTable = DBF('pdsInput/cassete_file.dbf', load=True, encoding='iso-8859-1')
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('PDS/SRO-85_081_855-Pds.xlsx')
+workbook = xlsxwriter.Workbook('PDS/SRO-31_206_327--Pds.xlsx')
 # ############### define the character and style of cell inside excel ################"
 bold = workbook.add_format({'bold': True, "border": 1})
 bold1 = workbook.add_format({'bold': True})
@@ -103,8 +103,6 @@ for k in range(0, zapLen):
         typeBat.append(zaPboDbl.records[k]['type_bat'])
         typeCli.append(zaPboDbl.records[k]['type_cli'])
         statut.append(zaPboDbl.records[k]['statut'])
-
-
 
 # from the cassete file
 reference = []  # reference of the boite
@@ -347,10 +345,10 @@ def getLastStartBoite(boite):
         if capacity == capacity2:
             try:
                 return getLastStartBoite(orginBoite)
-            except ValueError :
+            except ValueError:
                 return orginBoite
-            except RecursionError :
-                print("*"*25)
+            except RecursionError:
+                print("*" * 25)
                 print(boite)
                 return orginBoite
         else:
@@ -750,8 +748,8 @@ def PboFillFTTeStocker(w: sheet, boite, stokker, Lin, T=1):
     size = tailleCassete[index]
     N = nbrCassete[index]
     fu = nbf[indexb] - checkFtt(boite)
-    N = N - int(aroundTo(fu, size) / size)
-
+    if fu != 0:
+        N = N - int(aroundTo(fu, size) / size)
     k = 1
     p = 1
     for s in range(0, stokker):
@@ -997,12 +995,15 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine, p):
                     Lin = getStockStartLine(boite)
                     startLine, p = extracableFillIn(w, cable, cap, total - ftte, startLine, Lin, p)
                     f = int(ftte / 12)
-                    Lin = getFTTElineStart(boite)
+                    cabl = getCable(boite)
+                    capci = getCapacity(cabl)
+                    Lin = Lin + getPassedFtte(boite, capci)
                     ftteLeft = ftte - f * 12
-                    startLine, p = extracableFillIn(w, cable, cap, ftteLeft, startLine, Lin - 1, p)
-                    for i in range(0, f):
-                        Lin = (capacity - 12) - i * 12
-                        startLine, p = extracableFillIn(w, cable, cap, 12, startLine, Lin, p)
+                    startLine, p = extracableFillIn(w, cable, cap, ftteLeft, startLine, Lin, p)
+                    if f != 0:
+                        for i in range(0, f):
+                            Lin = (capacity - 12) - i * 12
+                            startLine, p = extracableFillIn(w, cable, cap, 12, startLine, Lin, p)
 
 
 
@@ -1057,9 +1058,15 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine, p):
                         Lin = getStockStartLine(boite)
                         startLine, p = extracableFillIn(w, cable, cap, total - ftt, startLine, Lin, p)
                         Lin = getFTTElineStart(boite)
+                        cabl = getCable(boite)
+                        capci = getCapacity(cabl)
+                        Lin = Lin + getPassedFtte(boite, capci)
                         startLine, p = extracableFillIn(w, cable, cap, ftt, startLine, Lin - 1, p)
                     else:
                         Lin = getFTTElineStart(boite)
+                        cabl = getCable(boite)
+                        capci = getCapacity(cabl)
+                        Lin = Lin + getPassedFtte(boite, capci)
                         startLine, p = extracableFillIn(w, cable, cap, ftt, startLine, Lin - 1, p)
 
                     # lin = Lin + getNumbrFu(getLastStartBoite(b), 0)-ftte
@@ -1076,7 +1083,7 @@ def getcassteIndex(boite):
         indexCass = reference.index(ref)
         return indexCass
     except ValueError:
-        x=str(boite)+"---/---"+str(ref)
+        x = str(boite) + "---/---" + str(ref)
         listCasseteNotfound.append(x)
         indexCass = 2
         return indexCass
@@ -1241,7 +1248,7 @@ def boitePecPboFillIn(w: sheet, cable, boite, capacity, T):
             end = aroundTo(endftteLine, 12)
             c = capacity - (int(ftte / 12) * 12)
             if ftte % 12 != 0:
-                p = libreFillIn(w, boite, endftteLine, c+1, p)
+                p = libreFillIn(w, boite, endftteLine, c + 1, p)
 
         else:
             Lin = PboFillEpes(w, boitesF, boite, Lin, 0, 1)
@@ -1290,7 +1297,7 @@ def boitePboFillIn(w: sheet, cable, boite, capacity, T):
             end = aroundTo(endftteLine, 12)
             c = capacity - (int(ftte / 12) * 12)
             if ftte % 12 != 0:
-                p = libreFillIn(w, boite, endftteLine, c+1, p)
+                p = libreFillIn(w, boite, endftteLine, c + 1, p)
         else:
             p = libreFillIn(w, boite, 1, linestockstart, p)
             p = libreFillIn(w, boite, Lin, capacity + 1, p)
@@ -1300,7 +1307,7 @@ def boitePboFillIn(w: sheet, cable, boite, capacity, T):
 
 SROboite = getSroBoite()
 print(SROboite)
-
+listCableEroor = []
 # ############## start fill In the pds ##########################################################
 for b in range(0, boiteLen):
     # ################## constant work with ####################
@@ -1318,6 +1325,9 @@ for b in range(0, boiteLen):
     func = boiteFunction[b]
     cable = boiteCable[b]
     capacity = getCapacity(cable)
+    # verfiy = capacity - ((getNumbrFu(b, 0) - checkFtt(b)) + aroundTo(checkGlobalFtt(b) + getPassedFtte(b, capacity), 12))
+    # if verfiy<0:
+    #     listCableEroor.append(str(b)+f" {cable} CAPCITYEroor")
     if func == 'PEC':
         boitePecFillIn(w, cable, boite, capacity, T)
     elif func == 'PEC-PBO' or func == 'BTI' or func == 'BET':
@@ -1329,23 +1339,23 @@ print("#" * 50)
 print(listCasseteNotfound)
 
 # ################# some test for verification ##############################################
-# boite = 'PBO-21-011-069-3029'
+boite = 'PBO-31-206-327-3012'
 # boit = "PEC-21-011-069-2041"
-# # cable = getCable(boit)
-# # index1 = boiteCode.index(boit)
+cable = getCable(boite)
+index1 = boiteCode.index(boite)
 # fuUsed = getNumbrFu(boit, 0)
-# # fu= nbf[index1]
-# # cap = getCapacity(cable)
-# ftte = checkGlobalFtt(boite)
-# # ftt = getPassedFtte(boite, cap)
+fu = nbf[index1]
+cap = getCapacity(cable)
+ftte = checkGlobalFtt(boite)
+ftt = getPassedFtte(boite, cap)
+getFTTElineStart(boite)
 # listb = []
 # getAllboitestart(getLastStartBoite(boite), boit, listb)
 # # getAllboitestart(getLastStartBoite(boite), boite, listb)
 # nbfu = getfuNum("PEC-21-011-069-3039", 0)
 # nb = getlinEpessStart(boite)
 # b = getLastStartBoite(boite)
-# print(ftte, nbfu, checkGlobalFtt("PEC-21-011-069-3039"), getFTTElineStart("PEC-21-011-069-3039"), nb, b, fuUsed,
-#       getlinEpessStart(boit), listb)
+print(ftte, fu, ftt, getFTTElineStart(boite), tubeRound(getFTTElineStart(boite) + ftt))
 
 # indexk = getcassteIndex(boit)
 # N= nbrCassete[indexk]

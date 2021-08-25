@@ -17,13 +17,15 @@ def start():
         BOIT = str(boiteT.get())
         ZPO = str(ZPBoDBL_JOINTURE.get())
         CASS = str(casseteT.get())
+        dircto = str(directory.get())
+        pdsN = str(pdsName.get())
         # ################## load the both file boite and cable in DBF format ###################################
         cableTable = DBF(CAB, load=True, encoding='iso-8859-1')
         boiteTable = DBF(BOIT, load=True, encoding='iso-8859-1')
         zaPboDbl = DBF(ZPO, load=True, encoding='iso-8859-1')
         casseteTable = DBF(CASS, load=True, encoding='iso-8859-1')
         # ################### declare the excel pds file ###########################################################
-        workbook = xlsxwriter.Workbook('PDS/TEST.xlsx')
+        workbook = xlsxwriter.Workbook(dircto+pdsN+'.xlsx')
         # ############### define the character and style of cell inside excel ################"
         bold = workbook.add_format({'bold': True, "border": 1})
         bold1 = workbook.add_format({'bold': True})
@@ -1250,7 +1252,7 @@ def start():
         # ############## start fill In the pds ##########################################################
         valADD = boiteLen % 100
         for b in range(0, boiteLen):
-            my_progress['value'] += 1.3
+            my_progress['value'] += 100/boiteLen
             screen.update_idletasks()
             # ################## constant work with ####################
             N = 1

@@ -1178,7 +1178,7 @@ def boitePecFillIn(w: sheet, cable, boite, capacity, T):
             end = aroundTo(endFTTLine, 12)
             p = fillPecPassage(w, x, endFTTLine, end + 1, endFTTLine - 1, tubeRound(endFTTLine), p)
         else:
-            p = fillPecPassage(w, x, 1, Lin, Lin - 1, tubeRound(Lin), p)
+            p = fillPecPassage(w, x, 1, Lin, 0, T, p)
             Lin = fillInAllCableEpess(w, nextBoits, boite, Lin)
             p = fillPecPassage(w, x, Lin, capacity + 1, Lin - 1, tubeRound(Lin), p)
 
@@ -1355,7 +1355,7 @@ print(listCasseteNotfound)
 print(listCableEroor)
 
 # ################# some test for verification ##############################################
-# boite = 'PBO-85-048-567-1011'
+# boite = 'PEC-85-018-261-1038'
 # # boit = "PEC-21-011-069-2041"
 # cable = getCable(boite)
 # index1 = boiteCode.index(boite)
@@ -1371,7 +1371,7 @@ print(listCableEroor)
 # # nbfu = getfuNum("PEC-21-011-069-3039", 0)
 # # nb = getlinEpessStart(boite)
 # # b = getLastStartBoite(boite)
-# print(ftte, cap,cable, getNumbrFu(boite,0), aroundTo(
+# print(getlinEpessStart(boite), cap,cable, getNumbrFu(boite,0), aroundTo(
 #                 checkGlobalFtt(boite), 12), tubeRound(getFTTElineStart(boite) + ftt))
 
 # indexk = getcassteIndex(boit)

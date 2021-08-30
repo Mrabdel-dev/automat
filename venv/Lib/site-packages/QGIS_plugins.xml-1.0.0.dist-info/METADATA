@@ -1,0 +1,33 @@
+Metadata-Version: 2.1
+Name: QGIS-plugins.xml
+Version: 1.0.0
+Summary: generate plugins.xml for QGIS plugins
+Home-page: http://www.camptocamp.com/geospatial-solutions
+Author: Camptocamp
+Author-email: info@camptocamp.com
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Requires-Dist: bottle
+Requires-Dist: Jinja2
+
+QGIS plugins.xml
+================
+
+Create the plugins.xml for the plugin(s) in a folder.
+
+Install
+-------
+
+.. code:: bash
+
+   make install
+
+Usage
+-----
+
+.. code:: bash
+
+   .venv/bin/qgis-plugins.xml --help
+
+

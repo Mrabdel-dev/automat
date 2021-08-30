@@ -6,11 +6,11 @@ import datetime
 now = datetime.datetime.now()
 date = now.strftime("%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('etiqueteInputs/21_011_071_CABLE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('etiqueteInputs/21_011_071_BOITE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
-pointTechTable = DBF('etiqueteInputs/21_011_071_POINT_TECHNIQUE_B.dbf', load=True, encoding='iso-8859-1')
-supportTable = DBF('etiqueteInputs/21_011_071_SUPPORT_B.dbf', load=True, encoding='iso-8859-1')
-fciTable = DBF('etiqueteInputs/fCI-071.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('etiqueteInputs/21_011_068_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('etiqueteInputs/21_011_068_BOITE_OPTIQUE_A_AI.dbf', load=True, encoding='iso-8859-1')
+pointTechTable = DBF('etiqueteInputs/21_011_068_POINT_TECHNIQUE_A.dbf', load=True, encoding='iso-8859-1')
+supportTable = DBF('etiqueteInputs/21_011_068_SUPPORT_A.dbf', load=True, encoding='iso-8859-1')
+fciTable = DBF('etiqueteInputs/fCI-068.dbf', load=True, encoding='iso-8859-1')
 Fibre = "ALTITUDE FIBRE 21"
 propFibre= "ALTI"
 sro = 'SRO-21_011_071'

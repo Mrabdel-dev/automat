@@ -1,5 +1,5 @@
 from click import edit
-from qgis.core import *
+from qgis.core import QgsVectorLayer
 
 path_to_my_layer = "C:/Users/etudes20/Desktop/89_013_022_EXE_CCE_SIO_MAN_001_A/89_013_022_SUPPORT_A.shx"
 supptable = QgsVectorLayer(path_to_my_layer, "SUPPORT", "ogr")

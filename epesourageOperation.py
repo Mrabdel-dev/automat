@@ -8,7 +8,7 @@ from openpyxl import load_workbook
 
 # load your pds file here
 pdsFile = ''
-pds = load_workbook('PDS/31_206_326_PLAN DE BOITE_A.xlsx')
+pds = load_workbook('PDS/31_206_326_PLAN_BOITES_D.xlsx')
 wpds = pds.sheetnames
 # dbf file to get information about the boitE AND POINT
 boiteTable = DBF('pdsInput/31_206_326_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
@@ -31,7 +31,7 @@ for K in range(0, dblLen):
     codeSite.append(dblTable.records[K]['ref_imb'])
     # codeSite.append(boiteTable.records[K]['REF_IMB'])
 # create the epesourege file
-epesBook = xlsxwriter.Workbook('epesExcel/31_206_326_EPISSURES_C.xlsx')
+epesBook = xlsxwriter.Workbook('epesExcel/31_206_326_EPISSURES_C-D.xlsx')
 wr = epesBook.add_worksheet()
 print(wpds)
 boiteList = sorted(wpds)
@@ -41,10 +41,10 @@ border = epesBook.add_format({"border": 1})
 # ################# the part of coping values from pds to new file ######################
 wr.write('A1', 'CODE_CABLE_ORIGINE', header)
 wr.write('B1', 'NUMERO_TUBE_ORIGINE', header)
-wr.write('C1', 'BAGUE_TUBE_ORIGINE ', header)
+wr.write('C1', 'BAGUE_TUBE_ORIGINE', header)
 wr.write('D1', 'COULEUR_TUBE_ORIGINE', header)
 wr.write('E1', 'NUMERO_FIBRE_ORIGINE', header)
-wr.write('F1', 'BAGUE_FIBRE_ORIGINE ', header)
+wr.write('F1', 'BAGUE_FIBRE_ORIGINE', header)
 wr.write('G1', 'COULEUR_FIBRE_ORIGINE', header)
 wr.write('H1', 'LOVAGE_FIBRE_ORIGINE', header)
 wr.write('I1', 'CODE_SITE', header)
@@ -55,10 +55,10 @@ wr.write('M1', 'CODE_CASSETTE', header)
 wr.write('N1', 'POSITION_CASSETTE', header)
 wr.write('O1', 'CODE_CABLE_DESTINATION', header)
 wr.write('P1', 'NUMERO_TUBE_DESTINATION', header)
-wr.write('Q1', 'BAGUE_TUBE_DESTINATION ', header)
+wr.write('Q1', 'BAGUE_TUBE_DESTINATION', header)
 wr.write('R1', 'COULEUR_TUBE_DESTINATION', header)
 wr.write('S1', 'NUMERO_FIBRE_DESTINATION', header)
-wr.write('T1', 'BAGUE_FIBRE_DESTINATION ', header)
+wr.write('T1', 'BAGUE_FIBRE_DESTINATION', header)
 wr.write('U1', 'COULEUR_FIBRE_DESTINATION', header)
 wr.write('V1', 'LOVAGE_FIBRE_DESTINATION', header)
 wr.write('W1', 'ETAT', header)

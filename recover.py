@@ -2,22 +2,22 @@
 from tkinter import *
 from tkinter import filedialog
 
-top = Tk()
-top.title("Maneo File Generator")
-top.minsize(800, 400)
-
-
-def browsefunc():
-    filename = filedialog.askopenfilename()
-    pathlabel.config(text=filename)
-
-
-browsebutton = Button(top, text="Browse", command=browsefunc)
-browsebutton.pack()
-
-pathlabel = Label(top)
-pathlabel.pack()
-top.mainloop()
+# top = Tk()
+# top.title("Maneo File Generator")
+# top.minsize(800, 400)
+# 
+# 
+# def browsefunc():
+#     filename = filedialog.askopenfilename()
+#     pathlabel.config(text=filename)
+# 
+# 
+# browsebutton = Button(top, text="Browse", command=browsefunc)
+# browsebutton.pack()
+# 
+# pathlabel = Label(top)
+# pathlabel.pack()
+# top.mainloop()
 # def duplicates(lst, item):
 #     return [i for i, x in enumerate(lst) if x == item]
 #
@@ -50,15 +50,15 @@ from openpyxl import load_workbook
 # # rootBook.close()
 # # sheet = openpyxl.worksheet.worksheet.Worksheet
 # worksheet = xlsxwriter.worksheet.Worksheet
-# def aroundTo(x: int, num):
-#     y = x % num
-#     if y != 0:
-#         k = x + num - y
-#         return k
-#     else:
-#         return x
+def aroundTo(x: int, num):
+    y = x % num
+    if y != 0:
+        k = x + num - y
+        return k
+    else:
+        return x
 #
-#
+print(aroundTo(93,12))
 # x = [1, 2, 3, 5, 9, 10, 20, 30]
 # for i in x:
 #     print(aroundTo(i, 12))

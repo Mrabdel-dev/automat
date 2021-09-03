@@ -6,17 +6,17 @@ import datetime
 now = datetime.datetime.now()
 date = now.strftime("%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('etiqueteInputs/21_011_068_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('etiqueteInputs/21_011_068_BOITE_OPTIQUE_A_AI.dbf', load=True, encoding='iso-8859-1')
-pointTechTable = DBF('etiqueteInputs/21_011_068_POINT_TECHNIQUE_A.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('etiqueteInputs/21_011_080_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('etiqueteInputs/21_011_080_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+pointTechTable = DBF('etiqueteInputs/21_011_080_POINT_TECHNIQUE_A.dbf', load=True, encoding='iso-8859-1')
 supportTable = DBF('etiqueteInputs/21_011_068_SUPPORT_A.dbf', load=True, encoding='iso-8859-1')
-fciTable = DBF('etiqueteInputs/fCI-068.dbf', load=True, encoding='iso-8859-1')
+fciTable = DBF('etiqueteInputs/fCI-080.dbf', load=True, encoding='iso-8859-1')
 Fibre = "ALTITUDE FIBRE 21"
 propFibre= "ALTI"
-sro = 'SRO-21_011_071'
+sro = 'SRO-21-011-080'
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('Etiquette/SRO-21_011_071-DETAIL-ETIQUETTE.xlsx')
-workbook1 = xlsxwriter.Workbook('Etiquette/SRO-21_011_071-ETIQUETTE.xlsx')
+workbook = xlsxwriter.Workbook(f'Etiquette/{sro}-DETAIL-ETIQUETTE.xlsx')
+workbook1 = xlsxwriter.Workbook(f'Etiquette/{sro}-ETIQUETTE.xlsx')
 totaleSheet = workbook1.add_worksheet("EtiquettePrintedFile")
 # ############### define the character and style of cell inside excel ################"0
 border = workbook.add_format({"border": 1})
@@ -53,9 +53,9 @@ for i in range(0, cableLen):
 # FROM THE SUPPORT
 suppAmount = []
 suppAval = []
-for s in range(0, supplen):
-    suppAmount.append(supportTable.records[s]['AMONT'])
-    suppAval.append(supportTable.records[s]['AVAL'])
+# for s in range(0, supplen):
+#     suppAmount.append(supportTable.records[s]['AMONT'])
+#     suppAval.append(supportTable.records[s]['AVAL'])
 # FROM THE TECHNIC POINT
 pointNom = []
 pointCode = []
@@ -73,7 +73,7 @@ fciNom = []
 fciCode = []
 for f in range(0, fcilen):
     try:
-        fciNom.append(fciTable.records[f]['POTEAU_CHA'])
+        fciNom.append(fciTable.records[f]['POTEAU__CH'])
     except KeyError:
         fciNom.append(fciTable.records[f]['N__'])
 
@@ -515,7 +515,6 @@ def cableEtiqueteFill(cables, k, totale: sheet):
     for i in range(0, x):
         N = 1
         cable = allcable[i]
-        y = str(cable)[3:14]
         cap = getCapacity(cable)
         point = cablePTCode[i]
         nm = getNomPT(point)
@@ -526,7 +525,7 @@ def cableEtiqueteFill(cables, k, totale: sheet):
             N = 2
         cbPro = cablePTProp[i]
         if fci is None and cbPro != 'ORANGE':
-            fci = 'SRO' + y
+            fci = sro
         if typef == 'TIRAGE' and (typeStr == 'APPUI' or typeStr == 'ANCRAGE FACADE') and (
                 cbPro == 'ORANGE' or cbPro == 'ENEDIS' or cbPro == 'PROPRIETAIRE PRIVE'):
             continue

@@ -429,7 +429,7 @@ def getPassedFtte(boite, capacity):
         if startboite == boite:
             test = False
         else:
-            totalFTTE += checkGlobalFtt(startboite)-checkGlobalFtt(boite)
+            totalFTTE += checkGlobalFtt(startboite) - checkGlobalFtt(boite)
             listBoite = getListComingBoite(startboite)
             if len(listBoite) > 0:
                 for b in listBoite:
@@ -1208,7 +1208,7 @@ def boitePecFillIn(w: sheet, cable, boite, capacity, T):
             endFTTLine = ftteFillIn(w, boites, boite, ftteLine, T)
             end = aroundTo(endFTTLine, 12)
             if end == capacity:
-                end = end+1
+                end = end + 1
             p = libreFillIn(w, boite, endFTTLine, end, p)
 
         else:

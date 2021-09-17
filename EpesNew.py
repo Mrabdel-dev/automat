@@ -8,11 +8,11 @@ from openpyxl import load_workbook
 
 # load your pds file here
 pdsFile = ''
-pds = load_workbook('PDS/SRO-85_048_567_PLAN_BOITES.xlsx')
+pds = load_workbook('PDS/SRO-85_048_571_PLAN_BOITES-A.xlsx')
 wpds = pds.sheetnames
 # dbf file to get information about the boit
-boiteTable = DBF('pdsInput/85_048_567_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-dblTable = DBF('pdsInput/zpbodbl567.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/85_048_571_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+dblTable = DBF('pdsInput/zpbodbl571.dbf', load=True, encoding='iso-8859-1')
 filedBoiteNam = boiteTable.field_names
 boiteLen = len(boiteTable)
 boiteCode = []
@@ -34,7 +34,7 @@ for K in range(0, dblLen):
         codeSite.append(dblTable.records[K]['ref_imb'])
 # create the epesourege file
 
-epesBook = xlsxwriter.Workbook('epesExcel/85_048_567_EPISSURES.xlsx')
+epesBook = xlsxwriter.Workbook('epesExcel/85_048_571_EPISSURES.xlsx')
 wr = epesBook.add_worksheet()
 print(wpds)
 boiteList = sorted(wpds)

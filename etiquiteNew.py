@@ -6,15 +6,15 @@ import datetime
 now = datetime.datetime.now()
 date = now.strftime("%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('etiqueteInputs/21_011_077_CABLE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('etiqueteInputs/21_011_077_BOITE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
-pointTechTable = DBF('etiqueteInputs/21_011_077_POINT_TECHNIQUE_B.dbf', load=True, encoding='iso-8859-1')
-supportTable = DBF('etiqueteInputs/21_011_068_SUPPORT_A.dbf', load=True, encoding='iso-8859-1')
-joinTable = DBF('etiqueteInputs/somet-point tech 077.dbf', load=True, encoding='iso-8859-1')
-fciTable = DBF('etiqueteInputs/fCI-077.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('etiqueteInputs/21_011_067_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('etiqueteInputs/21_011_067_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+pointTechTable = DBF('etiqueteInputs/21_011_067_POINT_TECHNIQUE_A.dbf', load=True, encoding='iso-8859-1')
+supportTable = DBF('etiqueteInputs/21_011_067_SUPPORT_A.dbf', load=True, encoding='iso-8859-1')
+joinTable = DBF('etiqueteInputs/joinCable067.dbf', load=True, encoding='iso-8859-1')
+fciTable = DBF('etiqueteInputs/fCI-067.dbf', load=True, encoding='iso-8859-1')
 Fibre = "ALTITUDE FIBRE 21"
 propFibre = "ALTI"
-sro = 'SRO-21-011-077'
+sro = 'SRO-21-011-067'
 # ################### declare the excel pds file ###########################################################
 workbook = xlsxwriter.Workbook(f'Etiquette/{sro}-DETAIL-ETIQUETTE.xlsx')
 workbook1 = xlsxwriter.Workbook(f'Etiquette/{sro}-ETIQUETTE.xlsx')

@@ -6,12 +6,12 @@ import datetime
 now = datetime.datetime.now()
 date = now.strftime("%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-boiteTable = DBF('vonder/85_048_570_BOITE_OPTIQUE_A2.dbf', load=True, encoding='iso-8859-1')
-pointTechTable = DBF('vonder/85_048_570_POINT_TECHNIQUE_A2.dbf', load=True, encoding='iso-8859-1')
-joinTable = DBF('vonder/joinCablePT-570.dbf', load=True, encoding='iso-8859-1')
-fciTable = DBF('vonder/fCI-570.dbf', load=True, encoding='iso-8859-1')
-codeTable = DBF('vonder/code_affaire.dbf', load=True, encoding='iso-8859-1')
-sro = 'SRO-85-048-570'
+boiteTable = DBF('vonder/85_072_791_BOITE_OPTIQUE_B3.dbf', load=True, encoding='iso-8859-1')
+pointTechTable = DBF('vonder/85_072_791_POINT_TECHNIQUE_B3.dbf', load=True, encoding='iso-8859-1')
+joinTable = DBF('vonder/joinCablePT-791.dbf', load=True, encoding='iso-8859-1')
+fciTable = DBF('vonder/fCI-791.dbf', load=True, encoding='iso-8859-1')
+codeTable = DBF('vonder/code_d-affaire_791.dbf', load=True, encoding='iso-8859-1')
+sro = 'SRO-85-072-791'
 # ################### declare the excel pds file ###########################################################
 workbook = xlsxwriter.Workbook(f'Etiquette/{sro}-ETIQUETTE.xlsx')
 totaleSheet = workbook.add_worksheet("ETIQUETTE")
@@ -29,7 +29,7 @@ filedCableNam = codeTable.field_names
 filedBoiteNam = boiteTable.field_names
 filedFciNam = fciTable.field_names
 boiteLen = len(boiteTable)
-cableLen = len(codeTable)
+codeLen = len(codeTable)
 pointlen = len(pointTechTable)
 fcilen = len(fciTable)
 joinlen = len(joinTable)
@@ -45,9 +45,9 @@ for j in range(0, boiteLen):
 namEned = []  # NAME OF the poto endis
 codeEned = []  # code d'affire
 
-for i in range(0, cableLen):
+for i in range(0, codeLen):
     namEned.append(codeTable.records[i]['NOM'])
-    codeEned.append(codeTable.records[i]['N_'])
+    codeEned.append(codeTable.records[i]['CODE'])
 
 # FROM THE SUPPORT
 
@@ -197,7 +197,8 @@ def getNumAffaire(point):
         index = namEned.index(point)
         return codeEned[index]
     except:
-        index = "CODE AFFAIRE non"
+        index = "CODE AFFAIR non"
+        print("#" * 15, point)
         return index
 
 
@@ -256,13 +257,13 @@ def cableEtiqueteFill(cables, totale: sheet):
         cap = int(capacity[i])
         point = cablePoint[i]
         prop = cablePTProp[i]
-        if prop.startswith("OR"):
+        if prop.startswith("OR") or prop.startswith("SYDEV"):
             fcicode = getFci(point)
             totale.write('A' + str(k), vonder, border)
             totale.write('B' + str(k), str(cap) + "Fo", border)
             totale.write('C' + str(k), cable, border)
             totale.write('D' + str(k), date, border)
-            if fcicode is  None:
+            if fcicode is None:
                 fcicode = sro
             totale.write('E' + str(k), fcicode, border)
             totale.write('F' + str(k), "", border)
@@ -322,7 +323,7 @@ def appuiEtiqueteFill(points, k, totale: sheet):
                 if romp.startswith("OUI") or romp.startswith("oui"):
                     totale.write('A' + str(k), vonder, border)
                     totale.write('B' + str(k), "", border)
-                    totale.write('C' + str(k)," ", border)
+                    totale.write('C' + str(k), " ", border)
                     totale.write('D' + str(k), "", border)
                     totale.write('E' + str(k), point, border)
                     totale.write('F' + str(k), "", border)

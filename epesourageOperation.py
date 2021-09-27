@@ -8,10 +8,10 @@ from openpyxl import load_workbook
 
 # load your pds file here
 pdsFile = ''
-pds = load_workbook('PDS/31_206_326_PLAN_BOITES_D.xlsx')
+pds = load_workbook('PDS/31_206_293_PLAN_BOITE -27-09-2021..xlsx')
 wpds = pds.sheetnames
 # dbf file to get information about the boitE AND POINT
-boiteTable = DBF('pdsInput/31_206_326_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/31_206_293_BOITE_OPTIQUE_E.dbf', load=True, encoding='iso-8859-1')
 dblTable = DBF('pdsInput/zpbodbl326.dbf', load=True, encoding='iso-8859-1')
 filedBoiteNam = boiteTable.field_names
 boiteLen = len(boiteTable)
@@ -22,7 +22,7 @@ for j in range(0, boiteLen):
     codeLocal.append(boiteTable.records[j]['ID_PARENT'])
 
 filedPointNam = dblTable.field_names
-print(filedPointNam)
+# print(filedPointNam)
 dblLen = len(dblTable)
 dblCode = []
 codeSite = []
@@ -31,7 +31,7 @@ for K in range(0, dblLen):
     codeSite.append(dblTable.records[K]['ref_imb'])
     # codeSite.append(boiteTable.records[K]['REF_IMB'])
 # create the epesourege file
-epesBook = xlsxwriter.Workbook('epesExcel/31_206_326_EPISSURES_C-D.xlsx')
+epesBook = xlsxwriter.Workbook('epesExcel/31_206_293_EPISSURES_C-D.xlsx')
 wr = epesBook.add_worksheet()
 print(wpds)
 boiteList = sorted(wpds)
@@ -79,11 +79,14 @@ def integerFormat(x):
 
 
 def getCodeSite(code):
-    index = codeLocal.index(code)
-    boite = boiteCode[index]
-    indexB = dblCode.index(boite)
-    codesite = codeSite[indexB]
-    return codesite
+    try:
+        index = codeLocal.index(code)
+        boite = boiteCode[index]
+        indexB = dblCode.index(boite)
+        codesite = codeSite[indexB]
+        return codesite
+    except:
+        return ""
 
 
 def getBagueByTube(tube: str):

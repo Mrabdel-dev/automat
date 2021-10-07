@@ -6,15 +6,14 @@ import datetime
 now = datetime.datetime.now()
 date = now.strftime("%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('etiqueteInputs/21_011_067_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('etiqueteInputs/21_011_067_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
-pointTechTable = DBF('etiqueteInputs/21_011_067_POINT_TECHNIQUE_A.dbf', load=True, encoding='iso-8859-1')
-supportTable = DBF('etiqueteInputs/21_011_067_SUPPORT_A.dbf', load=True, encoding='iso-8859-1')
-joinTable = DBF('etiqueteInputs/joinCable067.dbf', load=True, encoding='iso-8859-1')
-fciTable = DBF('etiqueteInputs/fCI-067.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('etiqueteInputs/21_011_078_CABLE_OPTIQUE_B_AI.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('etiqueteInputs/21_011_078_BOITE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
+pointTechTable = DBF('etiqueteInputs/21_011_078_POINT_TECHNIQUE_B.dbf', load=True, encoding='iso-8859-1')
+joinTable = DBF('etiqueteInputs/joinCablePT-078.dbf', load=True, encoding='iso-8859-1')
+fciTable = DBF('etiqueteInputs/fCI-078.dbf', load=True, encoding='iso-8859-1')
 Fibre = "ALTITUDE FIBRE 21"
 propFibre = "ALTI"
-sro = 'SRO-21-011-067'
+sro = 'SRO-21-011-078'
 # ################### declare the excel pds file ###########################################################
 workbook = xlsxwriter.Workbook(f'Etiquette/{sro}-DETAIL-ETIQUETTE.xlsx')
 workbook1 = xlsxwriter.Workbook(f'Etiquette/{sro}-ETIQUETTE.xlsx')
@@ -33,7 +32,6 @@ boiteLen = len(boiteTable)
 cableLen = len(cableTable)
 pointlen = len(pointTechTable)
 fcilen = len(fciTable)
-supplen = len(supportTable)
 joinlen = len(joinTable)
 # #######################declare the table that i need te full#############################################
 
@@ -53,12 +51,7 @@ for i in range(0, cableLen):
     cableOrigin.append(cableTable.records[i]['ORIGINE'])
     cableExtremity.append(cableTable.records[i]['EXTREMITE'])
     cableCapacity.append(cableTable.records[i]['CAPACITE'])
-# FROM THE SUPPORT
-suppAmount = []
-suppAval = []
-# for s in range(0, supplen):
-#     suppAmount.append(supportTable.records[s]['AMONT'])
-#     suppAval.append(supportTable.records[s]['AVAL'])
+
 # FROM THE TECHNIC POINT
 pointNom = []
 pointCode = []
@@ -205,234 +198,7 @@ def fillInAllTable(cable, pointCode, index):
     cablePTProp.append(pointPrp[index])
 
 
-def getAval(point):
-    index = suppAmount.index(point)
-    return suppAval[index]
-
-
-def getAmount(point):
-    index = suppAval.index(point)
-    return suppAmount[index]
-
-
-def checkAmountway(cablepointStart, cablepointEnd, test):
-    start = cablepointStart
-    k = test
-    try:
-        while test and k:
-            if cablepointEnd == start:
-                test = False
-                break
-            else:
-                start = getAval(start)
-                listDb = duplicates(suppAval, start)
-                if len(listDb) > 1:
-                    if cablepointEnd == start:
-                        test = False
-                    k = False
-                    break
-
-        return test
-    except ValueError:
-        print(start)
-        return True
-
-
-def checkAvalway(cablepointStart, cablepointEnd, test):
-    start = cablepointEnd
-    k = test
-    try:
-        while test and k:
-            if cablepointStart == start:
-                test = False
-                break
-            else:
-                start = getAmount(start)
-                listDb = duplicates(suppAmount, start)
-                if len(listDb) > 1:
-                    if cablepointStart == start:
-                        test = False
-                    k = False
-                    break
-
-        return test
-    except ValueError:
-        print(start)
-        return True
-
-
-def fillAmountWay(c, cablepointStart, cablepointEnd, test):
-    start = cablepointStart
-    k = test
-    try:
-        while test and k:
-            if cablepointEnd == start:
-                test = False
-                break
-            else:
-                start = getAval(start)
-                listDb = duplicates(suppAval, start)
-                if len(listDb) > 1:
-                    if cablepointEnd == start:
-                        test = False
-                    k = False
-                    break
-                else:
-                    if cablepointEnd == start:
-                        test = False
-                        break
-                index = pointCode.index(start)
-                fillInAllTable(c, start, index)
-        return test
-    except ValueError:
-        print(start)
-        return True
-
-
-def fillAvalWay(c, cablepointStart, cablepointEnd, test):
-    start = cablepointEnd
-    k = test
-    try:
-        while test and k:
-            if cablepointStart == start:
-                test = False
-                break
-            else:
-                start = getAmount(start)
-                listDb = duplicates(suppAmount, start)
-                if len(listDb) > 1:
-                    if cablepointStart == start:
-                        test = False
-                    k = False
-                    break
-                else:
-                    if cablepointStart == start:
-                        test = False
-                        break
-                index = pointCode.index(start)
-                fillInAllTable(c, start, index)
-        return test
-    except ValueError:
-        print(start)
-        return True
-
-
-# def fillInTable(c):
-#     test = True
-#     amount = True
-#     cablePointStart = getCablePointTechStart(c)
-#     index = pointCode.index(cablePointStart)
-#     fillInAllTable(c, cablePointStart, index)
-#     cablePointEnd = getCablePointTechEnd(c)
-#     index = pointCode.index(cablePointEnd)
-#     fillInAllTable(c, cablePointEnd, index)
-#     print(c, cablePointStart, cablePointEnd, test)
-#     aval = checkAvalway(cablePointStart, cablePointEnd, test)
-#     print('aval', aval, c)
-#     if not aval:
-#         fillAvalWay(c, cablePointStart, cablePointEnd, test)
-#         test = False
-#     else:
-#         amount = checkAmountway(cablePointStart, cablePointEnd, test)
-#         print('amount', amount)
-#
-#     if not aval and amount:
-#         fillAmountWay(c, cablePointStart, cablePointEnd, test)
-#         test = False
-#     print(test)
-#     print(cablePointStart, cablePointEnd)
-#
-#     try:
-#         nextstart = getAval(cablePointStart)
-#         print('#', nextstart)
-#         duplistart = duplicates(suppAval, nextstart)
-#     except ValueError:
-#
-#         nextstart = getAmount(cablePointStart)
-#         duplistart = duplicates(suppAmount, nextstart)
-#         print(c, cablePointStart, nextstart, duplicates(suppAmount, nextstart))
-#     try:
-#         nextend = getAmount(cablePointEnd)
-#         dupliend = duplicates(suppAmount, nextend)
-#         print(c, nextend, len(dupliend), len(duplistart))
-#     except ValueError:
-#         nextend = getAval(cablePointEnd)
-#         print(c, cablePointEnd, nextend)
-#         dupliend = duplicates(suppAval, nextend)
-#     k = 0
-#
-#     while test:
-#
-#         try:
-#             if len(dupliend) <= 1 and len(duplistart) <= 1:
-#                 if nextend == nextstart:
-#                     index = pointCode.index(nextend)
-#                     fillInAllTable(c, nextend, index)
-#                     test = False
-#
-#                 elif nextstart == cablePointEnd or nextend == cablePointStart:
-#                     test = False
-#
-#                 else:
-#                     index = pointCode.index(nextend)
-#                     fillInAllTable(c, nextend, index)
-#                     index = pointCode.index(nextstart)
-#                     fillInAllTable(c, nextstart, index)
-#                     nextstart = getAval(nextstart)
-#                     nextend = getAmount(nextend)
-#             elif len(dupliend) < 2 and len(duplistart) > 1:
-#                 if nextend == nextstart:
-#                     index = pointCode.index(nextend)
-#                     fillInAllTable(c, nextend, index)
-#                     test = False
-#                     break
-#                 elif nextstart == cablePointEnd or nextend == cablePointStart:
-#                     test = False
-#                     break
-#                 else:
-#                     index = pointCode.index(nextend)
-#                     fillInAllTable(c, nextend, index)
-#                     nextend = getAmount(nextend)
-#
-#             elif len(duplistart) < 2 and len(dupliend) > 1:
-#                 if nextend == nextstart:
-#                     index = pointCode.index(nextend)
-#                     fillInAllTable(c, nextend, index)
-#                     test = False
-#                     break
-#                 elif nextstart == cablePointEnd or nextend == cablePointStart:
-#                     test = False
-#                     break
-#                 else:
-#                     index = pointCode.index(nextstart)
-#                     fillInAllTable(c, nextstart, index)
-#                     nextstart = getAval(nextstart)
-#
-#
-#
-#             else:
-#                 if nextend == nextstart:
-#                     index = pointCode.index(nextend)
-#                     fillInAllTable(c, nextend, index)
-#
-#                 test = False
-#             dupliend = duplicates(suppAmount, nextend)
-#             duplistart = duplicates(suppAval, nextstart)
-#         except ValueError:
-#             print(c, ' start', cablePointStart, 'end', cablePointEnd)
-#             listErour.append(c)
-#             test = False
-#
-#
-# def createTablesBase(cables):
-#     for c in cables:
-#         fillInTable(c)
-
-
-# createTablesBase(cableName)
-
-
-# ############################# fill in function #################
+# ######### fill in ############
 def boiteEtiqueteFill(boites, k, totale: sheet):
     w = workbook.add_worksheet("Etiquette Boite")
     baseHeader(w)

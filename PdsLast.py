@@ -6,27 +6,27 @@ import xlsxwriter
 import datetime
 
 
-class MyFieldParser(FieldParser):
-    def parseN(self, field, data):
-        data = data.strip().strip(
-            b'*\x00')  # Had to strip out the other characters first before \x00, as per super function specs.
-        return super(MyFieldParser, self).parseN(field, data)
-
-    def parseD(self, field, data):
-        data = data.strip(b'\x00')
-        return super(MyFieldParser, self).parseD(field, data)
+# class MyFieldParser(FieldParser):
+#     def parseN(self, field, data):
+#         data = data.strip().strip(
+#             b'*\x00')  # Had to strip out the other characters first before \x00, as per super function specs.
+#         return super(MyFieldParser, self).parseN(field, data)
+#
+#     def parseD(self, field, data):
+#         data = data.strip(b'\x00')
+#         return super(MyFieldParser, self).parseD(field, data)
 
 
 # date configuration
 now = datetime.datetime.now()
 date = now.strftime("%d/%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('pdsInput/31_206_293_CABLE_OPTIQUE_E.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('pdsInput/31_206_293_BOITE_OPTIQUE_E.dbf', load=True, encoding='iso-8859-1')
-zaPboDbl = DBF('pdsInput/zpbodbl293.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('pdsInput/85_072_794_CABLE_OPTIQUE_A1.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/85_072_794_BOITE_OPTIQUE_A1.dbf', load=True, encoding='iso-8859-1')
+zaPboDbl = DBF('pdsInput/zapbodbl794.dbf', load=True, encoding='iso-8859-1')
 casseteTable = DBF('pdsInput/cassete_file.dbf', load=True, encoding='iso-8859-1')
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('PDS/31_206_293_PLAN_BOITES.xlsx')
+workbook = xlsxwriter.Workbook('PDS/85_072_794_PLAN_BOITES.xlsx')
 # ############### define the character and style of cell inside excel ################"
 bold = workbook.add_format({'bold': True, "border": 1})
 bold1 = workbook.add_format({'bold': True})
@@ -1208,9 +1208,9 @@ def boitePecFillIn(w: sheet, cable, boite, capacity, T):
             ftteLine, p = librePassFTTEFill(w, boite, fttepass, p)
             endFTTLine = ftteFillIn(w, boites, boite, ftteLine, T)
             end = aroundTo(endFTTLine, 12)
-            if end == capacity:
-                end = end + 1
-            p = libreFillIn(w, boite, endFTTLine, end, p)
+            # if end == capacity:
+            #     end = end + 1
+            p = libreFillIn(w, boite, endFTTLine, end+1, p)
 
         else:
             p = libreFillIn(w, boite, 1, Lin, p)

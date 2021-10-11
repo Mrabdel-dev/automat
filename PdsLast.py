@@ -21,12 +21,12 @@ import datetime
 now = datetime.datetime.now()
 date = now.strftime("%d/%m/%Y")
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('pdsInput/85_072_794_CABLE_OPTIQUE_A1.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('pdsInput/85_072_794_BOITE_OPTIQUE_A1.dbf', load=True, encoding='iso-8859-1')
-zaPboDbl = DBF('pdsInput/zapbodbl794.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('pdsInput/21_016_097_CABLE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/21_016_097_BOITE_OPTIQUE_A_AI.dbf', load=True, encoding='iso-8859-1')
+zaPboDbl = DBF('pdsInput/zpbodbl097.dbf', load=True, encoding='iso-8859-1')
 casseteTable = DBF('pdsInput/cassete_file.dbf', load=True, encoding='iso-8859-1')
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook('PDS/85_072_794_PLAN_BOITES.xlsx')
+workbook = xlsxwriter.Workbook('PDS/21_016_097_PLAN_BOITES.xlsx')
 # ############### define the character and style of cell inside excel ################"
 bold = workbook.add_format({'bold': True, "border": 1})
 bold1 = workbook.add_format({'bold': True})

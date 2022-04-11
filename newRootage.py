@@ -20,13 +20,17 @@ cap = 0
 found = True
 x = 0
 rowmax = 0
-# ##########################################################################################
-with open('epesourageCSV/SRO-21_016_097_EPISSURES.csv', 'rt')as f:
+SRo = '21_016_110'
+# #########################################################################################
+with open('epesourageCSV/SRO-21_016_110_EPISSURES G.csv', 'rt') as f:
     data = csv.DictReader(f, delimiter=';')
     # #<---------- get the value from csv epesourge table---------------------------------->#
     print(data.fieldnames)
     for row in data:
-        cableName.append(row['CODE_CABLE_ORIGINE'])
+        try:
+            cableName.append(row['CODE_CABLE_ORIGINE'])
+        except:
+            cableName.append(row['ï»¿CODE_CABLE_ORIGINE'])
         tubeNumberI.append(row['NUMERO_TUBE_ORIGINE'])
         fibreNumberI.append(row['NUMERO_FIBRE_ORIGINE'])
         boiteName.append(row['CODE_BOITE'])
@@ -60,15 +64,15 @@ with open('epesourageCSV/SRO-21_016_097_EPISSURES.csv', 'rt')as f:
 
 sortedSro = {k: v for k, v in sorted(dictCable.items(), key=lambda v: v[1])}
 sroCab = list(sortedSro.keys())
-# sroCable = sroCab
-sroCable = ['CDI-21-016-097-2012', 'CDI-21-016-097-1023', 'CDI-21-016-097-3019']
+sroCable = sroCab
+# sroCable = ['CDI-21-016-110-2080', 'CDI-21-016-110-3175', 'CDI-21-016-110-1215']
 print(dictCable)
 print(sortedSro)
 print(sroCab)
 print(sroCable)
 # ########################################################################################
 # <-----------------------route file creation------------------------------------------->
-rootBook = xlsxwriter.Workbook('routage/Rootage-SRO-21_016_097.xlsx')
+rootBook = xlsxwriter.Workbook(f'routage/Rootage-SRO-{SRo}.xlsx')
 wr = rootBook.add_worksheet()
 # define the character and style of cell inside excel
 bold = rootBook.add_format({'bold': True, "border": 1})
@@ -138,9 +142,10 @@ def normalHeader(j):
 
 
 def getIndex(val, tabl: list):
-    for i in tabl:
-        if i == val:
-            return tabl.index(val)
+    # for i in tabl:
+    #     if i == val:
+    #         return tabl.index(val)
+    return tabl.index(val)
 
 
 def getNextIndex(val, tube, fibre, tabl: list):
@@ -213,8 +218,6 @@ def getTeroire(y: int):
 # print(cableName[4704])
 
 # #######################################################################################
-
-
 # <----------------------------------generation part from epesourage file to route ------------------>
 # all constant we work with inside
 p = 0
@@ -245,13 +248,14 @@ for cab in sroCable:
 
     Line = getIndex(cab, cableName)
     print('#' * 40)
-    print(Line,cab)
+    print(Line, cab, len(cableName))
     print('#' * 40)
 
     done = True
     L = 1
     f = 0
     while done:
+        print()
         TEST = checkPassage(Line)
         print('#' * 25)
 
@@ -276,7 +280,7 @@ for cab in sroCable:
             wr.write('D' + str(b), L, border)
             f = f + 1
 
-            # #################get the values#############################
+            # ################# get the values #############################
 
             fibre1 = fibreNumberI[Line]
             cable1 = cableName[Line]
@@ -333,7 +337,8 @@ for cab in sroCable:
                 while keep:
                     try:
                         # print(cable2, tube2, fibr2)
-                        y = getNextIndex(cable2, tube2, fibr2, cableName)
+
+                        y = getNextIndex(str(cable2).strip(), str(tube2).strip(), str(fibr2).strip(), cableName)
                         boite = boiteName[y]
                         # BOITE2 VALUE
                         wr.write(Lin, column, boite, border)

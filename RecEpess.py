@@ -4,10 +4,10 @@ from openpyxl import load_workbook
 
 # load your pds file here
 pdsFile = ''
-pds = load_workbook('rec/NRO-21_011_PLAN DE BOITE.xlsx')
+pds = load_workbook('rec/21_011_067_PLAN_BOITES_B.xlsx')
 wpds = pds.sheetnames
 # dbf file to get information about the boitE AND POINT
-boiteTable = DBF('rec/21_011_BOITE_OPTIQUE_A.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('rec/21_011_067_BOITE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
 filedBoiteNam = boiteTable.field_names
 boiteLen = len(boiteTable)
 boiteCode = []
@@ -16,7 +16,7 @@ for j in range(0, boiteLen):
     boiteCode.append(boiteTable.records[j]['NOM'])
     codeLocal.append(boiteTable.records[j]['ID_PARENT'])
 # create the epesourege file
-epesBook = xlsxwriter.Workbook('rec/21_011_EPISSURES_REC.xlsx')
+epesBook = xlsxwriter.Workbook('rec/21_011_067_EPISSURES_tr New.xlsx')
 wr = epesBook.add_worksheet()
 print(wpds)
 boiteList = sorted(wpds)
@@ -57,7 +57,7 @@ def integerFormat(x):
         f = 'CSE-' + test.zfill(2)
         return f
 
-    elif test.startswith('FON'):
+    elif test.startswith('N') or test == "" or test is None:
         test = 'FOND DE BOITE'
         return test
     else:
@@ -93,6 +93,7 @@ def getBagueByTube(tube: str):
 
 # ##############################
 code = ''
+oldcas = ''
 for s in boiteList:
     sheet = pds[s]
     MaxRow = sheet.max_row
@@ -115,19 +116,19 @@ for s in boiteList:
             cableDist = Dist
         type = str(sheet.cell(row=i, column=5).value)
         cassete = sheet.cell(row=i, column=4).value
+
         print(cableDist)
         tube1 = sheet.cell(row=i, column=3).value
         print(tube1)
         tube2 = sheet.cell(row=i, column=6).value
         print(tube2)
         test = False
-        if type.startswith('L'):
-            test = True
+        if type.startswith('L') or type.startswith('l') or type.startswith('EN PASS') :
+            if cassete is None:
+                test = True
             if tube1 is None:
-                cassete = 'FON'
                 cable = ''
             elif tube2 is None:
-                cassete = 'FON'
                 cableDist = ''
 
         if tube1 is None and tube2 is None:
@@ -173,10 +174,12 @@ for s in boiteList:
                 wr.write('R' + str(b), '', border)
                 # ETAT
 
-                if str(type).startswith("libre") or type.startswith("PASS") or type.startswith("EN PASS"):
+                if str(type).startswith("libre") :
                     type = 'STOCKEE'
                 elif type.startswith("LIB") or type.startswith("A ST") or type.startswith("STO"):
                     type = 'STOCKEE'
+                elif type.startswith("PASS") or type.startswith("EN PASS"):
+                    type = 'EN PASSAGE'
                 elif type.startswith("A EP") or type.startswith("EP"):
                     type = 'EPISSUREE'
                 wr.write('W' + str(b), type, border)

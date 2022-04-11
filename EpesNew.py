@@ -8,11 +8,12 @@ from openpyxl import load_workbook
 
 # load your pds file here
 pdsFile = ''
-pds = load_workbook('PDS/21_016_097_PLAN_BOITES-exel.xlsx')
+SRo = '21_016_110'
+pds = load_workbook('PDS/21_016_110_PLAN_BOITES -GLOBAL.xlsx')
 wpds = pds.sheetnames
 # dbf file to get information about the boit
-boiteTable = DBF('pdsInput/21_016_097_BOITE_OPTIQUE_A_AI.dbf', load=True, encoding='iso-8859-1')
-dblTable = DBF('pdsInput/zpbodbl097.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/21_016_110_BOITE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
+dblTable = DBF('pdsInput/zpbodbl_110.dbf', load=True, encoding='iso-8859-1')
 filedBoiteNam = boiteTable.field_names
 boiteLen = len(boiteTable)
 boiteCode = []
@@ -33,8 +34,7 @@ for K in range(0, dblLen):
     except KeyError:
         codeSite.append(dblTable.records[K]['ref_imb'])
 # create the epesourege file
-
-epesBook = xlsxwriter.Workbook('epesExcel/SRO-21_016_097_EPISSURES.xlsx')
+epesBook = xlsxwriter.Workbook(f'epesExcel/SRO-{SRo}_EPISSURES G.xlsx')
 wr = epesBook.add_worksheet()
 print(wpds)
 boiteList = sorted(wpds)
@@ -101,11 +101,14 @@ def getBagueByTube(tube: str):
 
 
 def getcodeSite(code):
-    index = codeLocal.index(code)
-    boite = boiteCode[index]
-    indexB = dblCode.index(boite)
-    codesite = codeSite[indexB]
-    return codesite
+    try:
+        index = codeLocal.index(code)
+        boite = boiteCode[index]
+        indexB = dblCode.index(boite)
+        codesite = codeSite[indexB]
+        return codesite
+    except :
+        print(code)
 
 
 code = ''

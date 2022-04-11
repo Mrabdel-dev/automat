@@ -1,13 +1,13 @@
 from openpyxl import load_workbook
 
 # load the old book you gona modify
-workbookOldFree = load_workbook('C:/Users/etudes20/Desktop/free/Suivi Projet FREE-IDF-MàJ-17-09-2021.xlsx')
+workbookOldFree = load_workbook('C:/Users/etudes20/Desktop/free/Suivi Projet FREE-IDF- 23-12-2021.xlsx')
 oldBookFree = workbookOldFree.active
 # load the old book you gona modify
-workbookOldPaca = load_workbook('C:/Users/etudes20/Desktop/free/Suivi projets Free PACA-MàJ-17-09-2021.xlsx')
+workbookOldPaca = load_workbook('C:/Users/etudes20/Desktop/free/Suivi projets Free PACA-23-12-2021.xlsx')
 oldBookPaca = workbookOldPaca.active
 # load the new book that you want get value from it
-workbookNew = load_workbook('C:/Users/etudes20/Desktop/free/export_projets_2021-09-21-17-37-28.xlsx')
+workbookNew = load_workbook('C:/Users/etudes20/Desktop/free/export_projets_2022-03-14-17-07-28.xlsx')
 newBook = workbookNew.active
 # define parameter for loop
 maxRow = newBook.max_row
@@ -29,24 +29,7 @@ NbrDelPaca = 0
 for i in range(2, maxRow + 1):
     Test = str(newBook.cell(row=i, column=7).value)
     print(Test)
-    if Test == "Sebastien GELSI":
-        valNew = newBook.cell(row=i, column=4).value
-        for j in range(2, maxRowOldFree + 1):
-            valOld = oldBookFree.cell(row=j, column=4).value
-            if valNew == valOld:
-                found = 1
-                NbrExsFree = NbrExsFree + 1
-                break
-            else:
-                found = 0
-        if found == 0:
-            modRowOld = oldBookFree.max_row
-            u = modRowOld + 1
-            NbrAddFree = NbrAddFree + 1
-            for k in range(1, 10):
-                valN = newBook.cell(row=i, column=k).value
-                oldBookFree.cell(row=u, column=k).value = valN
-    else:
+    if Test == "Philippe PHILIS":
         valNew = newBook.cell(row=i, column=4).value
         for j in range(2, maxRowOldPaca + 1):
             valOld = oldBookPaca.cell(row=j, column=4).value
@@ -63,6 +46,24 @@ for i in range(2, maxRow + 1):
             for k in range(1, 10):
                 valN = newBook.cell(row=i, column=k).value
                 oldBookPaca.cell(row=u, column=k).value = valN
+    else:
+        valNew = newBook.cell(row=i, column=4).value
+        for j in range(2, maxRowOldFree + 1):
+            valOld = oldBookFree.cell(row=j, column=4).value
+            if valNew == valOld:
+                found = 1
+                NbrExsFree = NbrExsFree + 1
+                break
+            else:
+                found = 0
+        if found == 0:
+            modRowOld = oldBookFree.max_row
+            u = modRowOld + 1
+            NbrAddFree = NbrAddFree + 1
+            for k in range(1, 10):
+                valN = newBook.cell(row=i, column=k).value
+                oldBookFree.cell(row=u, column=k).value = valN
+
 
 newMax = oldBookFree.max_row
 # the second loop is for delete all value doesn't come with new file

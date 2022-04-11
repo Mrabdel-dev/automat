@@ -4,10 +4,10 @@ from os import walk
 
 # the folder source that you want take resize inside it
 from openpyxl import load_workbook
-num='791'
-monRepertoire = 'C:/Users/etudes20/Desktop/c3a/code daffaires/'
+num='854'
+monRepertoire = 'C:/Users/etudes20/Desktop/desktop 1/c3a/code daffaires/'
 # the folder out that u want to put new images in it
-sortRepetoire = f'C:/Users/etudes20/Desktop/c3a/code d-affaire {num}.xlsx'
+sortRepetoire = f'C:/Users/etudes20/Desktop/desktop 1/c3a/code d-affaire {num}.xlsx'
 workbook1 = xlsxwriter.Workbook(sortRepetoire)
 w = workbook1.add_worksheet('code')
 bold = workbook1.add_format({'bold': True, "border": 1})

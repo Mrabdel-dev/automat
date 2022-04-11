@@ -11,7 +11,7 @@ pointTechTable = DBF('vonder/85_072_791_POINT_TECHNIQUE_B3.dbf', load=True, enco
 joinTable = DBF('vonder/joinCablePT-791.dbf', load=True, encoding='iso-8859-1')
 fciTable = DBF('vonder/fCI-791.dbf', load=True, encoding='iso-8859-1')
 codeTable = DBF('vonder/code_d-affaire_791.dbf', load=True, encoding='iso-8859-1')
-sro = 'SRO-85-072-791'
+sro = 'SRO-85-072-797'
 # ################### declare the excel pds file ###########################################################
 workbook = xlsxwriter.Workbook(f'Etiquette/{sro}-ETIQUETTE.xlsx')
 totaleSheet = workbook.add_worksheet("ETIQUETTE")
@@ -312,7 +312,7 @@ def appuiEtiqueteFill(points, k, totale: sheet):
                 except:
                     cap = ""
                     totale.write('B' + str(k), cap, border)
-                    print(point)
+                    print("#"*15,fci,"orange",point)
                 totale.write('C' + str(k), boite, border)
                 totale.write('D' + str(k), "", border)
                 totale.write('E' + str(k), fci, border)

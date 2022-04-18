@@ -136,7 +136,7 @@ def stringCassette(x: str):
             return colorList[12]
     return colorList[12]
 
-
+# sorting function
 def sortdict(boit: dict):
     sortedL = {}
     for k in boit:
@@ -163,7 +163,7 @@ def getSroBoite():
 
     return sroBoite
 
-
+# function return all next coming boite without sorting
 def getListComingBoitN(pbo):
     comingList = []
     for org, extr in zip(cableOrigin, cableExtremity):
@@ -372,7 +372,7 @@ def getLastStartBoite(boite):
         else:
             return boite
 
-
+# function return list of all start boite with some capacity
 def getAllboitestart(boitestart, boite, listB):
     cab = getCable(boite)
     cap = getCapacity(cab)
@@ -439,7 +439,7 @@ def getBoitePassage(boite):
             return b
     return None
 
-
+# fonction returne touts les ftte utiliser avant
 def getPassedFtte(boite, capacity):
     startboite = getLastStartBoite(boite)
     totalFTTE = 0
@@ -681,7 +681,7 @@ def tubeRound(num):
                 T += 1
     return T
 
-
+# function  to write les FTTE passé come passage
 def fillfPassedfttePassage(w, boite, nbrPassFTTE, p):
     cable = getCable(boite)
     cap = getCapacity(cable)
@@ -775,7 +775,7 @@ def fillPecPassage(w, boite, startLine, endLine, i, T, p):
         p += 1
     return p
 
-
+# function  to write FTTE in stock state
 def PboFillFTTeStocker(w: sheet, boite, stokker, Lin, T=1):
     i = Lin - 1
     indexb = boiteCode.index(boite)
@@ -906,7 +906,7 @@ def passageFillIn(w: sheet, boit, startLine, T=1):
             i += 1
     return startLine
 
-
+# function  to write les FTTE passé come libre
 def librePassFTTEFill(w: sheet, boit, fttePass, p):
     cable = getCable(boite)
     cap = getCapacity(cable)
@@ -1112,7 +1112,7 @@ def extracablePECPBOFillIn(w: sheet, boites, boite, startLine, p):
 
 listCasseteNotfound = []
 
-
+# function return casste index in the casste file
 def getcassteIndex(boite):
     index = boiteCode.index(boite)
     ref = boiteReference[index]
@@ -1139,7 +1139,7 @@ def cassteFillIn(w: sheet, boite, function):
         pass
 
 
-#
+# function return the line that should i start the epess state
 def getlinEpessStart(boite):
     boiteS = getLastStartBoite(boite)
     if boiteS == boite:
@@ -1374,7 +1374,7 @@ SROboite = getSroBoite()
 print(SROboite)
 listCableEroor = []
 print(boiteCode)
-# ############## start fill In the pds ##########################################################
+# ######################################### start fill In the pds ##########################################################
 for b in range(0, boiteLen):
     # ################## constant work with ####################
     N = 1

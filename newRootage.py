@@ -20,9 +20,9 @@ cap = 0
 found = True
 x = 0
 rowmax = 0
-SRo = '21_016_110'
-# #########################################################################################
-with open('epesourageCSV/SRO-21_016_110_EPISSURES G.csv', 'rt') as f:
+SRo = '31_206_327'
+# ############################## ici on mettre le chemin de fichier eppssurage.csv ##########################################
+with open('epesourageCSV/31_206_327_EPISSURES_A MAJ.csv', 'rt') as f:
     data = csv.DictReader(f, delimiter=';')
     # #<---------- get the value from csv epesourge table---------------------------------->#
     print(data.fieldnames)
@@ -65,14 +65,16 @@ with open('epesourageCSV/SRO-21_016_110_EPISSURES G.csv', 'rt') as f:
 sortedSro = {k: v for k, v in sorted(dictCable.items(), key=lambda v: v[1])}
 sroCab = list(sortedSro.keys())
 sroCable = sroCab
-# sroCable = ['CDI-21-016-110-2080', 'CDI-21-016-110-3175', 'CDI-21-016-110-1215']
+# ########################## ici on force lorder des cable dans les liste ########################################
+sroCable = ['CDI-31-206-327-1001', 'CDI-31-206-327-2001', 'CDI-31-206-327-3001']
+###################################################################################################################
 print(dictCable)
 print(sortedSro)
 print(sroCab)
 print(sroCable)
 # ########################################################################################
 # <-----------------------route file creation------------------------------------------->
-rootBook = xlsxwriter.Workbook(f'routage/Rootage-SRO-{SRo}.xlsx')
+rootBook = xlsxwriter.Workbook(f'routage/Rootage-SRO-{SRo} v3.xlsx')
 wr = rootBook.add_worksheet()
 # define the character and style of cell inside excel
 bold = rootBook.add_format({'bold': True, "border": 1})
@@ -208,14 +210,6 @@ def getTeroire(y: int):
     else:
         return 0
 
-
-#
-# x = checkPassage(100)
-# y = getNextIndex('CDI-21-017-101-3007', 3, 4, cableName)
-# print(y)
-# # print(x)
-# print(destinationCable.index('CDI-21-017-101-3005'))
-# print(cableName[4704])
 
 # #######################################################################################
 # <----------------------------------generation part from epesourage file to route ------------------>

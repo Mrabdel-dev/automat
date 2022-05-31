@@ -8,12 +8,12 @@ from openpyxl import load_workbook
 
 # load your pds file here
 pdsFile = ''
-SRo = '21_016_110'
-pds = load_workbook('PDS/21_016_110_PLAN_BOITES -GLOBAL.xlsx')
+SRo = '21_011_074'
+pds = load_workbook('PDS/21_011_074_PLAN_BOITES -global.xlsx')
 wpds = pds.sheetnames
 # dbf file to get information about the boit
-boiteTable = DBF('pdsInput/21_016_110_BOITE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
-dblTable = DBF('pdsInput/zpbodbl_110.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/21_011_074_BOITE_OPTIQUE_A_AI.dbf', load=True, encoding='iso-8859-1')
+dblTable = DBF('pdsInput/zpbodbl_074.dbf', load=True, encoding='iso-8859-1')
 filedBoiteNam = boiteTable.field_names
 boiteLen = len(boiteTable)
 boiteCode = []

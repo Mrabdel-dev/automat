@@ -1,13 +1,13 @@
 from openpyxl import load_workbook
 
 # load the old book you gona modify
-workbookOldFree = load_workbook('C:/Users/etudes20/Desktop/free/Suivi Projet FREE-IDF- 23-12-2021.xlsx')
+workbookOldFree = load_workbook('C:/Users/etudes20/Desktop/free/Suivi Projet FREE-IDF.xlsx')
 oldBookFree = workbookOldFree.active
 # load the old book you gona modify
-workbookOldPaca = load_workbook('C:/Users/etudes20/Desktop/free/Suivi projets Free PACA-23-12-2021.xlsx')
+workbookOldPaca = load_workbook('C:/Users/etudes20/Desktop/free/Suivi projets Free PACA.xlsx')
 oldBookPaca = workbookOldPaca.active
 # load the new book that you want get value from it
-workbookNew = load_workbook('C:/Users/etudes20/Desktop/free/export_projets_2022-03-14-17-07-28.xlsx')
+workbookNew = load_workbook('C:/Users/etudes20/Desktop/free/export_projets_2022-05-27-17-55-46.xlsx')
 newBook = workbookNew.active
 # define parameter for loop
 maxRow = newBook.max_row
@@ -29,7 +29,7 @@ NbrDelPaca = 0
 for i in range(2, maxRow + 1):
     Test = str(newBook.cell(row=i, column=7).value)
     print(Test)
-    if Test == "Philippe PHILIS":
+    if Test == "Philippe PHILIS" or Test == "Christophe PEAUGER NETGEO" or Test=="Jean Claude Meru" :
         valNew = newBook.cell(row=i, column=4).value
         for j in range(2, maxRowOldPaca + 1):
             valOld = oldBookPaca.cell(row=j, column=4).value

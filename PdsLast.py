@@ -17,14 +17,14 @@ from dbfread import DBF
 # date configuration
 now = datetime.datetime.now()
 date = now.strftime("%d/%m/%Y")
-SROname = '21_016_110'
+SROname = '21_016_098'
 # ################## load the both file boite and cable in DBF format ###################################
-cableTable = DBF('pdsInput/21_016_110_CABLE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
-boiteTable = DBF('pdsInput/21_016_110_BOITE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
-zaPboDbl = DBF('pdsInput/zpbodbl_110.dbf', load=True, encoding='iso-8859-1')
+cableTable = DBF('pdsInput/21_016_098_CABLE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
+boiteTable = DBF('pdsInput/21_016_098_BOITE_OPTIQUE_B.dbf', load=True, encoding='iso-8859-1')
+zaPboDbl = DBF('pdsInput/zpbdbl_098F.dbf', load=True, encoding='iso-8859-1')
 casseteTable = DBF('pdsInput/cassete_file.dbf', load=True, encoding='iso-8859-1')
 # ################### declare the excel pds file ###########################################################
-workbook = xlsxwriter.Workbook(f'PDS/{SROname}_PLAN_BOITES Gg.xlsx')
+workbook = xlsxwriter.Workbook(f'PDS/{SROname}_PLAN_BOITES B.xlsx')
 # ############### define the character and style of cell inside excel ################"
 bold = workbook.add_format({'bold': True, "border": 1})
 bold1 = workbook.add_format({'bold': True})

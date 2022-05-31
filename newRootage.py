@@ -20,9 +20,9 @@ cap = 0
 found = True
 x = 0
 rowmax = 0
-SRo = '31_206_327'
+SRo = '21_011_074'
 # ############################## ici on mettre le chemin de fichier eppssurage.csv ##########################################
-with open('epesourageCSV/31_206_327_EPISSURES_A MAJ.csv', 'rt') as f:
+with open('epesourageCSV/SRO-21_011_074_EPISSURE_global.csv', 'rt') as f:
     data = csv.DictReader(f, delimiter=';')
     # #<---------- get the value from csv epesourge table---------------------------------->#
     print(data.fieldnames)
@@ -30,7 +30,10 @@ with open('epesourageCSV/31_206_327_EPISSURES_A MAJ.csv', 'rt') as f:
         try:
             cableName.append(row['CODE_CABLE_ORIGINE'])
         except:
-            cableName.append(row['ï»¿CODE_CABLE_ORIGINE'])
+            try:
+                cableName.append(row['ï»¿CODE_CABLE_ORIGINE'])
+            except :
+                cableName.append(row['?CODE_CABLE_ORIGINE'])
         tubeNumberI.append(row['NUMERO_TUBE_ORIGINE'])
         fibreNumberI.append(row['NUMERO_FIBRE_ORIGINE'])
         boiteName.append(row['CODE_BOITE'])
@@ -66,7 +69,7 @@ sortedSro = {k: v for k, v in sorted(dictCable.items(), key=lambda v: v[1])}
 sroCab = list(sortedSro.keys())
 sroCable = sroCab
 # ########################## ici on force lorder des cable dans les liste ########################################
-sroCable = ['CDI-31-206-327-1001', 'CDI-31-206-327-2001', 'CDI-31-206-327-3001']
+sroCable = [ 'CDI-21-011-074-3022', 'CDI-21-011-074-2042','CDI-21-011-074-1041']
 ###################################################################################################################
 print(dictCable)
 print(sortedSro)
